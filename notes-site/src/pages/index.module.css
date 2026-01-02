@@ -1,0 +1,89 @@
+.heroBanner {
+  padding: 4rem 0 3rem;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #00d9a3;
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: #e0e0e0;
+}
+
+.highlight {
+  color: #00d9a3;
+  font-weight: 600;
+}
+
+.heroDescription {
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 800px;
+  color: #b0b0b0;
+  margin-bottom: 2rem;
+}
+
+.topics {
+  padding: 3rem 0 4rem;
+}
+
+.topicGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.topicCard {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.topicCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #00d9a3;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 217, 163, 0.15);
+}
+
+.topicLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.topicTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #00d9a3;
+}
+
+.topicDescription {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #b0b0b0;
+  margin: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .topicGrid {
+    grid-template-columns: 1fr;
+  }
+}
