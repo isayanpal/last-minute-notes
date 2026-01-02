@@ -11,14 +11,13 @@ function HomepageHeader() {
       <div className="container">
         <h1 className={styles.heroTitle}>Getting Started</h1>
         <p className={styles.heroSubtitle}>
-          Welcome to the hub of{" "}
-          <span className={styles.highlight}>Sayan's resources</span>.
+          Hi, I'm <span className={styles.highlight}>Sayan</span>. Everything
+          here is what I learned through interviews and at work.
         </p>
         <p className={styles.heroDescription}>
-          I generally like to document a lot of different questions that I find
-          in the journey of learning to code. This is a collection of most of
-          those questions and answers (along with some other resources). I hope
-          you find it useful.
+          Real questions, practical patterns, and hard-earned insights from
+          navigating tech interviews and building production apps. These are the
+          notes I wish I had when I started.
         </p>
       </div>
     </header>
