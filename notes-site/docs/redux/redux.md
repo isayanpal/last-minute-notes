@@ -1,3 +1,8 @@
+---
+id: redux
+title: Redux Toolkit (RTK)
+---
+
 # Redux Toolkit (RTK)
 
 > Focus is on **why**, **when**, and **how**, not just syntax.

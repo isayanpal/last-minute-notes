@@ -1,3 +1,8 @@
+---
+id: react
+title: React.js Complete Notes
+---
+
 # React.js Complete Notes
 
 > All examples use **modern React (hooks + functional components)**.

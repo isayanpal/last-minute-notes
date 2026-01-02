@@ -51,12 +51,12 @@ function HomepageTopics() {
     {
       title: "React",
       description: "React in-depth resources, concepts & more",
-      link: "/docs/react/react",
+      link: "/docs/react/",
     },
     {
       title: "Redux",
       description: "Redux Toolkit & RTK Query",
-      link: "/docs/redux/redux",
+      link: "/docs/redux/",
     },
   ];
 
