@@ -1,3 +1,8 @@
+---
+title: "TypeScript Interview Notes"
+description: "Complete TypeScript interview notes and explanations."
+---
+
 # 📘 TypeScript Complete Interview Notes (Frontend – In Depth)
 
 ## Table of Contents

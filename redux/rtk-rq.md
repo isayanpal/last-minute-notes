@@ -1,3 +1,8 @@
+---
+title: "RTK Query vs React Query"
+description: "Deep comparison of RTK Query and React Query."
+---
+
 # RTK Query vs React Query — Deep Comparison
 
 This document compares **Redux Toolkit Query** and **React Query** from a **systems, performance, and architecture** perspective

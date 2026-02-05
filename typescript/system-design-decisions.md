@@ -1,3 +1,8 @@
+---
+title: "TypeScript System Design Decisions"
+description: "System design decisions and tradeoffs for TypeScript frontend work."
+---
+
 # 📘 TypeScript System Design Decisions (Frontend – Senior Level)
 
 ## Table of Contents

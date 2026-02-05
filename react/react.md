@@ -1,3 +1,8 @@
+---
+title: "React Notes"
+description: "Complete React notes with modern hooks-based patterns."
+---
+
 # React.js Complete Notes
 
 > All examples use **modern React (hooks + functional components)**.
