@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+@source "../app/**/*.{ts,tsx,mdx}";
+@source "../content/**/*.{md,mdx}";
+@source "../mdx-components.tsx";
+@source "../node_modules/fumadocs-ui/dist/**/*.js";
+
+:root {
+  --fd-logo-font: var(--font-sans);
+  --color-fd-primary: 48 97% 62%;
+  --color-fd-primary-foreground: 0 0% 10%;
+  --color-fd-accent: 48 97% 62%;
+  --color-fd-accent-foreground: 0 0% 10%;
+}
+
+/* Remove built-in search toggle UI */
+[data-search],
+[data-search-full] {
+  display: none !important;
+}
+
+/* Force dark theme and set primary/accent to yellow */
+html {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #0b0b0b;
+}
+
+.dark {
+  --color-fd-primary: 48 97% 62%;
+  --color-fd-primary-foreground: 0 0% 10%;
+  --color-fd-accent: 48 97% 62%;
+  --color-fd-accent-foreground: 0 0% 10%;
+}
+
+/* Ensure headings and active/selected states use the yellow accent */
+#nd-page h1,
+#nd-page h2,
+#nd-page h3,
+#nd-page h4,
+#nd-page h5,
+#nd-page h6 {
+  color: hsl(48 97% 62%);
+}
+
+#nd-sidebar [data-active="true"],
+#nd-sidebar [data-active="true"] * {
+  color: hsl(48 97% 62%) !important;
+}
+
+/* TOC active item */
+#nd-toc a[data-active="true"],
+#nd-toc a[data-active="true"] * {
+  color: hsl(48 97% 62%) !important;
+}
