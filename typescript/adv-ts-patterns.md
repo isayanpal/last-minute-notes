@@ -1,3 +1,8 @@
+---
+title: "Advanced TypeScript Patterns"
+description: "Production-grade TypeScript patterns for interviews."
+---
+
 # 📘 Advanced TypeScript Patterns (Production + Interview Focused)
 
 ## Table of Contents

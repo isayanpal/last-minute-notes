@@ -1,3 +1,8 @@
+---
+title: "React Core Concepts"
+description: "Core React concepts with definitions and examples."
+---
+
 # React.js Core Concepts — Interview Explanation with Examples
 
 This document summarizes core React concepts with short definitions and examples.

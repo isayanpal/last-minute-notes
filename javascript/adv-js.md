@@ -1,3 +1,8 @@
+---
+title: "Advanced JavaScript"
+description: "Patterns, pitfalls, and deeper JavaScript concepts."
+---
+
 # 📘 JavaScript Advanced Interview Notes
 
 ## Deep Async, Event Loop, Tricky Outputs & Machine Coding

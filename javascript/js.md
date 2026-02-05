@@ -1,3 +1,8 @@
+---
+title: "JavaScript Interview Notes"
+description: "Complete JavaScript interview notes and explanations."
+---
+
 # 📘 JavaScript Complete Interview Notes (In-Depth)
 
 ## Table of Contents
