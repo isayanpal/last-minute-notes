@@ -38,9 +38,13 @@ export default async function Page({
     notFound();
   }
 
+  const toc = loaded.toc?.filter((item: { depth: number }) => item.depth <= 3);
+
   return (
     <DocsPage
-      toc={loaded.toc}
+      toc={toc}
+      tableOfContent={{ style: 'clerk' }}
+      tableOfContentPopover={{ style: 'clerk' }}
       footer={{
         component: <DocFooter />,
       }}
