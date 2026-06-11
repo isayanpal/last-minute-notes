@@ -21,18 +21,12 @@ export default function DocFooter() {
     };
   }, [footerList, pathname]);
 
-  const columnClass = previous && next ? 'md:grid-cols-3' : 'md:grid-cols-2';
+  if (!previous && !next) return null;
 
   return (
-    <div className={`grid gap-4 ${columnClass}`}>
-      {previous ? <FooterItemLink item={previous} index={0} /> : null}
-      <Link
-        href="/"
-        className="flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-fd-accent/80 hover:text-fd-accent-foreground"
-      >
-        Home
-      </Link>
-      {next ? <FooterItemLink item={next} index={1} /> : null}
+    <div className="mt-2 grid grid-cols-2 gap-3">
+      <div>{previous ? <FooterItemLink item={previous} index={0} /> : null}</div>
+      <div>{next ? <FooterItemLink item={next} index={1} /> : null}</div>
     </div>
   );
 }
@@ -43,16 +37,14 @@ function FooterItemLink({ item, index }: { item: PageTreeItem; index: 0 | 1 }) {
   return (
     <Link
       href={item.url}
-      className={`flex flex-col gap-2 rounded-lg border p-4 text-sm transition-colors hover:bg-fd-accent/80 hover:text-fd-accent-foreground ${index === 1 ? 'text-end' : ''}`}
+      className={`group flex flex-col gap-1 rounded-lg border border-white/10 bg-white/4 px-4 py-3 text-sm transition hover:border-[#f5d547]/30 hover:bg-white/6 ${index === 1 ? 'items-end text-end' : 'items-start'}`}
     >
-      <div
-        className={`inline-flex items-center gap-1.5 font-medium ${index === 1 ? 'flex-row-reverse' : ''}`}
-      >
-        <Icon className="-mx-1 size-4 shrink-0 rtl:rotate-180" />
-        <p>{item.name}</p>
+      <div className={`inline-flex items-center gap-1 text-xs text-zinc-500 group-hover:text-[#f5d547] ${index === 1 ? 'flex-row-reverse' : ''}`}>
+        <Icon className="size-3 shrink-0" />
+        <span>{index === 0 ? 'Previous' : 'Next'}</span>
       </div>
-      <p className="text-fd-muted-foreground truncate">
-        {item.description ?? (index === 0 ? 'Previous page' : 'Next page')}
+      <p className="font-medium text-zinc-300 group-hover:text-white truncate max-w-50">
+        {item.name}
       </p>
     </Link>
   );

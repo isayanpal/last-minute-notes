@@ -1,11 +1,9 @@
 import type { ReactNode } from 'react';
-import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import { source } from '@/lib/source';
+import { HomeLayout } from 'fumadocs-ui/layouts/home';
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <DocsLayout
-      tree={source.pageTree}
+    <HomeLayout
       nav={{
         title: 'Last Minute Notes',
         url: '/',
@@ -17,9 +15,13 @@ export default function Layout({ children }: { children: ReactNode }) {
           url: 'https://github.com/isayanpal/last-minute-notes',
           external: true,
         },
+        {
+          text: 'Docs',
+          url: '/docs',
+        },
       ]}
     >
       {children}
-    </DocsLayout>
+    </HomeLayout>
   );
 }
