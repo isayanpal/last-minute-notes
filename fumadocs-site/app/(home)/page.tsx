@@ -40,24 +40,6 @@ export default function HomePage() {
             GitHub
           </a>
         </div>
-
-        <div className="mt-24 grid grid-cols-2 gap-4 md:grid-cols-4">
-          {[
-            { label: 'JavaScript', href: '/docs/javascript', desc: 'Async, closures, event loop' },
-            { label: 'TypeScript', href: '/docs/typescript', desc: 'Types, generics, patterns' },
-            { label: 'React', href: '/docs/react', desc: 'Hooks, patterns, performance' },
-            { label: 'Redux', href: '/docs/redux', desc: 'RTK, state, async' },
-          ].map((topic) => (
-            <a
-              key={topic.href}
-              href={topic.href}
-              className="group flex flex-col gap-2 rounded-xl border border-white/8 bg-white/3 p-5 transition hover:border-[#f5d547]/30 hover:bg-white/6 no-underline"
-            >
-              <span className="text-base font-semibold text-[#f5d547]">{topic.label}</span>
-              <span className="text-xs text-zinc-500 leading-relaxed">{topic.desc}</span>
-            </a>
-          ))}
-        </div>
       </section>
     </main>
   );

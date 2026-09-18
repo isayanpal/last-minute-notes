@@ -37,6 +37,9 @@ description: "Complete React notes with modern hooks-based patterns."
 26. [Folder Structure](#24-folder-structure-senior-level)
 27. [Common Interview Questions](#25-common-interview-questions)
 28. [Anti-Patterns](#26-anti-patterns)
+29. [React 19: Actions & New Hooks](#27-react-19-actions--new-hooks)
+30. [React 19: Other Changes](#28-react-19-other-changes)
+31. [React 19.2 Updates](#29-react-192-updates)
 
 ---
 
@@ -526,3 +529,227 @@ shared/
 - Excessive context usage
 - Index as key
 - Overusing useEffect
+
+---
+
+## 27. React 19: Actions & New Hooks
+
+React 19 (stable since December 2024) introduces **Actions**: functions that handle async transitions (pending state, errors, optimistic updates, form resets) automatically.
+
+### useActionState
+
+Manages the full lifecycle of a form action: pending state, returned value, and error.
+
+```jsx
+const [error, submitAction, isPending] = useActionState(
+  async (previousState, formData) => {
+    const result = await updateName(formData.get("name"));
+    if (result.error) return result.error;
+    return null;
+  },
+  null
+);
+
+<form action={submitAction}>
+  <input name="name" />
+  <button disabled={isPending}>Update</button>
+  {error && <p>{error}</p>}
+</form>;
+```
+
+### useFormStatus
+
+Lets a nested component read the parent `<form>` status without prop drilling.
+
+```jsx
+import { useFormStatus } from "react-dom";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return <button disabled={pending}>Submit</button>;
+}
+```
+
+`useFormStatus` must be called from a component rendered **inside** the `<form>`.
+
+### useOptimistic
+
+Shows an optimistic value while an async action is in flight, then reconciles with the real result.
+
+```jsx
+const [optimisticName, setOptimisticName] = useOptimistic(name);
+
+async function submitAction(formData) {
+  const newName = formData.get("name");
+  setOptimisticName(newName);
+  const updated = await updateName(newName);
+  setName(updated);
+}
+```
+
+### use()
+
+Reads the value of a resource (a Promise or a Context) during render. Unlike hooks, `use()` can be called conditionally and inside loops.
+
+```jsx
+import { use } from "react";
+
+function Comments({ commentsPromise }) {
+  const comments = use(commentsPromise);
+  return comments.map((c) => <p key={c.id}>{c.text}</p>);
+}
+```
+
+```jsx
+function Button() {
+  const theme = use(ThemeContext);
+  return <button className={theme}>Click</button>;
+}
+```
+
+### Interview Question
+
+**Q:** Why not just use `useEffect` + `useState` for form submissions?
+**A:** Actions collapse pending/error/optimistic-state boilerplate into one hook, and integrate directly with `<form action={...}>` so React manages the transition.
+
+---
+
+## 28. React 19: Other Changes
+
+### ref as a prop
+
+Function components can now accept `ref` directly as a prop. `forwardRef` is no longer required for new code (it is still supported but deprecated).
+
+```jsx
+function Input({ placeholder, ref }) {
+  return <input placeholder={placeholder} ref={ref} />;
+}
+```
+
+### Context as a provider
+
+`<Context>` can be rendered directly as a provider instead of `<Context.Provider>`.
+
+```jsx
+const ThemeContext = createContext("light");
+
+<ThemeContext value="dark">
+  <App />
+</ThemeContext>;
+```
+
+### ref cleanup functions
+
+A `ref` callback can now return a cleanup function, mirroring `useEffect`.
+
+```jsx
+<div
+  ref={(node) => {
+    console.log("attached", node);
+    return () => console.log("detached", node);
+  }}
+/>
+```
+
+### Document metadata
+
+`<title>`, `<meta>`, and `<link>` can be rendered directly inside any component. React hoists them into `<head>` automatically, including from Server Components.
+
+```jsx
+function Page() {
+  return (
+    <>
+      <title>My Page</title>
+      <meta name="description" content="..." />
+      <h1>Content</h1>
+    </>
+  );
+}
+```
+
+### Stylesheets, scripts, and preloading
+
+`<link rel="stylesheet" precedence="...">` lets React manage stylesheet insertion order and dedupe. New resource APIs (`preload`, `preinit`, `prefetchDNS`, `preconnect`) from `react-dom` give explicit control over resource loading hints.
+
+### Server Components & Server Actions
+
+React Server Components (RSC) shipped as stable in React 19, alongside **Server Actions**: async functions marked `"use server"` that can be called directly from Client Components (typically wired through a framework like Next.js).
+
+```jsx
+"use server";
+
+export async function createNote(formData) {
+  await db.notes.create({ text: formData.get("text") });
+}
+```
+
+### Error reporting hooks (react-dom)
+
+`createRoot` and `hydrateRoot` accept `onCaughtError`, `onUncaughtError`, and `onRecoverableError` for centralized error reporting, replacing noisy duplicate console logs.
+
+### Removed / deprecated APIs
+
+| API                                              | Status                                        |
+| ------------------------------------------------ | ---------------------------------------------- |
+| `propTypes` / `defaultProps` on function components | Removed (use default parameters, TypeScript) |
+| String refs                                      | Removed                                        |
+| `react-dom/test-utils` (`act` re-export)         | Removed, import `act` from `react`             |
+| Legacy Context (`contextTypes`/`getChildContext`) | Removed                                        |
+| `ReactDOM.render` / `ReactDOM.hydrate`            | Removed, use `createRoot` / `hydrateRoot`       |
+| `forwardRef`                                     | Deprecated, use `ref` as a prop                |
+
+### Interview Question
+
+**Q:** What is the difference between a Server Action and an API route?
+**A:** A Server Action is a plain async function annotated `"use server"` that the framework turns into a network call automatically; no manual route, serialization, or fetch call needed.
+
+---
+
+## 29. React 19.2 Updates
+
+Released October 2025, with patch releases continuing through 2026 (latest stable around v19.3 as of September 2026).
+
+### `<Activity />`
+
+Renders parts of a tree in a "hidden" state: unmounts effects and lowers priority while keeping DOM and component state alive, so it can be shown again instantly later. Useful for tab switching, pre-rendering off-screen routes, and back/forward navigation caches.
+
+```jsx
+import { unstable_Activity as Activity } from "react";
+
+<Activity mode={isVisible ? "visible" : "hidden"}>
+  <Sidebar />
+</Activity>;
+```
+
+### useEffectEvent
+
+Extracts non-reactive logic out of an Effect: the returned function always sees the latest props/state but never triggers the Effect to re-run, removing the need to over-list (or intentionally omit) dependencies.
+
+```jsx
+function ChatRoom({ roomId, theme }) {
+  const onConnected = useEffectEvent(() => {
+    showToast(`Connected, theme: ${theme}`);
+  });
+
+  useEffect(() => {
+    const connection = createConnection(roomId);
+    connection.on("connected", onConnected);
+    return () => connection.disconnect();
+  }, [roomId]);
+}
+```
+
+### cacheSignal
+
+Pairs with `cache()` (React Server Components) to expose an `AbortSignal` that fires when the cached render lifetime ends, so in-flight fetches tied to that cache entry can be cancelled cleanly.
+
+### Performance & SSR
+
+- Partial pre-rendering and SSR batching improvements reduce time-to-first-byte for streamed responses.
+- Default `useId` prefix changed from `:r:` (19.0) to `_r_` (19.2), aligning with upcoming View Transition support.
+- A new **Performance Tracks** integration adds React-specific lanes to the browser Performance panel (component renders, Suspense, transitions).
+
+### Interview Question
+
+**Q:** How is `<Activity>` different from just conditionally rendering `{isVisible && <Sidebar />}`?
+**A:** Conditional rendering unmounts the subtree (state and DOM are destroyed). `<Activity mode="hidden">` keeps state and DOM alive but deprioritizes and detaches effects, so re-showing it is instant instead of a full remount.

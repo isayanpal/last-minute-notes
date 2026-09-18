@@ -29,6 +29,9 @@ This document summarizes core React concepts with short definitions and examples
 18. [Portals](#18-portals)
 19. [Suspense](#19-suspense)
 20. [Error Boundaries](#20-error-boundaries)
+21. [use() (React 19)](#21-use-react-19)
+22. [Actions (React 19)](#22-actions-react-19)
+23. [ref as a Prop (React 19)](#23-ref-as-a-prop-react-19)
 
 ---
 
@@ -379,5 +382,57 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) return <h1>Something went wrong</h1>;
     return this.props.children;
   }
+}
+```
+
+---
+
+## 21. use() (React 19)
+
+Definition:
+`use` reads a Promise or Context value during render. Unlike other hooks, it can be called conditionally or inside loops.
+
+Example:
+
+```jsx
+function Comments({ commentsPromise }) {
+  const comments = use(commentsPromise);
+  return comments.map((c) => <p key={c.id}>{c.text}</p>);
+}
+```
+
+---
+
+## 22. Actions (React 19)
+
+Definition:
+An Action is any async function passed to `<form action={...}>`, a transition, or a new hook (`useActionState`, `useOptimistic`). React tracks its pending state, error, and result automatically.
+
+Example:
+
+```jsx
+const [error, submitAction, isPending] = useActionState(async (prev, formData) => {
+  const res = await updateName(formData.get("name"));
+  return res.error ?? null;
+}, null);
+
+<form action={submitAction}>
+  <input name="name" />
+  <button disabled={isPending}>Save</button>
+</form>;
+```
+
+---
+
+## 23. ref as a Prop (React 19)
+
+Definition:
+Function components can accept `ref` as a normal prop. `forwardRef` is no longer needed for new components.
+
+Example:
+
+```jsx
+function Input({ placeholder, ref }) {
+  return <input placeholder={placeholder} ref={ref} />;
 }
 ```
