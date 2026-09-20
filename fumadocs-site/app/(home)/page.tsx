@@ -4,7 +4,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-5xl px-6 pt-24 pb-32">
         <div className="inline-flex items-center gap-2 rounded-full border border-[#f5d547]/20 bg-[#f5d547]/5 px-4 py-1.5 text-xs font-medium text-[#f5d547] mb-8">
           <span className="h-1.5 w-1.5 rounded-full bg-[#f5d547]" />
-          Frontend Interview Prep
+          Software Engineer Interview Prep
         </div>
 
         <h1 className="text-6xl font-bold tracking-tight text-white md:text-7xl leading-[1.05]">
