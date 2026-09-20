@@ -71,6 +71,34 @@ acc.deposit(50);
 console.log(acc.getBalance()); // 150
 ```
 
+**Java:**
+
+```java
+public class BankAccount {
+    private double balance;
+
+    public BankAccount(double initialBalance) {
+        this.balance = initialBalance;
+    }
+
+    public void deposit(double amount) {
+        this.balance += amount;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BankAccount acc = new BankAccount(100); // acc is an object (instance)
+        acc.deposit(50);
+        System.out.println(acc.getBalance()); // 150.0
+    }
+}
+```
+
 ---
 
 ## 3. The Four Pillars
@@ -100,6 +128,29 @@ class BankAccount {
 }
 ```
 
+**Java:**
+
+```java
+public class BankAccount {
+    private double balance; // private: only this class can touch it
+
+    public BankAccount(double balance) {
+        this.balance = balance;
+    }
+
+    public void withdraw(double amount) {
+        if (amount > balance) {
+            throw new IllegalArgumentException("Insufficient funds");
+        }
+        balance -= amount;
+    }
+
+    public double getBalance() { // getter only, no setter
+        return balance;
+    }
+}
+```
+
 Why it matters: `#balance` can't be set to a negative number from outside the class. All mutation goes through `withdraw`/`deposit`, which enforce the account's invariants.
 
 ### 3.2 Abstraction
@@ -121,6 +172,29 @@ class StripeGateway implements PaymentGateway {
 function checkout(gateway: PaymentGateway, amount: number) {
   // checkout() doesn't know or care HOW charging happens
   return gateway.charge(amount);
+}
+```
+
+**Java:**
+
+```java
+public interface PaymentGateway {
+    boolean charge(double amount);
+}
+
+public class StripeGateway implements PaymentGateway {
+    @Override
+    public boolean charge(double amount) {
+        // complex HTTP calls, retries, signature verification hidden here
+        return true;
+    }
+}
+
+public class CheckoutService {
+    // doesn't know or care HOW charging happens
+    public boolean checkout(PaymentGateway gateway, double amount) {
+        return gateway.charge(amount);
+    }
 }
 ```
 
@@ -147,6 +221,38 @@ class Manager extends Employee {
   getSalary(): number {
     return this.baseSalary + this.bonus; // overrides base behavior
   }
+}
+```
+
+**Java:**
+
+```java
+public class Employee {
+    protected String name;
+    protected double baseSalary;
+
+    public Employee(String name, double baseSalary) {
+        this.name = name;
+        this.baseSalary = baseSalary;
+    }
+
+    public double getSalary() {
+        return baseSalary;
+    }
+}
+
+public class Manager extends Employee {
+    private double bonus;
+
+    public Manager(String name, double baseSalary, double bonus) {
+        super(name, baseSalary);
+        this.bonus = bonus;
+    }
+
+    @Override
+    public double getSalary() {
+        return baseSalary + bonus; // overrides base behavior
+    }
 }
 ```
 
@@ -179,10 +285,56 @@ printArea(new Circle(2));      // 12.57
 printArea(new Rectangle(3, 4)); // 12
 ```
 
+**Java:**
+
+```java
+public abstract class Shape {
+    public abstract double area();
+}
+
+public class Circle extends Shape {
+    private final double radius;
+
+    public Circle(double radius) { this.radius = radius; }
+
+    @Override
+    public double area() { return Math.PI * radius * radius; }
+}
+
+public class Rectangle extends Shape {
+    private final double w, h;
+
+    public Rectangle(double w, double h) { this.w = w; this.h = h; }
+
+    @Override
+    public double area() { return w * h; }
+}
+
+static void printArea(Shape shape) {
+    System.out.println(shape.area()); // correct area() runs based on actual type
+}
+
+printArea(new Circle(2));       // 12.566...
+printArea(new Rectangle(3, 4)); // 12.0
+```
+
 Two common flavors:
 
 - **Runtime (dynamic) polymorphism** — method overriding, resolved at runtime via the object's actual class (shown above).
 - **Compile-time (static) polymorphism** — method overloading, resolved at compile time based on argument types/count (common in Java/C++, simulated in TS via overload signatures).
+
+Java supports both natively. Overloading (compile-time) vs overriding (runtime):
+
+```java
+class Calculator {
+    int add(int a, int b) { return a + b; }             // overloading: same name,
+    double add(double a, double b) { return a + b; }    // different parameter types
+    int add(int a, int b, int c) { return a + b + c; }  // or different count
+}
+
+Shape s = new Circle(2);
+s.area(); // overriding: Circle.area() chosen at runtime from the actual object
+```
 
 ---
 
@@ -219,6 +371,26 @@ class Car {
 }
 ```
 
+**Java:**
+
+```java
+// Inheritance (is-a) - Manager IS an Employee
+class Manager extends Employee { /* ... */ }
+
+// Composition (has-a) - Car HAS an Engine
+class Engine {
+    void start() { System.out.println("engine started"); }
+}
+
+class Car {
+    private final Engine engine = new Engine();
+
+    void start() {
+        engine.start();
+    }
+}
+```
+
 Rule of thumb, and a very common senior-level answer: **"favor composition over inheritance"** — deep inheritance hierarchies get fragile and hard to change (the "fragile base class" problem), while composition keeps components swappable and independently testable.
 
 ---
@@ -232,6 +404,30 @@ A class should have only one reason to change.
 Bad: an `Invoice` class that calculates totals *and* saves itself to the database *and* formats a PDF — three unrelated reasons to change.
 
 Good: split into `Invoice` (data + calculation), `InvoiceRepository` (persistence), `InvoicePdfFormatter` (presentation).
+
+**Java:**
+
+```java
+// Bad: three reasons to change in one class
+class Invoice {
+    double calculateTotal() { /* ... */ return 0; }
+    void saveToDatabase() { /* ... */ }
+    byte[] renderPdf() { /* ... */ return new byte[0]; }
+}
+
+// Good: one responsibility each
+class Invoice {
+    double calculateTotal() { /* data + calculation */ return 0; }
+}
+
+class InvoiceRepository {
+    void save(Invoice invoice) { /* persistence */ }
+}
+
+class InvoicePdfFormatter {
+    byte[] format(Invoice invoice) { /* presentation */ return new byte[0]; }
+}
+```
 
 ### 6.2 Open/Closed Principle
 
@@ -255,6 +451,28 @@ function finalPrice(price: number, strategy: DiscountStrategy) {
 }
 ```
 
+**Java:**
+
+```java
+interface DiscountStrategy {
+    double apply(double price);
+}
+
+class NoDiscount implements DiscountStrategy {
+    public double apply(double price) { return price; }
+}
+
+class SeasonalDiscount implements DiscountStrategy {
+    public double apply(double price) { return price * 0.9; }
+}
+
+class PriceCalculator {
+    static double finalPrice(double price, DiscountStrategy strategy) {
+        return strategy.apply(price);
+    }
+}
+```
+
 Adding a new `BlackFridayDiscount` needs a new class, not edits to `finalPrice` or existing discount classes.
 
 ### 6.3 Liskov Substitution Principle
@@ -271,6 +489,28 @@ class Bird {
 class Penguin extends Bird {
   fly(): void { throw new Error("Penguins can't fly!"); } // breaks LSP
 }
+```
+
+**Java:**
+
+```java
+class Bird {
+    void fly() { System.out.println("flying"); }
+}
+
+class Penguin extends Bird {
+    @Override
+    void fly() { throw new UnsupportedOperationException("Penguins can't fly!"); } // breaks LSP
+}
+
+// Fix: split the hierarchy so only flying birds promise fly()
+interface Flyable { void fly(); }
+
+abstract class Bird { /* eat(), layEggs(), ... */ }
+class Sparrow extends Bird implements Flyable {
+    public void fly() { System.out.println("flying"); }
+}
+class Penguin extends Bird { /* no fly() to break */ }
 ```
 
 Any code that does `bird.fly()` expecting a `Bird` now crashes when handed a `Penguin`. Fix: don't model `Penguin` as a `Bird` that flies — separate `FlyingBird` and `FlightlessBird`, or use composition.
@@ -302,6 +542,30 @@ class Human implements Workable, Eatable {
 }
 ```
 
+**Java:**
+
+```java
+// Bad: one fat interface
+interface Worker {
+    void work();
+    void eat();
+}
+// A Robot implementing Worker is forced to implement eat(), which makes no sense.
+
+// Good: split it
+interface Workable { void work(); }
+interface Eatable { void eat(); }
+
+class Robot implements Workable {
+    public void work() { System.out.println("welding"); }
+}
+
+class Human implements Workable, Eatable {
+    public void work() { System.out.println("coding"); }
+    public void eat() { System.out.println("lunch"); }
+}
+```
+
 ### 6.5 Dependency Inversion Principle
 
 High-level modules shouldn't depend on low-level modules directly, both should depend on abstractions.
@@ -326,6 +590,38 @@ class MySQLDatabase implements Database {
 }
 ```
 
+**Java:**
+
+```java
+// Bad: OrderService is tightly coupled to a concrete MySQLDatabase
+class OrderService {
+    private final MySQLDatabase db = new MySQLDatabase();
+}
+
+// Good: depends on an interface, concrete implementation is injected
+interface Database {
+    void save(Order order);
+}
+
+class OrderService {
+    private final Database db;
+
+    OrderService(Database db) { // dependency injected via constructor
+        this.db = db;
+    }
+}
+
+class MySQLDatabase implements Database {
+    public void save(Order order) { /* ... */ }
+}
+
+class InMemoryTestDatabase implements Database {
+    public void save(Order order) { /* ... */ }
+}
+
+OrderService service = new OrderService(new InMemoryTestDatabase()); // e.g. in a unit test
+```
+
 This is what makes swapping `MySQLDatabase` for `InMemoryTestDatabase` in unit tests trivial.
 
 ---
@@ -339,6 +635,40 @@ Common relationships between classes, weakest to strongest coupling:
 - **Composition** — a stronger "has-a" where the part's lifecycle is bound to the whole (`House` has `Rooms`; a room doesn't exist without the house).
 - **Inheritance (Generalization)** — "is-a" relationship (`Manager` is an `Employee`).
 - **Realization/Implementation** — a class implements an interface's contract (`StripeGateway` implements `PaymentGateway`).
+
+**Java:**
+
+```java
+// Association: Teacher uses Student, neither owns the other
+class Teacher {
+    void teach(Student student) { /* ... */ }
+}
+
+// Aggregation: Professors are created elsewhere and outlive the Department
+class Department {
+    private final List<Professor> professors;
+
+    Department(List<Professor> professors) {
+        this.professors = professors;
+    }
+}
+
+// Composition: House creates its Rooms, so Rooms die with the House
+class House {
+    private final List<Room> rooms = new ArrayList<>();
+
+    House() {
+        rooms.add(new Room("Kitchen"));
+        rooms.add(new Room("Bedroom"));
+    }
+}
+
+// Inheritance (Generalization)
+class Manager extends Employee { /* ... */ }
+
+// Realization
+class StripeGateway implements PaymentGateway { /* ... */ }
+```
 
 ---
 
@@ -362,6 +692,35 @@ class ConfigManager {
 }
 ```
 
+**Java:**
+
+```java
+public class ConfigManager {
+    private final Map<String, String> settings = new HashMap<>();
+
+    private ConfigManager() {} // no outside instantiation
+
+    // Initialization-on-demand holder: lazy and thread-safe without explicit locking
+    private static class Holder {
+        private static final ConfigManager INSTANCE = new ConfigManager();
+    }
+
+    public static ConfigManager getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    public Map<String, String> getSettings() {
+        return settings;
+    }
+}
+
+// Simplest thread-safe alternative (also safe against reflection and serialization):
+enum AppConfig {
+    INSTANCE;
+    private final Map<String, String> settings = new HashMap<>();
+}
+```
+
 Use case: app-wide configuration or a shared connection pool. Caution: overused Singletons become hidden global state that makes testing harder.
 
 ### 8.2 Factory
@@ -376,6 +735,34 @@ class SmsNotification implements Notification { send(msg: string) { /* ... */ } 
 function createNotification(type: "email" | "sms"): Notification {
   return type === "email" ? new EmailNotification() : new SmsNotification();
 }
+```
+
+**Java:**
+
+```java
+interface Notification {
+    void send(String msg);
+}
+
+class EmailNotification implements Notification {
+    public void send(String msg) { /* ... */ }
+}
+
+class SmsNotification implements Notification {
+    public void send(String msg) { /* ... */ }
+}
+
+class NotificationFactory {
+    static Notification create(String type) {
+        return switch (type) {
+            case "email" -> new EmailNotification();
+            case "sms" -> new SmsNotification();
+            default -> throw new IllegalArgumentException("Unknown type: " + type);
+        };
+    }
+}
+
+Notification n = NotificationFactory.create("email"); // caller only sees the interface
 ```
 
 ### 8.3 Strategy
@@ -405,6 +792,31 @@ orderPlaced.subscribe((data) => console.log("update inventory", data));
 orderPlaced.publish({ orderId: "123" });
 ```
 
+**Java:**
+
+```java
+interface Observer<T> {
+    void update(T data);
+}
+
+class EventEmitter<T> {
+    private final List<Observer<T>> listeners = new ArrayList<>();
+
+    void subscribe(Observer<T> observer) {
+        listeners.add(observer);
+    }
+
+    void publish(T data) {
+        listeners.forEach(o -> o.update(data));
+    }
+}
+
+EventEmitter<String> orderPlaced = new EventEmitter<>();
+orderPlaced.subscribe(id -> System.out.println("send confirmation email " + id));
+orderPlaced.subscribe(id -> System.out.println("update inventory " + id));
+orderPlaced.publish("123");
+```
+
 This is the pattern behind DOM events, Redux subscriptions, and pub/sub systems.
 
 ### 8.5 Decorator
@@ -427,6 +839,31 @@ const order = new MilkDecorator(new SimpleCoffee());
 console.log(order.cost()); // 2.5
 ```
 
+**Java:**
+
+```java
+interface Coffee {
+    double cost();
+}
+
+class SimpleCoffee implements Coffee {
+    public double cost() { return 2; }
+}
+
+class MilkDecorator implements Coffee {
+    private final Coffee coffee;
+
+    MilkDecorator(Coffee coffee) { this.coffee = coffee; }
+
+    public double cost() { return coffee.cost() + 0.5; }
+}
+
+Coffee order = new MilkDecorator(new SimpleCoffee());
+System.out.println(order.cost()); // 2.5
+```
+
+`java.io` is the classic real-world example: `new BufferedReader(new InputStreamReader(System.in))` wraps one reader in another.
+
 ---
 
 ## 9. OOP in JavaScript vs Classical OOP
@@ -442,6 +879,21 @@ const Serializable = (Base: any) => class extends Base {
 
 class Model {}
 class User extends Serializable(Model) {}
+```
+
+Java also has single class inheritance, but allows multiple interfaces, and `default` methods give mixin-like reuse:
+
+```java
+interface Loggable {
+    default void log(String msg) { System.out.println("[LOG] " + msg); }
+}
+
+interface Serializable {
+    default String toJson() { return "{}"; } // real code would delegate to Jackson/Gson
+}
+
+class Model {}
+class User extends Model implements Loggable, Serializable {}
 ```
 
 ---
