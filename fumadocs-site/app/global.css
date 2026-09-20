@@ -44,6 +44,8 @@ body {
   color: hsl(48 97% 62%) !important;
 }
 
+#nd-toc a:hover,
+#nd-toc a:hover *,
 #nd-toc a[data-active="true"],
 #nd-toc a[data-active="true"] * {
   color: hsl(48 97% 62%) !important;
