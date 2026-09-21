@@ -5,6 +5,7 @@
 @source "../app/**/*.{ts,tsx,mdx}";
 @source "../content/**/*.{md,mdx}";
 @source "../mdx-components.tsx";
+@source "../components/**/*.tsx";
 @source "../node_modules/fumadocs-ui/dist/**/*.js";
 
 :root {

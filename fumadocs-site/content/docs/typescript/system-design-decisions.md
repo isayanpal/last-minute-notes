@@ -101,6 +101,17 @@ Why this matters:
 - Centralized conversion
 - Cleaner UI code
 
+**Flowchart: Convert Once at the Boundary**
+
+Be strict at the boundary and convert there, so the rest of the app never sees the raw API shape.
+
+```mermaid
+flowchart LR
+  A["API response: ApiUser<br/>created_at is a string"] --> B["mapUser: convert once, at the boundary"] --> C["User: createdAt is a Date"] --> D["Components, hooks, and store use only User"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 3. Preventing Impossible States (Most Important)
@@ -119,6 +130,27 @@ Problem:
 
 - `loading = false` and `data = undefined`
 - `data` and `error` can exist together
+
+**Flowchart: Impossible States**
+
+Independent fields allow combinations that make no sense, while a status union only has the states you meant.
+
+```mermaid
+flowchart LR
+  subgraph Bad["Separate fields: loading, data, error"]
+    B1["loading = false and data = undefined"]
+    B2["data and error both set"]
+  end
+  subgraph Good["One status union"]
+    G1["idle"]
+    G2["loading"]
+    G3["success with data"]
+    G4["error with message"]
+  end
+  Bad -->|"model it as"| Good
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -176,6 +208,19 @@ Why interviewers like this:
 - No `try/catch` abuse
 - Clear control flow
 
+**Flowchart: Handling an ApiResponse**
+
+The `success` flag narrows the union, so you cannot read `data` on a failure or `error` on a success.
+
+```mermaid
+flowchart TD
+  A["handleResponse(res)"] --> B{"res.success?"}
+  B -->|true| C["res narrows to ApiSuccess: res.data is available"]:::done
+  B -->|false| D["res narrows to ApiFailure: res.error is available"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 5. Designing Reusable Hooks (Typed Correctly)
@@ -207,6 +252,20 @@ Why:
 - No undefined checks
 - Scales well
 
+**Flowchart: Consuming a Typed Hook**
+
+The consumer is forced to handle every case, and never needs an undefined check.
+
+```mermaid
+flowchart TD
+  A["const result = useUser()"] --> B{"result.status"}
+  B -->|loading| C["Show a spinner"]
+  B -->|success| D["result.user is available"]:::done
+  B -->|error| E["result.error is available"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 6. Designing Component APIs (Senior Signal)
@@ -220,6 +279,19 @@ Why:
 Ambiguous:
 
 - Can be disabled AND loading
+
+**Flowchart: A Component API With States**
+
+One `state` prop replaces two booleans, so the ambiguous combination cannot be written.
+
+```mermaid
+flowchart TD
+  A["Button props: exactly one state at a time"] --> B{"state"}
+  B -->|idle| C["onClick is required"]
+  B -->|loading| D["No onClick: it cannot be clicked"]
+  B -->|disabled| E["No onClick: it cannot be clicked"]
+  X["disabled and loading together"] -.->|"not expressible: compile error"| A
+```
 
 ---
 
@@ -283,6 +355,19 @@ Interview one-liner:
 
 > Interfaces describe shapes, types describe logic.
 
+**Flowchart: interface or type?**
+
+Interfaces describe shapes, types describe logic.
+
+```mermaid
+flowchart TD
+  A{"What are you declaring?"} -->|"Union, intersection, conditional, or utility type"| T["type"]:::done
+  A -->|"Object shape, public API, library export"| I["interface"]:::done
+  I --> M["Need declaration merging? Only interface supports it"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 9. Strictness Strategy
@@ -301,6 +386,17 @@ Interview one-liner:
 
 - Allow `any` only at **external boundaries**
 - Wrap unsafe values with validators
+
+**Flowchart: Where any Is Allowed**
+
+`any` is acceptable only at the outer edge, and it is wrapped by a validator before it reaches typed code.
+
+```mermaid
+flowchart LR
+  A["External unsafe value"] --> B["any is allowed only here, at the boundary"] --> C["Validate or wrap with a validator"] --> D["Strictly typed internal code<br/>strict, strictNullChecks, noImplicitAny"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -328,6 +424,21 @@ interface User {
 Rule:
 
 > Types should help humans first, compiler second.
+
+**Flowchart: Is This Type Worth It?**
+
+Types should help humans first, and the compiler second.
+
+```mermaid
+flowchart TD
+  A["Tempted to write a complex type"] --> B{"Does it prevent a real bug or clarify intent?"}
+  B -->|no| C["Use a plain interface or type"]:::done
+  B -->|yes| D{"Can a teammate read it in under a minute?"}
+  D -->|yes| E["Keep it"]:::done
+  D -->|no| F["Simplify it, or change the design"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 

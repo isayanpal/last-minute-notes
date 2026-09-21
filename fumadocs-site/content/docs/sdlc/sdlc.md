@@ -51,6 +51,23 @@ Every model (Waterfall, Agile, Spiral, etc.) is just a different arrangement of 
 
 ## 2. The Core Phases
 
+**Flowchart: The Seven Phases**
+
+Every model in section 3 is a different arrangement of these same phases.
+The two loops are what differ between models: bugs found in testing go back to implementation, and new needs after release start the cycle again.
+
+```mermaid
+flowchart TD
+  R["1. Requirement analysis<br/>Output: SRS"] --> P["2. Planning<br/>Cost, timeline, resources, risks"]
+  P --> D["3. Design<br/>Output: HLD and LLD"]
+  D --> I["4. Implementation<br/>Code, review, merge"]
+  I --> T["5. Testing<br/>Verify against requirements"]
+  T -->|"bugs found"| I
+  T -->|"passes"| Dp["6. Deployment<br/>Staged rollout"]
+  Dp --> M["7. Maintenance<br/>Bug fixes, patches, small enhancements"]
+  M -->|"new needs"| R
+```
+
 ### 2.1 Requirement Analysis
 
 Business analysts and stakeholders define **what** the system should do.
@@ -118,8 +135,13 @@ Example: A month after launch, a bug is found where UPI payments fail for amount
 
 Strictly sequential: each phase must fully complete before the next starts.
 
-```
-Requirements → Design → Implementation → Testing → Deployment → Maintenance
+**Flowchart: Waterfall**
+
+Strictly one way: a phase must finish before the next starts, and there is no arrow back.
+
+```mermaid
+flowchart LR
+  R["Requirements"] --> D["Design"] --> I["Implementation"] --> T["Testing"] --> Dp["Deployment"] --> M["Maintenance"]
 ```
 
 Example use case: building firmware for a medical device where requirements are fixed by regulation and cannot change mid-project.
@@ -139,22 +161,64 @@ Cons:
 
 Extension of Waterfall where each development phase has a corresponding testing phase, forming a "V" shape.
 
-```
-Requirements ──────────────── Acceptance Testing
-   Design ─────────────────── System Testing
-      LLD ──────────────────  Integration Testing
-         Coding ───────────── Unit Testing
+**Flowchart: V-Model**
+
+Read the top row left to right, then the bottom row right to left.
+Each development phase is paired with a test level, and that test is written while the phase is being done.
+
+```mermaid
+flowchart TD
+  subgraph Dev["Development side: verification"]
+    direction LR
+    R["Requirements"] --> H["HLD"] --> L["LLD"] --> C["Coding"]
+  end
+  subgraph Test["Testing side: validation"]
+    direction RL
+    U["Unit testing<br/>checks Coding"] --> I["Integration testing<br/>checks LLD"] --> S["System testing<br/>checks HLD"] --> A["Acceptance testing<br/>checks Requirements"]
+  end
+  Dev -->|"code complete"| Test
 ```
 
 Example: Requirement "system must process 500 orders/min" maps directly to a performance test written during the requirement phase, executed at acceptance testing.
 
 Best for: safety-critical or highly regulated systems (aerospace, banking core systems).
 
+**Flowchart: Verification vs Validation**
+
+Verification checks the product against the spec.
+Validation checks the product against what the user actually needs.
+
+```mermaid
+flowchart LR
+  N["User need"] -->|"captured as"| S["Specification: SRS, HLD, LLD"]
+  S -->|"built as"| P["Product"]
+  P -.->|"Verification: are we building the product right?"| S
+  P -.->|"Validation: are we building the right product?"| N
+```
+
 ### 3.3 Iterative Model
 
 Build the system in repeated cycles, each producing a working (if incomplete) version, refined over iterations.
 
 Example: Iteration 1 builds login only, Iteration 2 adds product browsing, Iteration 3 adds checkout — each iteration is a usable, testable increment.
+
+**Flowchart: Iterative Model**
+
+Each pass through the loop ends with a usable, testable increment.
+For example: iteration 1 is login, iteration 2 is product browsing, iteration 3 is checkout.
+
+```mermaid
+flowchart TD
+  A["Pick the next slice of features"] --> B["Plan and design the slice"]
+  B --> C["Build"]
+  C --> D["Test"]
+  D --> E["Review: working increment"]
+  E --> F{"More features or fixes needed?"}
+  F -->|"yes: next iteration"| A
+  F -->|no| G["Final system"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ### 3.4 Spiral Model
 
@@ -163,6 +227,23 @@ Combines iterative development with explicit risk analysis at every loop of the 
 Example: A fintech startup building a new trading engine spends the first spiral loop building a throwaway prototype just to test whether their matching algorithm can handle order bursts, before committing to full implementation.
 
 Best for: large, high-risk, high-cost projects where unknowns need to be resolved early.
+
+**Flowchart: Spiral Model**
+
+Same four steps every loop, but the risk analysis step comes before any real engineering.
+Each loop is wider and costlier than the last, so unknowns are settled while they are still cheap.
+
+```mermaid
+flowchart TD
+  A["1. Plan<br/>Objectives, alternatives, constraints"] --> B["2. Risk analysis<br/>Prototype the riskiest unknown"]
+  B --> C["3. Engineering<br/>Build and test this loop's deliverable"]
+  C --> D["4. Evaluation<br/>Customer reviews the result"]
+  D --> E{"Risks resolved and system complete?"}
+  E -->|"no: start a wider loop"| A
+  E -->|yes| F["Release"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ### 3.5 Agile Model
 
@@ -176,6 +257,19 @@ Core values:
 - Responding to change over following a plan
 
 Example: A product team ships a minimal "add to cart" feature in Sprint 1, gets real user feedback, then iterates to add saved-for-later and quantity discounts in Sprint 2 based on that feedback.
+
+**Flowchart: Agile Feedback Loop**
+
+The plan is expected to change: feedback from working software flows straight back into the backlog.
+
+```mermaid
+flowchart LR
+  A["Customer needs"] --> B["Prioritized backlog"]
+  B --> C["Short iteration<br/>1 to 4 weeks"]
+  C --> D["Working software"]
+  D --> E["Customer feedback"]
+  E -->|"adapt the plan"| B
+```
 
 ### 3.6 Scrum
 
@@ -196,15 +290,75 @@ Ceremonies:
 
 Example: Team commits to 20 story points for a 2-week sprint, holds a 15-minute daily standup, demos the checkout feature to stakeholders at sprint review, then discusses in retro that code review turnaround was too slow.
 
+**Flowchart: One Scrum Sprint**
+
+The Product Owner decides what is on the backlog and in what order.
+The Scrum Master does not steer the work, they remove what is blocking it.
+
+```mermaid
+flowchart TD
+  PO["Product Owner orders the Product Backlog"] --> SP["Sprint Planning<br/>Team commits to items"]
+  SP --> SB["Sprint Backlog<br/>e.g. 20 story points"]
+  SB --> DS
+  subgraph Sprint["Sprint: fixed length, usually 2 weeks"]
+    DS["Daily Standup<br/>15 minutes"] -->|"every day"| W["Build and test the increment"]
+    W -->|"next day"| DS
+  end
+  W -->|"sprint ends"| INC["Working increment"]
+  INC --> SR["Sprint Review<br/>Demo to stakeholders"]
+  SR --> RT["Sprint Retrospective<br/>Improve the process"]
+  RT -->|"next sprint"| PO
+  SM["Scrum Master removes blockers"] -.-> Sprint
+```
+
 ### 3.7 Kanban
 
 A continuous-flow Agile method visualizing work on a board (`To Do → In Progress → Review → Done`) with **WIP limits** instead of fixed sprints.
+
+**Flowchart: Kanban Pull Rule**
+
+Work is pulled, never pushed: a card only enters In Progress if the WIP limit allows it.
+
+```mermaid
+flowchart LR
+  T["To Do"] --> G{"In Progress below WIP limit?"}
+  G -->|yes| P["In Progress<br/>WIP limit: 3"]
+  G -->|"no: finish something first"| W["Help finish current work"]
+  W --> G
+  P --> R["Review"]
+  R -->|"changes needed"| P
+  R -->|approved| Dn["Done"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 Example: A support/maintenance team uses Kanban instead of Scrum because incoming bugs arrive unpredictably; they cap "In Progress" at 3 items per engineer to avoid context-switching overload.
 
 ---
 
 ## 4. Comparing the Models
+
+**Flowchart: Picking a Model**
+
+The deciding questions are how stable the requirements are, how risky the project is, and how work arrives.
+
+```mermaid
+flowchart TD
+  A{"Requirements fixed and well understood?"} -->|yes| B{"Safety-critical or regulated?"}
+  B -->|yes| V["V-Model"]:::done
+  B -->|no| W["Waterfall"]:::done
+  A -->|no| C{"Large, high-risk, big unknowns?"}
+  C -->|yes| S["Spiral"]:::done
+  C -->|no| D{"Work arrives unpredictably, like bugs and support?"}
+  D -->|yes| K["Kanban"]:::done
+  D -->|no| E{"Stable roadmap, fixed-length sprints?"}
+  E -->|yes| Sc["Scrum"]:::done
+  E -->|no| F{"Close customer input, fast feedback?"}
+  F -->|yes| Ag["Agile"]:::done
+  F -->|no| It["Iterative"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 | Model      | Flexibility | Feedback Speed | Best For                                  |
 |------------|-------------|-----------------|---------------------------------------------|
@@ -228,9 +382,29 @@ Modern SDLC folds Deployment and Maintenance into a continuous loop rather than 
 
 Example CI/CD pipeline for the checkout feature:
 
-```
-git push → run unit tests → run integration tests → build docker image
-  → deploy to staging → run smoke tests → manual approval → deploy to prod
+**Flowchart: CI/CD Pipeline**
+
+Any failing stage sends the change back to the developer, so a broken build never reaches production.
+Continuous Delivery keeps the manual approval gate.
+Continuous Deployment removes it, so a passing change goes straight to production.
+
+```mermaid
+flowchart TD
+  subgraph CI["Continuous Integration"]
+    A["git push"] --> B["Unit tests"] --> C["Integration tests"] --> D["Build docker image"]
+  end
+  subgraph CDel["Continuous Delivery: always ready to deploy"]
+    E["Deploy to staging"] --> F["Smoke tests"] --> G["Manual approval"]
+  end
+  D --> E
+  G -->|approved| H["Deploy to production"]:::done
+  F -.->|"Continuous Deployment: no approval gate"| H
+  B -->|fail| X["Fix and push again"]
+  C -->|fail| X
+  F -->|fail| X
+  X --> A
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 This shortens the feedback loop from "weeks" (Waterfall-style release trains) to "minutes" (a PR merge can be in production the same day).
@@ -244,6 +418,18 @@ This shortens the feedback loop from "weeks" (Waterfall-style release trains) to
 - **System Testing** — the whole application end-to-end against requirements.
 - **Acceptance Testing (UAT)** — validated by the client/business that it meets real needs.
 - **Regression Testing** — re-running existing tests after a change to ensure nothing broke.
+
+**Flowchart: Testing Levels**
+
+The first four levels widen in scope.
+Regression testing is not a level, it is a re-run of the existing tests at every level after any change.
+
+```mermaid
+flowchart LR
+  U["Unit<br/>One function or class"] --> I["Integration<br/>Modules working together"] --> S["System<br/>Whole app, end to end"] --> A["Acceptance (UAT)<br/>Client validates real needs"]
+  C["Any code change"] --> R["Regression<br/>Re-run existing tests"]
+  R -.->|"re-run at every level"| U
+```
 
 Example: after fixing the double-checkout race condition bug, the team adds a regression test that submits checkout twice concurrently and asserts only one order is created.
 

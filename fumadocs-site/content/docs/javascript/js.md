@@ -93,6 +93,25 @@ JavaScript is a **high-level, interpreted, dynamically typed, single-threaded pr
 5. Microtask Queue
 6. Event Loop
 
+**Flowchart: JavaScript Runtime**
+
+The engine only has a call stack and a heap, everything asynchronous is handled by the runtime around it.
+
+```mermaid
+flowchart TD
+  subgraph Engine["Engine"]
+    CS["Call stack"]
+    H["Heap"]
+  end
+  CS -->|"setTimeout, fetch, DOM events"| W["Web APIs"]
+  W -->|"ready: callback"| MA["Macrotask queue"]
+  CS -->|"Promise.then, queueMicrotask"| MI["Microtask queue"]
+  EL(["Event loop: acts when the call stack is empty"])
+  MI -->|"1st: drain all"| EL
+  MA -->|"2nd: take one"| EL
+  EL -->|"push the callback"| CS
+```
+
 ---
 
 ## 3. Execution Context
@@ -120,6 +139,26 @@ An environment where JavaScript code is evaluated and executed.
 #### Execution Phase
 
 - Code execution line by line
+
+**Flowchart: Execution Context Lifecycle**
+
+Every function call gets its own context with the same two phases as the global one.
+
+```mermaid
+flowchart TD
+  A["Script starts"] --> B["Create the Global Execution Context"]
+  B --> C["Creation phase: allocate memory, hoist declarations"]
+  C --> D["Execution phase: run code line by line"]
+  D --> E{"Function called?"}
+  E -->|yes| F["Function context: creation phase, then execution phase, pushed on the call stack"]
+  F --> R["Function returns: pop it off the call stack"]
+  R --> D
+  E -->|no| G{"More code left?"}
+  G -->|yes| D
+  G -->|no| H["Global context finishes last"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -154,6 +193,18 @@ function hello() {
 }
 ```
 
+**Flowchart: How Declarations Are Hoisted**
+
+All three are hoisted during the creation phase, but they start in different states.
+
+```mermaid
+flowchart TD
+  A["Creation phase finds a declaration"] --> B{"Kind?"}
+  B -->|var| V["Initialized to undefined<br/>Reading it early gives undefined"]
+  B -->|"let or const"| L["Uninitialized: Temporal Dead Zone<br/>Reading it early throws ReferenceError"]
+  B -->|"function declaration"| Fn["Stored with its whole body<br/>Callable before its line"]
+```
+
 ---
 
 ## 5. Scope & Scope Chain
@@ -174,6 +225,22 @@ console.log(x); // Error
 ### Scope Chain
 
 - JavaScript searches variables from inner scope to outer scope.
+
+**Flowchart: Scope Chain Lookup**
+
+Lookup only ever goes outward, never inward.
+
+```mermaid
+flowchart TD
+  A["Look up variable x"] --> B{"Found in the current scope?"}
+  B -->|yes| Z["Use it"]:::done
+  B -->|no| C{"Any outer scope left?"}
+  C -->|yes| D["Move to the enclosing scope"]
+  D --> B
+  C -->|"no: past global"| E["ReferenceError"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -205,6 +272,19 @@ counter(); // 2
 - Currying
 - Memoization
 - Event handlers
+
+**Flowchart: How a Closure Keeps Its Scope**
+
+`outer()` is finished, but `inner` still points at its scope, so `count` is never freed.
+
+```mermaid
+flowchart TD
+  A["outer() is called"] --> B["Creates count = 0 and returns inner"]
+  B --> C["outer() finishes and its stack frame is gone"]
+  C --> D["inner still references outer's scope, so count stays alive"]
+  D --> E["counter() call 1: count becomes 1"]
+  E --> F["counter() call 2: count becomes 2"]
+```
 
 ---
 
@@ -288,6 +368,23 @@ const obj = {
   },
 };
 obj.greet(); // JS
+```
+
+**Flowchart: What Is this?**
+
+`this` is decided by how the function is called, except for arrow functions, which never get their own.
+
+```mermaid
+flowchart TD
+  A["How is the function called?"] --> B{"Arrow function?"}
+  B -->|yes| L["Lexical this: taken from the enclosing scope"]:::done
+  B -->|no| C{"call, apply, or bind used?"}
+  C -->|yes| E["this is the value you passed"]:::done
+  C -->|no| D{"Called as obj.method()?"}
+  D -->|yes| O["this is obj"]:::done
+  D -->|no| G["Plain call: window, or undefined in strict mode"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ---
@@ -427,6 +524,23 @@ Person.prototype.sayHi = function () {
 };
 ```
 
+**Flowchart: Prototype Chain Lookup**
+
+A property lookup walks up the `__proto__` links until it finds a match or reaches `null`.
+
+```mermaid
+flowchart TD
+  A["person.sayHi()"] --> B{"Own property on the object?"}
+  B -->|yes| Z["Use it"]:::done
+  B -->|no| C{"On Person.prototype?"}
+  C -->|yes| Z
+  C -->|no| D{"On Object.prototype?"}
+  D -->|yes| Z
+  D -->|no| E["Reached null: undefined"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 18. Classes (Syntactic Sugar)
@@ -484,6 +598,18 @@ try {
 } catch (e) {}
 ```
 
+**Flowchart: Promise States**
+
+A promise settles once, and its handlers always run as microtasks.
+
+```mermaid
+flowchart LR
+  P["Pending"] -->|"resolve(value)"| F["Fulfilled"]
+  P -->|"reject(error)"| R["Rejected"]
+  F -->|".then handler"| T["Runs as a microtask"]
+  R -->|".catch handler"| C["Runs as a microtask"]
+```
+
 ---
 
 ## 21. Event Loop (CRITICAL)
@@ -501,6 +627,25 @@ Promise.resolve().then(() => console.log("C"));
 console.log("D");
 
 // Output: A D C B
+```
+
+**Flowchart: The Event Loop Cycle**
+
+Microtasks are drained completely, including any new ones they queue, before a single macrotask runs.
+That is why `A D C B` comes out in that order.
+
+```mermaid
+flowchart TD
+  A["Run the current script on the call stack"] --> B{"Call stack empty?"}
+  B -->|no| A
+  B -->|yes| C{"Microtask queue empty?"}
+  C -->|no| D["Run the next microtask"]
+  D --> C
+  C -->|yes| E{"Macrotask queue empty?"}
+  E -->|no| F["Take ONE macrotask and run it"]
+  F --> B
+  E -->|yes| W["Wait for new events"]
+  W --> E
 ```
 
 ---
@@ -531,6 +676,33 @@ function throttle(fn, limit) {
     setTimeout(() => (flag = true), limit);
   };
 }
+```
+
+**Flowchart: Debounce**
+
+The function runs only after events stop for `delay` milliseconds.
+
+```mermaid
+flowchart TD
+  A["Event fires"] --> B["clearTimeout(timer)"]
+  B --> C["Start a new timer for delay ms"]
+  C --> D{"Another event before the delay ends?"}
+  D -->|yes| B
+  D -->|no| E["Timer fires: run fn once"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+**Flowchart: Throttle**
+
+The function runs at most once per `limit` milliseconds, and extra events in between are dropped.
+
+```mermaid
+flowchart TD
+  A["Event fires"] --> B{"flag is true?"}
+  B -->|no| X["Ignore the event"]
+  B -->|yes| C["flag = false, run fn"]
+  C --> D["setTimeout: flag = true after limit ms"]
 ```
 
 ---
@@ -593,6 +765,19 @@ Prevents:
   - Remove event listeners
   - Clear timers
   - Avoid global variables
+
+**Flowchart: Mark and Sweep**
+
+A leak is an object that is still reachable from a root, so the collector correctly keeps it.
+
+```mermaid
+flowchart TD
+  A["Garbage collection runs"] --> B["Mark every object reachable from the roots"]
+  B --> C{"Object marked?"}
+  C -->|yes| K["Keep it"]
+  C -->|no| S["Sweep: free its memory"]
+  K -.-> L["Leak: an old listener, timer, or global still references it, so it can never be freed"]
+```
 
 ---
 
@@ -682,6 +867,21 @@ parent.addEventListener("click", (e) => {
   if (e.target.matches("button")) {
   }
 });
+```
+
+**Flowchart: Event Delegation**
+
+One listener on the parent handles every child, including ones added later.
+
+```mermaid
+flowchart TD
+  A["User clicks a child button"] --> B["The event bubbles up to the parent"]
+  B --> C["The parent's single listener runs"]
+  C --> D{"e.target.matches('button')?"}
+  D -->|yes| E["Handle the click"]:::done
+  D -->|no| F["Ignore it"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ---

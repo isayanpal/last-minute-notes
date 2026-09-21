@@ -106,6 +106,24 @@ Never swallow `InterruptedException`, either propagate it or restore the interru
 
 `BLOCKED` is specifically about `synchronized` monitors, waiting on a `ReentrantLock` shows up as `WAITING`.
 
+**State diagram: Thread States**
+
+`BLOCKED` is only for `synchronized` monitors, a `ReentrantLock` wait shows up as `WAITING`.
+
+```mermaid
+stateDiagram-v2
+  [*] --> NEW
+  NEW --> RUNNABLE : start()
+  RUNNABLE --> BLOCKED : waits for a synchronized monitor
+  BLOCKED --> RUNNABLE : lock acquired
+  RUNNABLE --> WAITING : wait, join, park
+  WAITING --> RUNNABLE : notify, thread ends, unpark
+  RUNNABLE --> TIMED_WAITING : sleep, wait or join with a timeout
+  TIMED_WAITING --> RUNNABLE : timeout or notify
+  RUNNABLE --> TERMINATED : run() finishes
+  TERMINATED --> [*]
+```
+
 ---
 
 ## 3. Race Conditions and synchronized
@@ -126,6 +144,24 @@ Thread a = new Thread(r), b = new Thread(r);
 a.start(); b.start();
 a.join(); b.join();
 System.out.println(counter.get());   // usually LESS than 200000: lost updates
+```
+
+**Sequence diagram: A Lost Update**
+
+`count++` is read, add, write, so two threads can both read the same old value.
+
+```mermaid
+sequenceDiagram
+  participant A as Thread a
+  participant M as count in memory
+  participant B as Thread b
+  A->>M: read count (0)
+  B->>M: read count (0)
+  A->>A: add 1, result 1
+  B->>B: add 1, result 1
+  A->>M: write 1
+  B->>M: write 1
+  Note over M: two increments, but count is 1
 ```
 
 ### 3.1 synchronized
@@ -211,6 +247,23 @@ In real code prefer `BlockingQueue`, which does all of this for you.
 | Needs a monitor | No | Yes |
 | Woken by | Timeout or interrupt | `notify`, `notifyAll`, timeout, or interrupt |
 
+**Sequence diagram: wait and notify**
+
+`wait()` releases the lock, and the woken thread must re-check its condition in a loop.
+
+```mermaid
+sequenceDiagram
+  participant P as Producer
+  participant B as BoundedBuffer (the monitor)
+  participant C as Consumer
+  C->>B: take() on an empty buffer
+  B-->>C: wait(): lock released, consumer sleeps
+  P->>B: put(item)
+  B->>B: add the item, notifyAll()
+  B-->>C: consumer wakes and re-checks the loop condition
+  C->>B: the item is there, take it
+```
+
 ### 4.2 Deadlock
 
 Two or more threads wait on each other forever.
@@ -243,6 +296,18 @@ Break any one to prevent it:
 - Diagnose with `jstack <pid>` or a thread dump, which reports "Found one Java-level deadlock".
 
 Related problems: **livelock** (threads keep reacting to each other without progress) and **starvation** (a thread never gets the resource).
+
+**Flowchart: A Deadlock**
+
+Each thread holds the lock the other one needs, so the wait is circular.
+
+```mermaid
+flowchart LR
+  T1["Thread t1"] -->|holds| LA["lockA"]
+  T2["Thread t2"] -->|holds| LB["lockB"]
+  T1 -.->|"waits for"| LB
+  T2 -.->|"waits for"| LA
+```
 
 ---
 
@@ -329,6 +394,20 @@ ref.compareAndSet("a", "b");
 - Under **heavy contention**, `LongAdder` (and `LongAccumulator`) scale better by spreading updates across cells.
 - CAS has the **ABA problem** (value changes A to B to A, and CAS cannot tell), solved with `AtomicStampedReference`.
 - Atomicity holds per operation, so two separate atomic calls together are still not atomic.
+
+**Flowchart: Compare-And-Swap**
+
+CAS retries instead of locking, so there is no blocking and no deadlock.
+
+```mermaid
+flowchart TD
+  A["Read the current value"] --> B["Compute the new value"]
+  B --> C{"CAS: is the value still what I read?"}
+  C -->|yes| D["Swap in the new value atomically"]:::done
+  C -->|no| A
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -448,6 +527,24 @@ Sizing rule of thumb:
 `submit` vs `execute`: `submit` returns a `Future` and **captures exceptions inside it**, while `execute` lets an uncaught exception kill the worker thread.
 If you ignore the `Future` returned by `submit`, task failures go unnoticed.
 
+**Flowchart: How a Thread Pool Takes a Task**
+
+The queue is tried before extra threads, which surprises many people.
+
+```mermaid
+flowchart TD
+  A["Task submitted"] --> B{"Fewer than corePoolSize threads?"}
+  B -->|yes| C["Start a new thread for it"]:::done
+  B -->|no| D{"Work queue has room?"}
+  D -->|yes| E["Queue the task"]:::done
+  D -->|no| F{"Fewer than maximumPoolSize threads?"}
+  F -->|yes| G["Start an extra thread"]:::done
+  F -->|no| H["Apply the rejection policy"]
+  H --> I["AbortPolicy throws, CallerRunsPolicy runs it in the caller, DiscardPolicy drops it, DiscardOldestPolicy drops the oldest queued task"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 9. CompletableFuture
@@ -487,6 +584,21 @@ CompletableFuture.allOf(userF, ordersF).join();     // wait for both
 
 Pass your own `Executor` as the last argument to `supplyAsync` for I/O work, otherwise everything shares the common pool, which is sized for CPU work.
 `join()` throws an unchecked `CompletionException`, while `get()` throws checked `ExecutionException` and `InterruptedException`.
+
+**Flowchart: A CompletableFuture Chain**
+
+A failure anywhere upstream skips the remaining steps and lands in `exceptionally`.
+
+```mermaid
+flowchart LR
+  A["supplyAsync: fetchUser(42)"] --> B["thenApply: user to name"] --> C["thenCompose: fetchOrdersAsync(name)"] --> D["join: block for the result"]:::done
+  A -.->|failure| E["exceptionally: return the fallback"]
+  B -.->|failure| E
+  C -.->|failure| E
+  E --> D
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -647,23 +759,40 @@ try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
 | Practical count | Thousands | Millions |
 | Blocking cost | Holds an OS thread | Frees the carrier thread |
 
+**Flowchart: A Virtual Thread**
+
+Blocking frees the carrier thread, which is why blocking code is cheap on virtual threads.
+
+```mermaid
+flowchart TD
+  A["Virtual thread starts"] --> B["Mounted on a carrier (platform) thread"]
+  B --> C["Runs code"]
+  C --> D{"Blocks on I/O?"}
+  D -->|yes| E["Unmounted: the carrier is free for other virtual threads"]
+  E --> F["I/O completes"]
+  F --> B
+  D -->|no| G["Finishes"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 14. JVM Memory Structure
 
-```text
-JVM memory
-  |- Heap                  shared, GC managed: all objects and arrays
-  |    |- Young generation
-  |    |    |- Eden        new objects
-  |    |    |- Survivor S0 / S1
-  |    |- Old generation   long-lived objects
-  |- Metaspace             class metadata (native memory, replaced PermGen in Java 8)
-  |- Per thread
-  |    |- JVM stack        one frame per method call: locals, operand stack
-  |    |- PC register      current instruction
-  |    |- Native stack
-  |- Code cache            JIT-compiled native code
+```mermaid
+flowchart TD
+  J["JVM memory"] --> H["Heap: shared, GC managed<br/>all objects and arrays"]
+  J --> M["Metaspace: class metadata<br/>native memory, replaced PermGen in Java 8"]
+  J --> T["Per thread"]
+  J --> CC["Code cache: JIT-compiled native code"]
+  H --> Y["Young generation"]
+  H --> O["Old generation: long-lived objects"]
+  Y --> Ed["Eden: new objects"]
+  Y --> Sv["Survivor S0 and S1"]
+  T --> St["JVM stack: one frame per method call"]
+  T --> Pc["PC register: current instruction"]
+  T --> Ns["Native stack"]
 ```
 
 ### 14.1 Stack vs Heap
@@ -684,6 +813,22 @@ void demo() {
 ```
 
 The JIT can use **escape analysis** to allocate non-escaping objects on the stack (or eliminate them entirely).
+
+**Flowchart: Stack and Heap**
+
+Primitives and references live in the frame, and every object lives on the heap.
+
+```mermaid
+flowchart LR
+  subgraph Stack["Thread stack: frame of demo()"]
+    X["x = 10"]
+    R["name: a reference"]
+  end
+  subgraph Heap["Heap"]
+    O["String object 'hi'"]
+  end
+  R --> O
+```
 
 ### 14.2 Memory Errors
 
@@ -716,6 +861,23 @@ Most objects die young, so the heap is split by age:
 
 A collection that pauses application threads is a **stop-the-world (STW)** pause.
 
+**Flowchart: Generational GC**
+
+Most objects die in Eden, so the frequent minor GC is cheap and the expensive full GC is rare.
+
+```mermaid
+flowchart TD
+  A["New object allocated in Eden"] --> B{"Eden full?"}
+  B -->|no| A
+  B -->|yes| C["Minor GC: copy live objects to a survivor space, age + 1"]
+  C --> D{"Survived enough collections? Tenuring threshold"}
+  D -->|no| C2["Stays in the survivor space"]
+  D -->|yes| E["Promoted to the old generation"]
+  E --> F{"Old generation full?"}
+  F -->|yes| G["Major or full GC: expensive, stop-the-world"]
+  F -->|no| H["Keeps aging"]
+```
+
 ### 15.2 Collectors
 
 | Collector | Notes |
@@ -727,6 +889,20 @@ A collection that pauses application threads is a **stop-the-world (STW)** pause
 | **Shenandoah** | Low-pause concurrent collector, similar goals to ZGC |
 
 Choose by goal: **throughput** (Parallel), **balanced latency** (G1, the safe default), or **ultra-low latency** (ZGC, Shenandoah).
+
+**Flowchart: Choosing a Collector**
+
+Choose by goal: throughput, balanced latency, or ultra-low latency.
+
+```mermaid
+flowchart TD
+  A{"What matters most?"} -->|Throughput| P["Parallel"]:::done
+  A -->|"Balanced, predictable pauses: the safe default"| G["G1"]:::done
+  A -->|"Ultra-low latency, huge heaps"| Z["ZGC or Shenandoah"]:::done
+  A -->|"Tiny heap, simple app"| S["Serial"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ### 15.3 Java Memory Leaks
 
@@ -787,6 +963,25 @@ The JVM loads classes **lazily**, the first time they are needed.
 **Parent delegation:** a loader first asks its parent to load the class, and only loads it itself if the parent cannot.
 This ensures core classes such as `java.lang.String` cannot be replaced by a malicious class with the same name.
 
+**Flowchart: Parent Delegation**
+
+Each loader asks its parent first, so a core class can never be replaced by an application class with the same name.
+
+```mermaid
+flowchart TD
+  A["Load class X"] --> B["Application loader asks its parent: Platform loader"]
+  B --> C["Platform loader asks its parent: Bootstrap loader"]
+  C --> D{"Bootstrap can load X?"}
+  D -->|yes| Z["Use it"]:::done
+  D -->|no| E{"Platform loader can load X?"}
+  E -->|yes| Z
+  E -->|no| F{"Application loader can load X from the classpath?"}
+  F -->|yes| Z
+  F -->|no| G["ClassNotFoundException"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ### 17.2 Loading Phases
 
 1. **Loading**: read the `.class` bytes and create the `Class` object.
@@ -794,6 +989,20 @@ This ensures core classes such as `java.lang.String` cannot be replaced by a mal
 3. **Initialization**: run static initializers and assign static field values (the `<clinit>` method), which happens once, when the class is first actively used (instantiation, static method or field access).
 
 `ClassNotFoundException` is a checked exception thrown when loading by name fails, while `NoClassDefFoundError` is an error thrown when a class that existed at compile time is missing at runtime.
+
+**Flowchart: Class Loading Phases**
+
+Initialization happens once, when the class is first actively used.
+
+```mermaid
+flowchart TD
+  A["Loading: read the .class bytes, create the Class object"] --> B["Linking: verify the bytecode"]
+  B --> C["Linking: prepare static fields with default values"]
+  C --> D["Linking: resolve symbolic references"]
+  D --> E["Initialization: run static initializers, once"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 

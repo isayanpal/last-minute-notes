@@ -91,6 +91,25 @@ function handleError(error: unknown) {
 }
 ```
 
+**Flowchart: Which Narrowing to Use**
+
+Pick the check by what you can test at runtime, and the compiler narrows the type inside the branch.
+
+```mermaid
+flowchart TD
+  A["Value has a union or unknown type"] --> B{"What can you check?"}
+  B -->|"a primitive type"| T["typeof: string, number, boolean"]
+  B -->|"a property only one member has"| I["in operator: 'permissions' in account"]
+  B -->|"a class instance"| O["instanceof: error instanceof ApiError"]
+  B -->|"a shared literal field"| D["Discriminated union: switch on status or kind"]
+  T --> R["The compiler narrows the type inside the branch"]:::done
+  I --> R
+  O --> R
+  D --> R
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 2. Exhaustive Checking with `never` (Very Important)
@@ -122,6 +141,19 @@ Why interviewers love this:
 
 - Guarantees **future safety**
 - Compiler error when new union member is added
+
+**Flowchart: How the never Check Works**
+
+After every case is handled, nothing is left for `default`, so its type is `never`.
+
+```mermaid
+flowchart TD
+  A["switch on status"] --> B{"Every union member handled?"}
+  B -->|yes| C["default receives type never: assertNever(status) compiles"]:::done
+  B -->|"no: a new member was added"| D["default receives a real type, not never: compile error"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -155,6 +187,20 @@ Production usage:
 - API state management
 - Redux reducers
 - UI state machines
+
+**State diagram: A Union as a State Machine**
+
+Each variant of the union is one state, and only one is active at a time.
+
+```mermaid
+stateDiagram-v2
+  [*] --> idle
+  idle --> loading : request starts
+  loading --> success : data arrives
+  loading --> error : request fails
+  success --> loading : refetch
+  error --> loading : retry
+```
 
 ---
 
@@ -217,6 +263,22 @@ type ReturnTypeOf<T> = T extends (...args: any[]) => infer R ? R : never;
 ```
 
 This is how **built-in `ReturnType` works**.
+
+**Flowchart: Conditional Types**
+
+A conditional type is an `if` over types, and `infer` captures a piece of the matched type.
+
+```mermaid
+flowchart TD
+  A["IsString of T"] --> B{"T extends string?"}
+  B -->|yes| C["true"]
+  B -->|no| D["false"]
+  E["ReturnTypeOf of T"] --> F{"T is a function type?"}
+  F -->|"yes: infer R from the return position"| G["R"]:::done
+  F -->|no| H["never"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -289,6 +351,19 @@ Why this matters:
 
 - Type-safe property access
 - Used in forms, tables, configs
+
+**Flowchart: Lookup Type**
+
+The constraint `T extends keyof User` makes an invalid key a compile error.
+
+```mermaid
+flowchart LR
+  A["UserValue of 'name'"] --> B{"'name' extends keyof User?"}
+  B -->|yes| C["User['name']"] --> D["string"]:::done
+  B -->|no| E["Compile error"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -427,6 +502,20 @@ Used in:
 - Runtime validation
 - Critical paths
 
+**Flowchart: Assertion Function**
+
+The compiler assumes the assertion held for every line after the call.
+
+```mermaid
+flowchart TD
+  A["assertIsDefined(user)"] --> B{"value == null?"}
+  B -->|yes| C["Throws: execution stops"]
+  B -->|no| D["Returns normally"]
+  D --> E["The compiler treats user as NonNullable from here on"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 13. Preventing Invalid States (Senior-Level)
@@ -476,6 +565,18 @@ Used in:
 - Finance
 - IDs
 - Security-sensitive apps
+
+**Flowchart: Branded Types**
+
+The brand exists only in the type system, so the only way to get a `UserId` is through the function that creates it.
+
+```mermaid
+flowchart LR
+  A["Plain string '123'"] -->|"assign directly"| X["Compile error: not a UserId"]
+  A -->|"createUserId(id)"| B["UserId: a string with a brand"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 

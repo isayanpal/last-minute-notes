@@ -65,8 +65,9 @@ React alone is not enough when:
 
 ## Problems with Classic Redux
 
-```txt
-ACTION → DISPATCH → REDUCER → STORE
+```mermaid
+flowchart LR
+  A["Action"] --> D["Dispatch"] --> R["Reducer"] --> S["Store"]
 ```
 
 Issues:
@@ -92,18 +93,13 @@ RTK abstracts all of this.
 
 ## Redux Toolkit Architecture
 
-```
-UI
- ↓ dispatch
-Slice Actions
- ↓
-Reducers (Immer)
- ↓
-Store
- ↓
-Selectors
- ↓
-UI
+```mermaid
+flowchart TD
+  UI["UI"] -->|dispatch| A["Slice actions"]
+  A --> R["Reducers with Immer"]
+  R --> S["Store"]
+  S --> Sel["Selectors"]
+  Sel -->|"new data"| UI
 ```
 
 ---
@@ -193,8 +189,11 @@ state.count += 1; // SAFE
 
 Internally:
 
-```txt
-Draft → Diff → Immutable copy
+```mermaid
+flowchart LR
+  D["Draft: write state.count += 1"] --> F["Immer records what changed"] --> I["Immutable copy, untouched parts share references"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ### Interview Question
@@ -271,6 +270,28 @@ extraReducers: (builder) => {
 | pending   | API started |
 | fulfilled | Success     |
 | rejected  | Failure     |
+
+**Sequence diagram: createAsyncThunk**
+
+One dispatch produces two actions, `pending` first, then either `fulfilled` or `rejected`.
+
+```mermaid
+sequenceDiagram
+  participant C as Component
+  participant S as Store and reducers
+  participant A as API
+  C->>S: dispatch(fetchUser(id))
+  S->>S: fetchUser.pending: loading = true
+  S->>A: fetch user
+  alt request succeeds
+    A-->>S: user data
+    S->>S: fetchUser.fulfilled: store the user, loading = false
+  else request fails
+    A-->>S: error
+    S->>S: fetchUser.rejected: loading = false, error = true
+  end
+  S-->>C: subscribers re-render
+```
 
 ---
 
@@ -374,6 +395,21 @@ const selectFiltered = createSelector(
 );
 ```
 
+**Flowchart: Memoized Selector**
+
+`createSelector` reruns the calculation only when one of its input selectors returns a new value.
+
+```mermaid
+flowchart TD
+  A["Store updates"] --> B["Input selectors run: selectItems, selectFilter"]
+  B --> C{"Same results as last time?"}
+  C -->|yes| D["Return the cached output: same reference, no re-render"]:::done
+  C -->|no| E["Recompute items.filter(...)"]
+  E --> F["New output reference: subscribed components re-render"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 11. Redux vs Context (Interview Favorite)
@@ -389,6 +425,20 @@ const selectFiltered = createSelector(
 
 - Context → Theme, auth flag
 - Redux → Business state, async-heavy logic
+
+**Flowchart: Redux or Context?**
+
+Context is for values that rarely change, Redux is for state with real logic.
+
+```mermaid
+flowchart TD
+  A{"State shared by many components?"} -->|no| L["Local: useState or useReducer"]:::done
+  A -->|yes| B{"Changes often, or complex logic, or async-heavy?"}
+  B -->|"no: theme, auth flag"| C["Context"]:::done
+  B -->|"yes: business state"| R["Redux Toolkit"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -421,6 +471,24 @@ const api = createApi({
 
 ```ts
 const { data, isLoading } = useGetUsersQuery();
+```
+
+**Flowchart: RTK Query Request Flow**
+
+The cache is keyed by endpoint plus serialized arguments, so identical calls share one request.
+
+```mermaid
+flowchart TD
+  A["Component calls useGetUsersQuery()"] --> B{"Cache entry for this endpoint and args?"}
+  B -->|yes| C["Return the cached data, no network call"]:::done
+  B -->|no| D["isLoading = true, fetch from the API"]
+  D --> E["Store the result in the Redux cache"]
+  E --> F["Subscribed components re-render with data"]:::done
+  C --> G["When the last subscriber unmounts, wait keepUnusedDataFor seconds"]
+  F --> G
+  G --> H["Remove the entry from the cache"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ---
@@ -483,3 +551,20 @@ features/
 - Local UI state
 - Single-page forms
 - Simple data flow
+
+**Flowchart: Where Should This State Live?**
+
+Start local and move state up only when something actually needs it.
+
+```mermaid
+flowchart TD
+  A["A piece of state"] --> B{"Comes from the server?"}
+  B -->|yes| S["Server-state cache: RTK Query or React Query"]:::done
+  B -->|no| C{"Used by one component or one small form?"}
+  C -->|yes| L["Local state: useState or useReducer"]:::done
+  C -->|no| D{"Rarely changing, like theme or auth flag?"}
+  D -->|yes| Cx["Context"]:::done
+  D -->|no| R["Redux Toolkit"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```

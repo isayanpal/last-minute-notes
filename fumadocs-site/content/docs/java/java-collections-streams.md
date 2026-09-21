@@ -29,15 +29,14 @@ description: "Java Collections Framework, HashMap internals, generics, lambdas, 
 
 ## 1. Collections Framework Overview
 
-```text
-Iterable
-  |- Collection
-       |- List           ordered, allows duplicates       (ArrayList, LinkedList)
-       |- Set            no duplicates                    (HashSet, LinkedHashSet, TreeSet)
-       |- Queue          FIFO-style processing            (ArrayDeque, PriorityQueue, LinkedList)
-            |- Deque     double-ended queue               (ArrayDeque, LinkedList)
-
-Map (NOT a Collection)   key -> value pairs               (HashMap, LinkedHashMap, TreeMap)
+```mermaid
+flowchart TD
+  I["Iterable"] --> Co["Collection"]
+  Co --> L["List: ordered, allows duplicates<br/>ArrayList, LinkedList"]
+  Co --> S["Set: no duplicates<br/>HashSet, LinkedHashSet, TreeSet"]
+  Co --> Q["Queue: FIFO-style processing<br/>ArrayDeque, PriorityQueue, LinkedList"]
+  Q --> D["Deque: double-ended queue<br/>ArrayDeque, LinkedList"]
+  M["Map: key to value pairs, NOT a Collection<br/>HashMap, LinkedHashMap, TreeMap"]
 ```
 
 - Always **program to the interface**: `List<String> names = new ArrayList<>();`, so the implementation can change without touching callers.
@@ -263,6 +262,18 @@ cache.put("c", 3);       // evicts "b"
 System.out.println(cache.keySet());   // [a, c]
 ```
 
+**Flowchart: LRU Eviction**
+
+Access order keeps the least recently used entry at the head, and `removeEldestEntry` decides whether to drop it.
+
+```mermaid
+flowchart TD
+  A["get(key) or put(key, value)"] --> B["The entry moves to the end: most recently used"]
+  B --> C{"put() pushed size above capacity?"}
+  C -->|yes| D["removeEldestEntry returns true: the head entry, the least recently used, is evicted"]
+  C -->|no| E["Nothing is evicted"]
+```
+
 ### 5.4 TreeMap Navigation
 
 ```java
@@ -296,6 +307,32 @@ Each bucket holds a linked list of nodes, or a red-black tree when it gets long.
 4. Otherwise, walk the bucket. If a node has an equal hash **and** `key.equals(existingKey)`, replace its value. If not, append a new node.
 5. If the bucket now has **8 or more** nodes **and** the table has at least **64** buckets, convert the bucket to a **red-black tree** (worst case drops from O(n) to O(log n)). If the table is smaller than 64, it resizes instead.
 6. If `size > capacity * loadFactor`, **resize**.
+
+**Flowchart: HashMap put**
+
+Follow one `put` from the hash to the bucket, then through treeify and resize.
+
+```mermaid
+flowchart TD
+  A["put(key, value)"] --> B["hash = key.hashCode(), spread with h ^ (h >>> 16)"]
+  B --> C["index = (n - 1) & hash"]
+  C --> D{"Bucket empty?"}
+  D -->|yes| N["Place a new node"]
+  D -->|no| E{"A node with equal hash and key.equals(key)?"}
+  E -->|yes| U["Replace its value"]:::done
+  E -->|no| P["Append a new node"]
+  P --> T{"8 or more nodes in the bucket?"}
+  T -->|yes| T2{"Table has at least 64 buckets?"}
+  T -->|no| R
+  T2 -->|yes| TR["Convert the bucket to a red-black tree"]
+  T2 -->|no| RS["Resize the table instead"]
+  N --> R{"size > capacity * 0.75?"}
+  TR --> R
+  R -->|yes| RZ["Resize: double the table and rehash every node"]
+  R -->|no| Dn["Done"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ### 6.3 Key Numbers
 
@@ -424,6 +461,22 @@ nums.removeIf(n -> n % 2 == 0);
 
 `ArrayList`, `HashMap`, and friends are **fail-fast** (they detect changes via an internal `modCount`, on a best-effort basis).
 Concurrent collections such as `CopyOnWriteArrayList` and `ConcurrentHashMap` are **weakly consistent** and never throw this exception.
+
+**Flowchart: Why ConcurrentModificationException Happens**
+
+The iterator remembers the modification count it started with, and only its own `remove` keeps that count in sync.
+
+```mermaid
+flowchart LR
+  subgraph Bad["list.remove(n) inside for-each"]
+    B1["modCount changes"] --> B2["The iterator's expected count is stale"] --> B3["Next next() throws ConcurrentModificationException"]
+  end
+  subgraph Good["it.remove() or removeIf"]
+    G1["Removal goes through the iterator"] --> G2["Expected count is updated too"] --> G3["Iteration continues safely"]:::done
+  end
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -632,6 +685,18 @@ List<String> result = people.stream()          // source
 - Elements flow **one at a time through the whole pipeline** (not stage by stage), and short-circuiting ops like `limit` and `findFirst` stop early.
 - A stream can be consumed **once**. Reusing it throws `IllegalStateException`.
 
+**Flowchart: A Stream Pipeline**
+
+Nothing runs until the terminal operation, and then each element flows through the whole pipeline one at a time.
+Short-circuiting operations like `limit` and `findFirst` stop the flow early.
+
+```mermaid
+flowchart LR
+  S["Source: people.stream()"] --> F["filter: lazy"] --> M["map: lazy"] --> So["sorted: lazy"] --> T["collect: terminal, triggers the run"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ### 13.1 Creating Streams
 
 ```java
@@ -800,6 +865,22 @@ Guidelines:
 - Never call `get()` without checking, prefer `orElseThrow()` or `map`/`orElse`.
 - Do not return `null` from a method that returns `Optional`.
 - Primitive versions `OptionalInt`, `OptionalDouble`, `OptionalLong` avoid boxing.
+
+**Flowchart: Chaining Optional**
+
+An empty Optional skips every `map` step, so there are no null checks in between.
+
+```mermaid
+flowchart TD
+  A["findUser('42')"] --> B{"Optional has a value?"}
+  B -->|yes| C["map(User::getAddress), then map(Address::getCity)"]
+  B -->|no| E["Stays empty: the map steps are skipped"]
+  C --> F["orElse('Unknown')"]
+  E --> F
+  F --> G["A String, never null"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
