@@ -1,0 +1,10 @@
+{
+  "title": "Low-Level Design (LLD)",
+  "pages": [
+    "lld-fundamentals",
+    "design-patterns",
+    "machine-coding-problems-1",
+    "machine-coding-problems-2",
+    "concurrency-in-lld"
+  ]
+}

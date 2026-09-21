@@ -24,11 +24,13 @@ export default async function Page({
       toc?: any;
       title?: string;
       description?: string;
+      full?: boolean;
     }>;
     body?: ComponentType<any>;
     toc?: any;
     title?: string;
     description?: string;
+    full?: boolean;
   };
 
   const loaded = typeof data.load === 'function' ? await data.load() : data;
@@ -39,13 +41,16 @@ export default async function Page({
   }
 
   const toc = loaded.toc?.filter((item: { depth: number }) => item.depth <= 3);
+  const isIndex = (resolvedParams.slug ?? []).length === 0;
 
   return (
     <DocsPage
       toc={toc}
+      full={loaded.full}
       tableOfContent={{ style: 'clerk' }}
       tableOfContentPopover={{ style: 'clerk' }}
       footer={{
+        enabled: !isIndex,
         component: <DocFooter />,
       }}
     >

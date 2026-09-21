@@ -1,0 +1,14 @@
+{
+  "title": "Backend",
+  "pages": [
+    "backend-fundamentals",
+    "nodejs-and-spring",
+    "api-design",
+    "authentication-and-security",
+    "performance-and-caching",
+    "async-processing-and-messaging",
+    "architecture-and-testing",
+    "deployment-and-runtime",
+    "backend-interview-playbook"
+  ]
+}

@@ -1,0 +1,57 @@
+---
+title: "Databases"
+description: "A beginner to advanced database library: relational fundamentals, SQL from basics to window functions, indexing, transactions and isolation, internals, replication and sharding, NoSQL, data modeling, and an interview question bank. SQL examples were executed."
+---
+
+Start here for database prep, from "what is a primary key" to "how does MVCC work" and "how do I shard Postgres".
+The focus is relational databases first (PostgreSQL, MySQL, SQLite), because that is what most interviews and most production systems use, then NoSQL and analytics.
+Every portable SQL example on these pages was run against SQLite, and Postgres-only syntax is labelled.
+Facts that changed recently (PostgreSQL 18, MySQL 9.7 and vectors, DynamoDB multi-Region strong consistency, Postgres as the default engine) are included where they matter.
+
+<SectionHub
+  path="databases"
+  levels={{
+    "database-fundamentals": "Beginner",
+    "sql-essentials": "Beginner to mid",
+    "sql-practice-problems": "Mid",
+    "indexing-and-query-performance": "Mid",
+    "transactions-and-concurrency": "Mid to advanced",
+    "database-internals": "Advanced",
+    "replication-sharding-and-operations": "Advanced",
+    "nosql-databases": "Mid to advanced",
+    "data-modeling-patterns": "Mid to advanced",
+    "database-interview-playbook": "All levels"
+  }}
+/>
+
+## Reading Path
+
+```mermaid
+flowchart TD
+  F["Database Fundamentals<br/>keys, normalization, ER"] --> S["SQL Essentials<br/>joins, aggregates, windows"]
+  S --> P["SQL Practice Problems<br/>top-N, gaps and islands"]
+  S --> I["Indexing and Query Performance<br/>EXPLAIN, composite indexes"]
+  I --> T["Transactions and Concurrency<br/>ACID, isolation, MVCC, locks"]
+  T --> D["Database Internals<br/>B-tree, LSM, WAL, planner"]
+  D --> R["Replication, Sharding, Operations<br/>HA, partitioning, migrations"]
+  F --> N["NoSQL Databases<br/>Redis, Mongo, DynamoDB, Cassandra"]
+  R --> M["Data Modeling Patterns<br/>hierarchies, multi-tenant, warehouse"]
+  N --> M
+  M --> Q["Interview Playbook<br/>question bank and cheat sheets"]
+  P --> Q
+```
+
+## Pick Your Level
+
+| You are | Read in this order |
+| --- | --- |
+| New to databases | [Fundamentals](/docs/databases/database-fundamentals), [SQL Essentials](/docs/databases/sql-essentials), [SQL Practice Problems](/docs/databases/sql-practice-problems) |
+| Preparing for a mid-level loop | Add [Indexing](/docs/databases/indexing-and-query-performance), [Transactions](/docs/databases/transactions-and-concurrency), [Data Modeling](/docs/databases/data-modeling-patterns) |
+| Preparing for senior or staff | Add [Internals](/docs/databases/database-internals), [Replication and Sharding](/docs/databases/replication-sharding-and-operations), [NoSQL](/docs/databases/nosql-databases) |
+| One week left | The [Interview Playbook](/docs/databases/database-interview-playbook) study plan |
+
+## Related Sections
+
+- [System Design](/docs/system-design) uses these ideas at architecture level: sharding, replication, consistency, CAP.
+- [Backend](/docs/backend) covers how application code talks to databases: pools, ORMs, transactions, migrations.
+- [Java](/docs/java) has the JDBC-adjacent collections and concurrency notes.

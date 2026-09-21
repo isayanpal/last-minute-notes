@@ -1,0 +1,12 @@
+{
+  "title": "High-Level Design (HLD)",
+  "pages": [
+    "building-blocks",
+    "distributed-systems",
+    "classic-designs",
+    "large-scale-designs",
+    "ai-system-design",
+    "frontend-system-design",
+    "reliability-and-operations"
+  ]
+}

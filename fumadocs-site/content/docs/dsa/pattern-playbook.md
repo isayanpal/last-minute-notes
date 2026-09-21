@@ -1075,6 +1075,7 @@ Run through this list before saying "done".
 
 Do 3 to 5 problems per pattern, in order of difficulty, and redo the ones you needed hints for a week later.
 The point is to recognize the shape, not to memorize solutions.
+For a day-by-day schedule with LeetCode links, see the [LeetCode 30-Day Plan](/docs/dsa/leetcode-30-day-plan).
 
 | Pattern | Warm up | Core | Stretch |
 | --- | --- | --- | --- |
