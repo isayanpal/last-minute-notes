@@ -1,0 +1,9 @@
+{
+  "title": "DSA Patterns",
+  "pages": [
+    "pattern-playbook",
+    "arrays-and-linked-lists",
+    "trees-graphs-and-search",
+    "leetcode-30-day-plan"
+  ]
+}

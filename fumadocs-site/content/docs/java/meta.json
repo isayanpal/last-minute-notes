@@ -1,0 +1,8 @@
+{
+  "title": "Java",
+  "pages": [
+    "java",
+    "java-collections-streams",
+    "java-concurrency-jvm"
+  ]
+}

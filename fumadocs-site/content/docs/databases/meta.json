@@ -1,0 +1,15 @@
+{
+  "title": "Databases",
+  "pages": [
+    "database-fundamentals",
+    "sql-essentials",
+    "sql-practice-problems",
+    "indexing-and-query-performance",
+    "transactions-and-concurrency",
+    "database-internals",
+    "replication-sharding-and-operations",
+    "nosql-databases",
+    "data-modeling-patterns",
+    "database-interview-playbook"
+  ]
+}

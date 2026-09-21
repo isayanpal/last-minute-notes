@@ -1,0 +1,8 @@
+{
+  "title": "TypeScript",
+  "pages": [
+    "ts",
+    "adv-ts-patterns",
+    "system-design-decisions"
+  ]
+}
