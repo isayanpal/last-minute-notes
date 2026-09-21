@@ -228,6 +228,23 @@ Two implementation styles:
 | Queue with `shift()` | Easy to read. `Array.shift` is O(n) on large arrays, so a 10^5 node tree can go quadratic. |
 | Current level array replaced by next level | No `shift`, O(1) per node, and the level boundary is explicit. Used below. |
 
+**Flowchart: Tree BFS**
+
+The current level is processed as a whole, so the level boundary is explicit and no `shift()` is needed.
+
+```mermaid
+flowchart TD
+  A["level = [root], result = []"] --> B{"level is empty?"}
+  B -->|yes| Z["Return result"]:::done
+  B -->|no| C["Read values of every node in level, push as one row into result"]
+  C --> D["next = left and right children of every node in level"]
+  D --> E["level = next"]
+  E --> B
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 2.3 Problem: Level Order Traversal
 
 ```js
@@ -542,6 +559,22 @@ static int orangesRotting(int[][] grid) {
 | Inorder | left, node, right | Sorted order in a BST |
 | Postorder | left, right, node | Deleting, height, anything that needs children results **first** (bubbling **up**) |
 
+**Flowchart: Which DFS Order**
+
+Choose the order from when you need the node relative to its children.
+
+```mermaid
+flowchart TD
+  A["What do I need at each node?"] --> B{"Sorted order of a BST?"}
+  B -->|yes| C["Inorder: left, node, right"]:::done
+  B -->|no| D{"Need children results before the parent?"}
+  D -->|"yes: height, delete, bubble up"| E["Postorder: left, right, node"]:::done
+  D -->|"no: copy, serialize, pass info down"| F["Preorder: node, left, right"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 3.3 The Mental Model: Down, Up, or Global
 
 Every tree DFS answers three questions:
@@ -551,6 +584,29 @@ Every tree DFS answers three questions:
 3. Is the real answer different from what I return? If so, keep it in a **global** variable updated at each node (diameter, max path sum).
 
 Max path sum is the standard example of question 3: the value returned to the parent is a one-sided path, but the answer may bend through the current node using both sides.
+
+**Flowchart: Down, Up, or Global**
+
+Ask these three questions at every tree DFS problem before writing code.
+
+```mermaid
+flowchart TD
+  A["dfs(node)"] --> B{"node is null?"}
+  B -->|yes| C["Return the neutral value: 0, true, null"]
+  B -->|no| D{"Does the answer depend on the path from the root?"}
+  D -->|yes| E["Pass state DOWN as parameters: remaining sum, bounds, path"]
+  D -->|no| F["Recurse into left and right"]
+  E --> F
+  F --> G{"Answer built from children results?"}
+  G -->|yes| H["Return state UP: height, gain, boolean"]
+  G -->|no| I["Just traverse and act on the node"]
+  H --> J{"Best answer bends through this node?"}
+  J -->|"yes: diameter, max path sum"| K["Update a GLOBAL best here, return the one-sided value to the parent"]:::done
+  J -->|no| L["The returned value is the answer"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 
 ### 3.4 Problem: Inorder Traversal
 
@@ -941,6 +997,28 @@ Split the data into two halves:
 The median lives at the two tops.
 Invariant: every value in `small` is at most every value in `large`, and `small.size` is either equal to `large.size` or exactly one bigger.
 
+**Flowchart: Two Heaps**
+
+Pushing through `small` then moving its top to `large` keeps the ordering invariant without comparing to the current tops.
+The second check keeps `small` equal to `large` in size or exactly one bigger.
+
+```mermaid
+flowchart TD
+  A["addNum(x)"] --> B["Push x into small (max-heap)"]
+  B --> C["Move small.top to large (min-heap)"]
+  C --> D{"large.size > small.size?"}
+  D -->|yes| E["Move large.top back to small"]
+  D -->|no| F["Sizes are balanced"]
+  E --> F
+  F --> G["findMedian()"]
+  G --> H{"small.size > large.size?"}
+  H -->|"yes: odd count"| I["median = small.top"]:::done
+  H -->|"no: even count"| J["median = (small.top + large.top) / 2"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 4.3 Problem: Find Median from a Data Stream
 
 ```js
@@ -1091,6 +1169,24 @@ static int findMaximizedCapital(int k, int w, int[] profits, int[] capital) {
 | Iterative (BFS style) | Start with `[[]]`. For each element, copy every existing subset and append the element. | Subsets, with or without duplicates |
 | Backtracking (DFS style) | Choose, explore, un-choose. | Permutations, combinations with constraints, pruning |
 
+**Flowchart: Iterative Subsets**
+
+Each new element doubles the number of subsets: copy every existing subset and append the element.
+For the backtracking shape, see the flowchart after the template below.
+
+```mermaid
+flowchart TD
+  A["result = [[]]"] --> B{"More elements in nums?"}
+  B -->|no| Z["Return result"]:::done
+  B -->|yes| C["x = next element"]
+  C --> D["For each subset in result, make a copy and append x"]
+  D --> E["Add all the new copies to result"]
+  E --> B
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 5.3 Problem: Subsets
 
 ```js
@@ -1217,6 +1313,28 @@ combinationSum([2, 3, 6, 7], 7); // [[2, 2, 3], [7]]
 It means "do not pick the same value twice at the same tree level", while still allowing it at different depths.
 
 **Generate parentheses** is a good pruning example: add `(` while `open < n`, add `)` while `close < open`.
+
+**Flowchart: Backtracking Template**
+
+Every backtracking problem is this loop: choose, explore, undo.
+The undo step is what lets one shared `path` array serve every branch.
+
+```mermaid
+flowchart TD
+  A["backtrack(state)"] --> B{"state is a complete answer?"}
+  B -->|yes| C["Record a COPY of state, return"]:::done
+  B -->|no| D{"Any choice left to try?"}
+  D -->|no| R["Return to the parent call"]
+  D -->|yes| E{"Choice invalid or pruned?"}
+  E -->|yes| D
+  E -->|no| F["Apply the choice"]
+  F --> G["backtrack(new state)"]
+  G --> H["Undo the choice"]
+  H --> D
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 
 ### 5.6 Growth Rates to Quote
 
@@ -1420,6 +1538,27 @@ Insert position is `lowerBound`.
 `lo + ((hi - lo) >> 1)` instead of `(lo + hi) / 2` avoids integer overflow in Java, C++, and Go.
 JavaScript numbers are doubles so it does not overflow, but the habit is free.
 
+**Flowchart: Modified Binary Search**
+
+This is the one template to memorize: first index where a monotonic predicate becomes true, in the half-open range `[lo, hi)`.
+Every variant (lower bound, upper bound, binary search on the answer) is just a different predicate.
+
+```mermaid
+flowchart TD
+  A["Define isTrue(i): false, false, ..., true, true"] --> B["lo = 0, hi = n"]
+  B --> C{"lo < hi?"}
+  C -->|no| Z["Return lo: the first index where isTrue holds"]:::done
+  C -->|yes| D["mid = lo + ((hi - lo) >> 1)"]
+  D --> E{"isTrue(mid)?"}
+  E -->|"yes: mid may be the answer"| F["hi = mid"]
+  E -->|"no: mid is too small"| G["lo = mid + 1"]
+  F --> C
+  G --> C
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 6.3 Problem: Search in a Rotated Sorted Array
 
 `[4, 5, 6, 7, 0, 1, 2]` is a sorted array rotated at some pivot.
@@ -1461,6 +1600,31 @@ The `<=` in `nums[lo] <= nums[mid]` matters when `lo === mid` (two elements left
 With **duplicates**, `nums[lo] === nums[mid] === nums[hi]` hides which half is sorted.
 The fix is to shrink both ends (`lo++`, `hi--`), which makes the worst case O(n).
 Say this out loud, because it is the standard follow-up.
+
+**Flowchart: Rotated Sorted Array**
+
+At every step at least one half is sorted.
+Find that half, then check whether the target lies inside it.
+
+```mermaid
+flowchart TD
+  A["mid = lo + ((hi - lo) >> 1)"] --> B{"nums[mid] === target?"}
+  B -->|yes| Z["Return mid"]:::done
+  B -->|no| C{"Left half sorted? nums[lo] <= nums[mid]"}
+  C -->|yes| D{"nums[lo] <= target < nums[mid]?"}
+  D -->|"yes: target is in the left half"| E["hi = mid - 1"]
+  D -->|"no: search the right"| F["lo = mid + 1"]
+  C -->|"no: right half is sorted"| G{"nums[mid] < target <= nums[hi]?"}
+  G -->|"yes: target is in the right half"| F
+  G -->|"no: search the left"| E
+  E --> H{"lo <= hi?"}
+  F --> H
+  H -->|yes| A
+  H -->|no| N["Return -1"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 
 ### 6.4 Problem: Minimum in a Rotated Sorted Array
 
@@ -1667,6 +1831,27 @@ The heap never grows past K, so each operation is O(log K).
 | K largest | min-heap | pop the min |
 | K smallest | max-heap | pop the max |
 | Kth largest | min-heap of size K | the top is the answer |
+
+**Flowchart: Top K Elements**
+
+The heap kind is the opposite of what you want to keep: the top is always the next element to evict.
+
+```mermaid
+flowchart TD
+  A{"What to keep?"} -->|"K largest, kth largest, most frequent"| B["Min-heap of size K"]
+  A -->|"K smallest, K closest"| C["Max-heap of size K"]
+  B --> D["For each element x: push x"]
+  C --> D
+  D --> E{"heap.size > K?"}
+  E -->|"yes: evict the worst of the K"| F["Pop the top"]
+  E -->|no| G{"More elements?"}
+  F --> G
+  G -->|yes| D
+  G -->|no| H["Heap holds the answer, its top is the kth"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 
 ### 7.3 Problem: Kth Largest Element
 
@@ -1931,6 +2116,24 @@ heap:   {1a, 1b, 2}  -> pop 1a, push 4a  -> {1b, 2, 4a} -> pop 1b ...
 ```
 
 Complexity for N total elements: O(N log K) time, O(K) heap space.
+
+**Flowchart: K-way Merge**
+
+The heap holds one candidate per list, so it never grows past K and each step costs O(log K).
+
+```mermaid
+flowchart TD
+  A["Push the head of each of the K lists into a min-heap"] --> B{"Heap is empty?"}
+  B -->|yes| Z["Return the merged output"]:::done
+  B -->|no| C["Pop the smallest, append it to output"]
+  C --> D{"Its list has a next element?"}
+  D -->|yes| E["Push that next element into the heap"]
+  D -->|no| B
+  E --> B
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 
 ### 8.3 Problem: Merge K Sorted Lists
 
@@ -2211,6 +2414,25 @@ A valid ordering exists **if and only if the graph has no cycle**.
 3. Pop a node, add it to the order, and decrement the in-degree of everything that depends on it. Anything reaching 0 joins the queue.
 4. If the order contains fewer than all nodes, there is a cycle.
 
+**Flowchart: Topological Sort (Kahn)**
+
+If the order ends up shorter than the node count, the leftover nodes are stuck in a cycle.
+
+```mermaid
+flowchart TD
+  A["Build adjacency list and in-degree of every node"] --> B["Queue every node with in-degree 0"]
+  B --> C{"Queue is empty?"}
+  C -->|no| D["Pop a node, append it to order"]
+  D --> E["For each node that depends on it: in-degree--, push it if it reaches 0"]
+  E --> C
+  C -->|yes| F{"order.length === n?"}
+  F -->|yes| G["Valid order, no cycle"]:::done
+  F -->|no| H["Cycle: some nodes never reached in-degree 0"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 9.3 Problem: Course Schedule
 
 `prerequisites[i] = [course, pre]` means you must take `pre` before `course`.
@@ -2289,6 +2511,24 @@ function canFinishDFS(numCourses, prerequisites) {
 
 Kahn's is iterative (no recursion limit) and produces the order directly, so it is the default choice.
 DFS needs the extra reversal step but is handy when the graph is already being walked.
+
+**Flowchart: DFS Three-Color Cycle Check**
+
+Reaching a node that is still on the current path means a back edge, which is a cycle.
+
+```mermaid
+flowchart TD
+  A["visit(node)"] --> B{"state[node]"}
+  B -->|"1: on the current path"| C["Cycle found"]:::done
+  B -->|"2: already finished"| D["Return, this node is safe"]
+  B -->|"0: unvisited"| E["Mark state = 1"]
+  E --> F["visit(every neighbour)"]
+  F --> G["Mark state = 2, add to finish order"]
+  G --> H["Topological order = reverse of finish order"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 
 ### 9.5 Extra Variants
 

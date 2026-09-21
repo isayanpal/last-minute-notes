@@ -153,6 +153,21 @@ if (typeof value === "string") {
 
 > Prefer `unknown` over `any` always.
 
+**Flowchart: any vs unknown**
+
+Both accept any value, but only `unknown` forces you to check before you use it.
+
+```mermaid
+flowchart TD
+  A["A value of unknown shape"] --> B{"Typed as?"}
+  B -->|any| C["No checks: value.toUpperCase() compiles and may crash at runtime"]
+  B -->|unknown| D{"Narrowed first, e.g. typeof value === 'string'?"}
+  D -->|no| E["Compile error: it cannot be used yet"]
+  D -->|yes| F["Safe to use as the narrowed type"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 6. Void, Never
@@ -288,6 +303,19 @@ type User = {
 
 > Use `interface` for public APIs, `type` for unions & advanced types.
 
+**Flowchart: interface or type?**
+
+Interfaces describe shapes, types describe logic.
+
+```mermaid
+flowchart TD
+  A{"What are you declaring?"} -->|"Union, intersection, conditional, or utility type"| T["type"]:::done
+  A -->|"Object shape, public API, library export"| I["interface"]:::done
+  I --> M["Need declaration merging? Only interface supports it"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 11. Optional & Readonly Properties
@@ -409,6 +437,20 @@ function logLength<T extends { length: number }>(value: T) {
 const useState = <T>(initial: T): [T, (v: T) => void] => {};
 ```
 
+**Flowchart: How Generics Resolve**
+
+The type parameter is inferred from the argument, and a constraint rejects arguments that do not fit.
+
+```mermaid
+flowchart LR
+  A["identity(42)"] --> B["T is inferred as number"] --> C["Parameter and return type are both number"]:::done
+  D["logLength(value)"] --> E{"value has a length property?"}
+  E -->|yes| F["Accepted: T satisfies the constraint"]:::done
+  E -->|no| G["Compile error"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 18. Utility Types (Frequently Asked)
@@ -458,6 +500,19 @@ Used in:
 - API responses
 - Runtime validation
 
+**Flowchart: A Type Guard**
+
+The `value is string` return type tells the compiler what a true result proves.
+
+```mermaid
+flowchart TD
+  A["value: unknown"] --> B{"isString(value), predicate: value is string"}
+  B -->|true| C["The compiler narrows value to string"]:::done
+  B -->|false| D["value stays unknown"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 20. Discriminated Unions
@@ -478,6 +533,19 @@ function area(shape: Shape) {
 ```
 
 ### Interview favorite question
+
+**Flowchart: Narrowing a Discriminated Union**
+
+The shared `kind` field tells the compiler which variant it is looking at inside each branch.
+
+```mermaid
+flowchart TD
+  A["area(shape: Shape)"] --> B{"switch on shape.kind"}
+  B -->|circle| C["shape narrows to the circle variant: radius is available"]:::done
+  B -->|square| D["shape narrows to the square variant: size is available"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -515,6 +583,17 @@ type ReadonlyUser = {
 ```
 
 Foundation of utility types.
+
+**Flowchart: How a Mapped Type Is Built**
+
+The type is rebuilt one key at a time, with a modifier applied to each.
+
+```mermaid
+flowchart LR
+  U["User: id, name"] --> K["keyof User gives id or name"] --> M["For each K in keyof User"] --> R["readonly K: User[K]"] --> Out["ReadonlyUser"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 

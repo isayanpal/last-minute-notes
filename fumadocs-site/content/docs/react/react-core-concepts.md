@@ -180,6 +180,20 @@ root.render(<App />);
 
 Components re-render when their state or props change.
 
+**Flowchart: Render and Commit**
+
+Rendering is React calling your components, and only the difference is committed to the DOM.
+
+```mermaid
+flowchart TD
+  A["Trigger: first render, setState, or new props"] --> B["Render: React calls your components and builds a new Virtual DOM"]
+  B --> C["Reconciliation: diff against the previous tree"]
+  C --> D["Commit: update only the DOM nodes that changed"]
+  D --> E["Effects: useEffect callbacks run after paint"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 9. Event Handling
@@ -299,6 +313,24 @@ useEffect(() => {
 }, []);
 ```
 
+**Flowchart: When an Effect Runs**
+
+The dependency array decides whether the effect runs again, and cleanup always runs first.
+
+```mermaid
+flowchart TD
+  A["Component renders and commits"] --> B{"Dependency array?"}
+  B -->|"none: every render"| R["Run the previous cleanup, then the effect"]
+  B -->|"[a]"| C{"First render, or a changed since the last render?"}
+  C -->|yes| R
+  C -->|no| S["Skip the effect"]
+  B -->|"[]"| M{"First render (mount)?"}
+  M -->|yes| E["Run the effect"]
+  M -->|no| S
+  R --> E
+  U["Unmount"] --> CL["Run the last cleanup"]
+```
+
 ---
 
 ## 16. Refs
@@ -346,6 +378,22 @@ Example:
 ReactDOM.createPortal(<Modal />, document.getElementById("modal-root"));
 ```
 
+**Flowchart: Portals**
+
+The component stays in the same place in the React tree, but its DOM is rendered somewhere else.
+
+```mermaid
+flowchart LR
+  subgraph RT["React tree"]
+    P["Parent"] --> M["Modal via createPortal"]
+  end
+  subgraph DT["DOM tree"]
+    Root["root: Parent's DOM"]
+    MR["modal-root: Modal's DOM"]
+  end
+  M -.->|"renders into"| MR
+```
+
 ---
 
 ## 19. Suspense
@@ -359,6 +407,21 @@ Example:
 <Suspense fallback={<Loading />}>
   <LazyComponent />
 </Suspense>
+```
+
+**Flowchart: Suspense**
+
+The boundary shows the fallback until every child underneath it is ready.
+
+```mermaid
+flowchart TD
+  A["Render the Suspense boundary"] --> B{"Children ready? Lazy code loaded or data resolved"}
+  B -->|yes| C["Show the children"]:::done
+  B -->|no| D["Show the fallback"]
+  D --> E["Children become ready"]
+  E --> C
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ---
@@ -385,6 +448,20 @@ class ErrorBoundary extends React.Component {
 }
 ```
 
+**Flowchart: Error Boundary**
+
+A render error in any child is caught by the nearest boundary above it.
+
+```mermaid
+flowchart TD
+  A["A child throws while rendering"] --> B["React looks for the nearest error boundary above it"]
+  B --> C["getDerivedStateFromError sets hasError = true"]
+  C --> D["Boundary re-renders and shows the fallback UI"]:::done
+  B --> E["componentDidCatch(error, info) can log the error"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 21. use() (React 19)
@@ -399,6 +476,23 @@ function Comments({ commentsPromise }) {
   const comments = use(commentsPromise);
   return comments.map((c) => <p key={c.id}>{c.text}</p>);
 }
+```
+
+**Flowchart: use() and Suspense**
+
+`use()` suspends the component until the promise resolves.
+
+```mermaid
+flowchart TD
+  A["Component calls use(promise)"] --> B{"Promise already resolved?"}
+  B -->|yes| C["Return the value and keep rendering"]:::done
+  B -->|no| D["The component suspends"]
+  D --> E["Nearest Suspense boundary shows its fallback"]
+  E --> F["Promise resolves"]
+  F --> G["React re-renders the component with the value"]
+  G --> C
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ---
@@ -420,6 +514,23 @@ const [error, submitAction, isPending] = useActionState(async (prev, formData) =
   <input name="name" />
   <button disabled={isPending}>Save</button>
 </form>;
+```
+
+**Sequence diagram: An Action Lifecycle**
+
+React tracks pending, result, and error for you.
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant F as form action
+  participant A as Action function
+  U->>F: submit the form
+  F->>A: submitAction(previousState, formData)
+  Note over F: isPending = true
+  A->>A: await updateName(...)
+  A-->>F: return an error, or null
+  Note over F: isPending = false, state updated
 ```
 
 ---

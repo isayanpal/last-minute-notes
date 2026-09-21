@@ -186,6 +186,27 @@ queryClient.invalidateQueries(["users"]);
 - Powerful
 - Easier to misuse
 
+**Sequence diagram: Tag-Based Invalidation**
+
+A mutation does not touch the cache directly, it invalidates a tag and the tagged queries refetch.
+
+```mermaid
+sequenceDiagram
+  participant C as Component
+  participant Q as getUsers query (providesTags User)
+  participant M as updateUser mutation (invalidatesTags User)
+  participant API as Server
+  C->>Q: subscribe
+  Q->>API: fetch users
+  API-->>Q: users, cached with tag User
+  C->>M: run the mutation
+  M->>API: update the user
+  API-->>M: success
+  M->>Q: invalidate tag User
+  Q->>API: refetch users
+  API-->>C: fresh data
+```
+
 ---
 
 ## DevTools & Debugging
@@ -276,6 +297,24 @@ Choose React Query if:
 
 **Common in:** startups, consumer apps, Next.js apps
 
+**Flowchart: RTK Query or React Query?**
+
+The main question is whether the app already runs on Redux.
+
+```mermaid
+flowchart TD
+  A{"App already uses Redux?"} -->|yes| B{"Need central data logic and strong conventions across teams?"}
+  B -->|yes| R["RTK Query"]:::done
+  B -->|no| C{"Want minimal boilerplate and the best caching defaults?"}
+  C -->|yes| Q["React Query"]:::done
+  C -->|no| R
+  A -->|no| D{"API-heavy app, backend is the source of truth?"}
+  D -->|yes| Q
+  D -->|no| E["Plain fetching may be enough"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## Interview Summary (One-Liner)
@@ -299,6 +338,23 @@ Redux itself is fast — performance problems usually come from:
 3. Over-rendering components
 4. Deeply nested state
 5. Incorrect memoization
+
+**Flowchart: Debugging Redux Performance**
+
+Work from the cheapest, most common cause to the least likely one.
+
+```mermaid
+flowchart TD
+  A["Slow or over-rendering screen"] --> B{"useSelector returns the whole store?"}
+  B -->|yes| B1["Select the smallest slice"]
+  B -->|no| C{"Derived data recomputed on every update?"}
+  C -->|yes| C1["Use createSelector"]
+  C -->|no| D{"Reducers spread state and create new references?"}
+  D -->|yes| D1["Let Immer update only what changed"]
+  D -->|no| E{"UI flags and input values living in Redux?"}
+  E -->|yes| E1["Move them to local state"]
+  E -->|no| F["Profile with Redux DevTools and the React profiler: the problem may be the components, not Redux"]
+```
 
 ---
 

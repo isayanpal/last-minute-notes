@@ -128,6 +128,42 @@ There are two shapes:
 | Fixed | Given as `k` | Add the new element, remove the one that fell off |
 | Variable | Grows and shrinks | Expand `right`, shrink `left` while the window is invalid (or while it is still valid, when minimizing) |
 
+**Flowchart: Sliding Window**
+
+Pick fixed or variable first, then follow the loop.
+In the variable shape the `while` decides whether you are shrinking to restore validity (longest) or to tighten the answer (shortest).
+
+```mermaid
+flowchart TD
+  A["Contiguous subarray or substring?"] -->|no| X["Not a sliding window problem"]
+  A -->|yes| B{"Is the window size given as k?"}
+
+  B -->|"yes: fixed"| F0["i = 0, state = empty"]
+  F0 --> F1["Add nums[i] to state"]
+  F1 --> F2{"i >= k - 1?"}
+  F2 -->|"no: window not full yet"| F5
+  F2 -->|"yes: window full"| F3["Record answer from state"]
+  F3 --> F4["Remove nums[i - k + 1] from state"]
+  F4 --> F5["i++"]
+  F5 --> F6{"i < n?"}
+  F6 -->|yes| F1
+  F6 -->|no| FD["Return best"]:::done
+
+  B -->|"no: variable"| V0["left = 0, right = 0, best = 0"]
+  V0 --> V1["Add nums[right] to state"]
+  V1 --> V2{"Window invalid?"}
+  V2 -->|yes| V3["Remove nums[left] from state, left++"]
+  V3 --> V2
+  V2 -->|no| V4["Record best = max(best, right - left + 1)"]
+  V4 --> V5["right++"]
+  V5 --> V6{"right < n?"}
+  V6 -->|yes| V1
+  V6 -->|no| VD["Return best"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 2.3 Templates
 
 ```js
@@ -537,6 +573,50 @@ static int atMostKDistinct(int[] nums, int k) {
 | Same direction (read/write) | `read` scans, `write` marks the next slot to fill | Remove duplicates, move zeroes |
 | Partition | Three or more pointers splitting regions | Dutch national flag (sort colors) |
 
+**Flowchart: Two Pointers**
+
+First pick the shape from the problem, then run that shape's loop.
+For opposite ends, every pointer move must be justified: the pairs you skip cannot contain the answer.
+
+```mermaid
+flowchart TD
+  S["Sorted input, a pair from both ends, or an in-place filter?"] --> Q{"Which shape?"}
+
+  Q -->|"Pair, palindrome, container"| O0["lo = 0, hi = n - 1"]
+  O0 --> O1{"lo < hi?"}
+  O1 -->|no| OD["Return best or not found"]:::done
+  O1 -->|yes| O2{"Compare nums[lo] + nums[hi] with target"}
+  O2 -->|"Too small: need a bigger sum"| O3["lo++"]
+  O2 -->|"Too big: need a smaller sum"| O4["hi--"]
+  O2 -->|"Match"| O5["Record answer, then move a pointer"]
+  O3 --> O1
+  O4 --> O1
+  O5 --> O1
+
+  Q -->|"Remove or compact in place"| R0["read = 0, write = 0"]
+  R0 --> R1{"nums[read] should be kept?"}
+  R1 -->|yes| R2["nums[write] = nums[read], write++"]
+  R1 -->|no| R3["read++"]
+  R2 --> R3
+  R3 --> R4{"read < n?"}
+  R4 -->|yes| R1
+  R4 -->|no| RD["write is the new length"]:::done
+
+  Q -->|"Partition into 3 regions"| P0["low = 0, mid = 0, high = n - 1"]
+  P0 --> P1{"mid <= high?"}
+  P1 -->|no| PD["Array partitioned"]:::done
+  P1 -->|yes| P2{"nums[mid]"}
+  P2 -->|"0"| P3["swap(low, mid), low++, mid++"]
+  P2 -->|"1"| P4["mid++"]
+  P2 -->|"2"| P5["swap(mid, high), high-- (mid stays)"]
+  P3 --> P1
+  P4 --> P1
+  P5 --> P1
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 3.3 Template: Opposite Ends
 
 ```js
@@ -826,6 +906,31 @@ Two pointers move at different speeds, usually `slow` by 1 and `fast` by 2.
 - If there is a cycle, `fast` laps `slow` and they meet inside the loop.
 - If there is no cycle, `fast` reaches the end when `slow` is at the middle.
 
+**Flowchart: Fast and Slow Pointers**
+
+One loop answers three questions: is there a cycle, where does it start, and where is the middle.
+The middle falls out of the "no cycle" exit, and the cycle start comes from the reset step after the pointers meet.
+
+```mermaid
+flowchart TD
+  A["slow = head, fast = head"] --> B{"fast and fast.next exist?"}
+  B -->|no| C["fast reached the end: no cycle"]
+  C --> C2["slow is at the middle"]:::done
+  B -->|yes| D["slow = slow.next"]
+  D --> E["fast = fast.next.next"]
+  E --> F{"slow === fast?"}
+  F -->|no| B
+  F -->|yes| G["Cycle exists"]:::done
+  G --> H["Need the start? Set probe = head, keep slow at the meeting point"]
+  H --> I["Move probe and slow one step each"]
+  I --> J{"probe === slow?"}
+  J -->|no| I
+  J -->|yes| K["That node is the cycle start"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 4.3 Problem: Detect a Cycle
 
 ```js
@@ -1094,6 +1199,27 @@ If no, `a` is finished.
 
 Ask whether intervals touching at a single point (for example `[1, 3]` and `[3, 5]`) count as overlapping.
 It changes `<=` to `<`.
+
+**Flowchart: Merge Intervals**
+
+Sorting by start turns every case into one comparison against the last merged interval.
+If touching intervals such as `[1, 3]` and `[3, 5]` should not merge, change `<=` to `<`.
+
+```mermaid
+flowchart TD
+  A["Sort intervals by start"] --> B["merged = [first interval]"]
+  B --> C{"More intervals left?"}
+  C -->|no| Z["Return merged"]:::done
+  C -->|yes| D["cur = next interval, last = last item of merged"]
+  D --> E{"cur.start <= last.end?"}
+  E -->|"yes: overlap"| F["last.end = max(last.end, cur.end)"]
+  E -->|"no: gap"| G["Push cur onto merged"]
+  F --> C
+  G --> C
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 
 ### 5.3 Problem: Merge Overlapping Intervals
 
@@ -1399,6 +1525,26 @@ cyclicSort([3, 1, 5, 4, 2]); // [1, 2, 3, 4, 5]
 Comparing `nums[i] !== nums[home]` (values) instead of `i !== home` (positions) is what makes the loop safe with **duplicates**.
 With `i !== home` the array `[2, 2]` would swap forever.
 
+**Flowchart: Cyclic Sort**
+
+Compare values, not positions, when deciding to swap.
+That is what keeps the loop finite when the array has duplicates.
+
+```mermaid
+flowchart TD
+  A["i = 0"] --> B{"i < n?"}
+  B -->|no| Z["Scan for the first i where nums[i] != i + 1"]:::done
+  B -->|yes| C["home = nums[i] - 1"]
+  C --> D{"nums[i] in range and nums[i] != nums[home]?"}
+  D -->|"yes: not at home yet"| E["swap(nums[i], nums[home]), stay on i"]
+  E --> B
+  D -->|"no: at home, a duplicate, or out of range"| F["i++"]
+  F --> B
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 6.3 Problem: Missing Number
 
 Given `n` distinct numbers from `0..n`, find the one missing.
@@ -1660,6 +1806,24 @@ step:    save next = curr.next
 after:   null <- 1 <- 2 <- 3 <- 4     prev = 4 is the new head
 ```
 
+**Flowchart: In-Place Reversal**
+
+Order of the four statements matters: save `next` before you overwrite `curr.next`.
+
+```mermaid
+flowchart TD
+  A["prev = null, curr = head"] --> B{"curr is not null?"}
+  B -->|no| Z["Return prev as the new head"]:::done
+  B -->|yes| C["next = curr.next (save the rest of the list)"]
+  C --> D["curr.next = prev (flip the pointer)"]
+  D --> E["prev = curr"]
+  E --> F["curr = next"]
+  F --> B
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+
 ### 7.3 Problem: Reverse a Linked List
 
 ```js
@@ -1726,6 +1890,28 @@ Dry run on `1 -> 2 -> 3 -> 4 -> 5`, `left = 2`, `right = 4`:
 | 2 | 1, 4, 3, 2, 5 | 4 moved to the front of the segment |
 
 The dummy node makes `left = 1` work without a special case.
+
+**Flowchart: Reverse a Sublist**
+
+The dummy head makes `left = 1` work without a special case.
+Each iteration moves one node to the front of the segment, so the segment is reversed in one pass.
+
+```mermaid
+flowchart TD
+  A["dummy = new node pointing to head"] --> B["before = dummy, walk left - 1 steps"]
+  B --> C["start = before.next (becomes the segment tail)"]
+  C --> D["then = start.next"]
+  D --> E{"Done right - left moves?"}
+  E -->|yes| Z["Return dummy.next"]:::done
+  E -->|no| F["start.next = then.next (unlink then)"]
+  F --> G["then.next = before.next"]
+  G --> H["before.next = then (insert at segment front)"]
+  H --> I["then = start.next"]
+  I --> E
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 
 ### 7.5 Extra Variants
 

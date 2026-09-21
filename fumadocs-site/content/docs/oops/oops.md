@@ -49,6 +49,18 @@ It exists to make large systems easier to reason about by mapping code structure
 - **Class** — a blueprint that defines what data and behavior instances of it will have.
 - **Object** — a concrete instance of a class, with its own state.
 
+**Flowchart: Class and Object**
+
+One class, many objects, and each object owns its state.
+
+```mermaid
+flowchart LR
+  C["class BankAccount<br/>blueprint: balance, deposit(), getBalance()"]
+  C -->|"new BankAccount(100)"| A["acc<br/>balance = 100"]
+  C -->|"new BankAccount(500)"| B["other<br/>balance = 500"]
+  A -->|"acc.deposit(50)"| A2["acc<br/>balance = 150"]
+```
+
 ```ts
 class BankAccount {
   private balance: number;
@@ -103,6 +115,23 @@ public class Main {
 
 ## 3. The Four Pillars
 
+**Flowchart: The Four Pillars**
+
+Each pillar answers a different question about how to manage change.
+
+```mermaid
+flowchart TD
+  O["OOP: objects bundle state and behavior"]
+  O --> E["Encapsulation<br/>Protect invariants"]
+  O --> A["Abstraction<br/>Hide complexity"]
+  O --> I["Inheritance<br/>Reuse through is-a"]
+  O --> P["Polymorphism<br/>One call, many behaviors"]
+  E --> E1["private state + public methods"]
+  A --> A1["interfaces and abstract classes"]
+  I --> I1["subclass extends superclass"]
+  P --> P1["overriding at runtime, overloading at compile time"]
+```
+
 ### 3.1 Encapsulation
 
 Bundling data with the methods that operate on it, and restricting direct access to internal state.
@@ -153,6 +182,21 @@ public class BankAccount {
 
 Why it matters: `#balance` can't be set to a negative number from outside the class. All mutation goes through `withdraw`/`deposit`, which enforce the account's invariants.
 
+**Flowchart: Encapsulation**
+
+All mutation goes through a method that enforces the rule, so the balance can never be set to something invalid from outside.
+
+```mermaid
+flowchart LR
+  C["Caller"] -->|"acc.balance = -5"| X["Blocked: balance is private"]
+  C -->|"acc.withdraw(amount)"| M["withdraw()"]
+  M --> V{"amount > balance?"}
+  V -->|yes| E["Throw: Insufficient funds"]
+  V -->|no| U["balance -= amount"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ### 3.2 Abstraction
 
 Exposing only the essential behavior to the caller and hiding implementation detail.
@@ -199,6 +243,28 @@ public class CheckoutService {
 ```
 
 Why it matters: `checkout()` can work with `StripeGateway`, `PaypalGateway`, or a `MockGateway` in tests, without ever knowing their internals.
+
+**Class diagram: Abstraction**
+
+`checkout()` depends only on the interface, so any gateway that implements it can be plugged in.
+
+```mermaid
+classDiagram
+  class PaymentGateway {
+    <<interface>>
+    +charge(amount) boolean
+  }
+  class StripeGateway
+  class PaypalGateway
+  class MockGateway
+  class Checkout {
+    +checkout(gateway, amount)
+  }
+  PaymentGateway <|.. StripeGateway
+  PaymentGateway <|.. PaypalGateway
+  PaymentGateway <|.. MockGateway
+  Checkout ..> PaymentGateway : depends on
+```
 
 ### 3.3 Inheritance
 
@@ -257,6 +323,24 @@ public class Manager extends Employee {
 ```
 
 `Manager` **is an** `Employee`, with extra behavior layered on top.
+
+**Class diagram: Inheritance**
+
+`Manager` is an `Employee`: it inherits the fields and overrides `getSalary()` to add the bonus.
+
+```mermaid
+classDiagram
+  class Employee {
+    #name
+    #baseSalary
+    +getSalary() number
+  }
+  class Manager {
+    -bonus
+    +getSalary() number
+  }
+  Employee <|-- Manager : extends
+```
 
 ### 3.4 Polymorphism
 
@@ -318,6 +402,25 @@ printArea(new Circle(2));       // 12.566...
 printArea(new Rectangle(3, 4)); // 12.0
 ```
 
+**Flowchart: How a Call Is Resolved**
+
+Overloading is decided by the compiler from the argument types and count.
+Overriding is decided at runtime from the actual class of the object.
+
+```mermaid
+flowchart TD
+  A["Method call with a known name"] --> B{"Same name, different parameters in one class?"}
+  B -->|"yes: overloading"| C["Compiler picks by argument types and count"]:::done
+  B -->|"no: subclass redefines a parent method"| D["Runtime picks by the actual object's class"]:::done
+  D --> E["Shape s = new Circle(2)"]
+  E --> F["s.area()"]
+  F --> G{"Actual class?"}
+  G -->|Circle| H["PI * radius^2"]
+  G -->|Rectangle| I["width * height"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 Two common flavors:
 
 - **Runtime (dynamic) polymorphism** — method overriding, resolved at runtime via the object's actual class (shown above).
@@ -344,6 +447,20 @@ These get confused constantly in interviews:
 
 - **Encapsulation** is about **hiding data** (implementation state) — a mechanism (`private`/`#field`, getters/setters).
 - **Abstraction** is about **hiding complexity** (implementation detail) behind a simpler interface — a design decision (interfaces, abstract classes).
+
+**Flowchart: Encapsulation or Abstraction?**
+
+Ask what is being hidden, and how.
+
+```mermaid
+flowchart TD
+  A{"What is being hidden?"} -->|"Data and state, protected from outside changes"| B["Encapsulation<br/>Mechanism: private, #field, getters"]:::done
+  A -->|"Complexity and implementation, behind a simpler interface"| C["Abstraction<br/>Design decision: interface, abstract class"]:::done
+  B --> B1["Car: the steering rack is sealed inside the body"]
+  C --> C1["Car: the steering wheel is all you need to drive"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 Analogy: a car's steering wheel is **abstraction** (you don't need to know how the steering rack works to drive). The steering rack being sealed inside the car body so you can't tamper with it is **encapsulation**.
 
@@ -391,11 +508,42 @@ class Car {
 }
 ```
 
+**Flowchart: Composition or Inheritance?**
+
+Default to composition, and reach for inheritance only when every check passes.
+
+```mermaid
+flowchart TD
+  A{"Is B truly an A in every context?"} -->|no| C["Composition: A has a B as a field"]:::done
+  A -->|yes| B{"Can B replace A anywhere without breaking callers? (Liskov)"}
+  B -->|no| C
+  B -->|yes| D{"Hierarchy shallow, and parent unlikely to change?"}
+  D -->|no| C
+  D -->|yes| E["Inheritance: B extends A"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 Rule of thumb, and a very common senior-level answer: **"favor composition over inheritance"** — deep inheritance hierarchies get fragile and hard to change (the "fragile base class" problem), while composition keeps components swappable and independently testable.
 
 ---
 
 ## 6. SOLID Principles
+
+**Flowchart: Code Smell to SOLID Principle**
+
+Use this to name the principle a piece of code is breaking.
+
+```mermaid
+flowchart LR
+  A["Code smell"] --> S1["A class changes for several unrelated reasons"] --> P1["S: Single Responsibility"]:::done
+  A --> S2["Adding a feature means editing an if/else chain"] --> P2["O: Open/Closed"]:::done
+  A --> S3["A subclass throws or does nothing for an inherited method"] --> P3["L: Liskov Substitution"]:::done
+  A --> S4["Implementers stub out methods they do not need"] --> P4["I: Interface Segregation"]:::done
+  A --> S5["High-level code calls new on a concrete low-level class"] --> P5["D: Dependency Inversion"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ### 6.1 Single Responsibility Principle
 
@@ -427,6 +575,25 @@ class InvoiceRepository {
 class InvoicePdfFormatter {
     byte[] format(Invoice invoice) { /* presentation */ return new byte[0]; }
 }
+```
+
+**Class diagram: Single Responsibility**
+
+Three reasons to change become three classes, each with one.
+
+```mermaid
+classDiagram
+  class Invoice {
+    +calculateTotal() double
+  }
+  class InvoiceRepository {
+    +save(invoice)
+  }
+  class InvoicePdfFormatter {
+    +format(invoice) bytes
+  }
+  InvoiceRepository ..> Invoice : persists
+  InvoicePdfFormatter ..> Invoice : presents
 ```
 
 ### 6.2 Open/Closed Principle
@@ -475,6 +642,30 @@ class PriceCalculator {
 
 Adding a new `BlackFridayDiscount` needs a new class, not edits to `finalPrice` or existing discount classes.
 
+**Class diagram: Open/Closed**
+
+A new `BlackFridayDiscount` is a new class.
+`finalPrice` and the existing discounts are not touched.
+
+```mermaid
+classDiagram
+  class DiscountStrategy {
+    <<interface>>
+    +apply(price) double
+  }
+  class NoDiscount
+  class SeasonalDiscount
+  class BlackFridayDiscount
+  note for BlackFridayDiscount "New class, nothing else is edited"
+  class PriceCalculator {
+    +finalPrice(price, strategy)
+  }
+  DiscountStrategy <|.. NoDiscount
+  DiscountStrategy <|.. SeasonalDiscount
+  DiscountStrategy <|.. BlackFridayDiscount
+  PriceCalculator ..> DiscountStrategy
+```
+
 ### 6.3 Liskov Substitution Principle
 
 Subclasses must be substitutable for their base class without breaking correctness.
@@ -514,6 +705,28 @@ class Penguin extends Bird { /* no fly() to break */ }
 ```
 
 Any code that does `bird.fly()` expecting a `Bird` now crashes when handed a `Penguin`. Fix: don't model `Penguin` as a `Bird` that flies — separate `FlyingBird` and `FlightlessBird`, or use composition.
+
+**Class diagram: Liskov Substitution Fix**
+
+Only birds that can fly promise `fly()`, so no caller can be handed a `Penguin` and crash.
+
+```mermaid
+classDiagram
+  class Bird {
+    <<abstract>>
+    +eat()
+    +layEggs()
+  }
+  class Flyable {
+    <<interface>>
+    +fly()
+  }
+  class Sparrow
+  class Penguin
+  Bird <|-- Sparrow
+  Bird <|-- Penguin
+  Flyable <|.. Sparrow
+```
 
 ### 6.4 Interface Segregation Principle
 
@@ -564,6 +777,27 @@ class Human implements Workable, Eatable {
     public void work() { System.out.println("coding"); }
     public void eat() { System.out.println("lunch"); }
 }
+```
+
+**Class diagram: Interface Segregation**
+
+A robot needs `work()` only, so it implements only `Workable`.
+
+```mermaid
+classDiagram
+  class Workable {
+    <<interface>>
+    +work()
+  }
+  class Eatable {
+    <<interface>>
+    +eat()
+  }
+  class Robot
+  class Human
+  Workable <|.. Robot
+  Workable <|.. Human
+  Eatable <|.. Human
 ```
 
 ### 6.5 Dependency Inversion Principle
@@ -622,6 +856,27 @@ class InMemoryTestDatabase implements Database {
 OrderService service = new OrderService(new InMemoryTestDatabase()); // e.g. in a unit test
 ```
 
+**Class diagram: Dependency Inversion**
+
+Both the high-level class and the low-level classes point at the abstraction, so the arrow into the concrete database is inverted.
+
+```mermaid
+classDiagram
+  class OrderService {
+    -db Database
+    +OrderService(db)
+  }
+  class Database {
+    <<interface>>
+    +save(order)
+  }
+  class MySQLDatabase
+  class InMemoryTestDatabase
+  OrderService --> Database : depends on abstraction
+  Database <|.. MySQLDatabase
+  Database <|.. InMemoryTestDatabase
+```
+
 This is what makes swapping `MySQLDatabase` for `InMemoryTestDatabase` in unit tests trivial.
 
 ---
@@ -635,6 +890,37 @@ Common relationships between classes, weakest to strongest coupling:
 - **Composition** — a stronger "has-a" where the part's lifecycle is bound to the whole (`House` has `Rooms`; a room doesn't exist without the house).
 - **Inheritance (Generalization)** — "is-a" relationship (`Manager` is an `Employee`).
 - **Realization/Implementation** — a class implements an interface's contract (`StripeGateway` implements `PaymentGateway`).
+
+**Flowchart: Which UML Relationship?**
+
+Start with is-a, then ask about ownership and lifecycle.
+
+```mermaid
+flowchart TD
+  A{"Is A a kind of B?"} -->|yes| B{"B is an interface?"}
+  B -->|yes| R["Realization: A implements B"]:::done
+  B -->|no| G["Inheritance: A extends B"]:::done
+  A -->|no| C{"Does A hold B as a part?"}
+  C -->|no| S["Association: A and B just interact"]:::done
+  C -->|yes| D{"Does B die when A is gone?"}
+  D -->|yes| K["Composition: House and Rooms"]:::done
+  D -->|no| Ag["Aggregation: Department and Professors"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+**Class diagram: UML Relationships**
+
+The same five relationships drawn with their standard arrows.
+
+```mermaid
+classDiagram
+  Teacher --> Student : association, teaches
+  Department o-- Professor : aggregation
+  House *-- Room : composition
+  Employee <|-- Manager : inheritance
+  PaymentGateway <|.. StripeGateway : realization
+```
 
 **Java:**
 
@@ -723,6 +1009,22 @@ enum AppConfig {
 
 Use case: app-wide configuration or a shared connection pool. Caution: overused Singletons become hidden global state that makes testing harder.
 
+**Flowchart: Singleton**
+
+The private constructor forces every caller through `getInstance()`, so only one object is ever created.
+
+```mermaid
+flowchart TD
+  A["ConfigManager.getInstance()"] --> B{"Instance already exists?"}
+  B -->|no| C["Create it once, through the private constructor"]
+  C --> D["Store it"]
+  B -->|yes| E["Reuse the stored instance"]
+  D --> F["Return the same instance"]:::done
+  E --> F
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ### 8.2 Factory
 
 Delegates object creation to a dedicated method/class instead of calling `new` directly, so the caller doesn't need to know the concrete type.
@@ -765,9 +1067,46 @@ class NotificationFactory {
 Notification n = NotificationFactory.create("email"); // caller only sees the interface
 ```
 
+**Flowchart: Factory**
+
+The caller asks for a type by name and only ever sees the `Notification` interface.
+
+```mermaid
+flowchart LR
+  C["Caller<br/>NotificationFactory.create(type)"] --> S{"type"}
+  S -->|email| E["new EmailNotification()"]
+  S -->|sms| M["new SmsNotification()"]
+  S -->|"anything else"| X["Throw IllegalArgumentException"]
+  E --> R["Return as Notification"]:::done
+  M --> R
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ### 8.3 Strategy
 
 Encapsulates interchangeable algorithms behind a common interface, selected at runtime (already shown in [6.2](#62-openclosed-principle) with `DiscountStrategy`).
+
+**Class diagram: Strategy**
+
+The context holds a strategy and delegates to it, and the strategy can be swapped at runtime.
+
+```mermaid
+classDiagram
+  class PriceCalculator {
+    -strategy DiscountStrategy
+    +finalPrice(price) double
+  }
+  class DiscountStrategy {
+    <<interface>>
+    +apply(price) double
+  }
+  class NoDiscount
+  class SeasonalDiscount
+  PriceCalculator o--> DiscountStrategy : delegates to
+  DiscountStrategy <|.. NoDiscount
+  DiscountStrategy <|.. SeasonalDiscount
+```
 
 ### 8.4 Observer
 
@@ -819,6 +1158,25 @@ orderPlaced.publish("123");
 
 This is the pattern behind DOM events, Redux subscriptions, and pub/sub systems.
 
+**Sequence diagram: Observer**
+
+The publisher does not know who is listening, it just notifies everyone who subscribed.
+
+```mermaid
+sequenceDiagram
+  participant Mail as Email listener
+  participant Inv as Inventory listener
+  participant Pub as orderPlaced (EventEmitter)
+  participant App as Application
+  Mail->>Pub: subscribe(fn)
+  Inv->>Pub: subscribe(fn)
+  App->>Pub: publish({ orderId: 123 })
+  Pub->>Mail: fn(data)
+  Note right of Mail: send confirmation email
+  Pub->>Inv: fn(data)
+  Note right of Inv: update inventory
+```
+
 ### 8.5 Decorator
 
 Adds behavior to an individual object dynamically, without altering other instances of the same class.
@@ -862,6 +1220,20 @@ Coffee order = new MilkDecorator(new SimpleCoffee());
 System.out.println(order.cost()); // 2.5
 ```
 
+**Flowchart: Decorator**
+
+Each decorator calls the object it wraps and adds its own behavior on top.
+
+```mermaid
+flowchart LR
+  A["order.cost()"] --> B["MilkDecorator.cost()"]
+  B -->|"coffee.cost()"| C["SimpleCoffee.cost()"]
+  C -->|"returns 2"| B
+  B -->|"adds 0.5, returns 2.5"| D["Result: 2.5"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 `java.io` is the classic real-world example: `new BufferedReader(new InputStreamReader(System.in))` wraps one reader in another.
 
 ---
@@ -879,6 +1251,28 @@ const Serializable = (Base: any) => class extends Base {
 
 class Model {}
 class User extends Serializable(Model) {}
+```
+
+**Flowchart: Prototype Chain Lookup**
+
+A method call walks up the `[[Prototype]]` links until it finds the property or reaches `null`.
+The mixin adds one more link to the chain.
+
+```mermaid
+flowchart TD
+  A["user.toJSON()"] --> B{"Own property on the user object?"}
+  B -->|yes| Z["Call it"]:::done
+  B -->|no| C{"On User.prototype?"}
+  C -->|yes| Z
+  C -->|no| D{"On the Serializable(Model) mixin class prototype?"}
+  D -->|"yes: defined here"| Z
+  D -->|no| E{"On Model.prototype?"}
+  E -->|yes| Z
+  E -->|no| F{"On Object.prototype?"}
+  F -->|yes| Z
+  F -->|no| G["undefined: TypeError, not a function"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 Java also has single class inheritance, but allows multiple interfaces, and `default` methods give mixin-like reuse:

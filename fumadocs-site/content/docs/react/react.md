@@ -171,6 +171,21 @@ Correct:
 setCount((prev) => prev + 1);
 ```
 
+**Flowchart: What Happens on setState**
+
+The updater is queued, not applied immediately, so the variable in the current render never changes.
+React batches queued updates and re-renders once.
+
+```mermaid
+flowchart TD
+  A["Event handler runs"] --> B["setCount(prev => prev + 1) is queued"]
+  B --> C["Handler finishes"]
+  C --> D["React batches all queued updates"]
+  D --> E["Component re-renders with the new state"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 5. useState Hook
@@ -308,6 +323,24 @@ useEffect(() => {
 }, []);
 ```
 
+**Flowchart: When an Effect Runs**
+
+The dependency array decides whether the effect runs again, and cleanup always runs before the next run and on unmount.
+
+```mermaid
+flowchart TD
+  A["Component renders and commits"] --> B{"Dependency array?"}
+  B -->|"none: every render"| R["Run the previous cleanup, then the effect"]
+  B -->|"[a]"| C{"First render, or a changed since the last render?"}
+  C -->|yes| R
+  C -->|no| S["Skip the effect"]
+  B -->|"[]"| M{"First render (mount)?"}
+  M -->|yes| E["Run the effect"]
+  M -->|no| S
+  R --> E
+  U["Unmount"] --> CL["Run the last cleanup"]
+```
+
 ---
 
 ## 12. useRef
@@ -374,6 +407,22 @@ const Child = React.memo(function Child({ value }) {
 
 Prevents re-render unless props change.
 
+**Flowchart: Does the Child Re-render?**
+
+A parent re-render re-renders its children unless `React.memo` finds the props unchanged.
+Props are compared by reference, which is why `useMemo` and `useCallback` keep object and function props stable.
+
+```mermaid
+flowchart TD
+  A["Parent re-renders"] --> B{"Child wrapped in React.memo?"}
+  B -->|no| R["Child re-renders"]
+  B -->|yes| C{"Every prop equal to last time?"}
+  C -->|yes| S["Skip: reuse the previous output"]:::done
+  C -->|"no: a new object or function reference counts"| R
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 16. Context API
@@ -398,6 +447,19 @@ const theme = useContext(ThemeContext);
 
 **Q:** Context vs Redux?
 **A:** Context for low-frequency global state, Redux for complex state logic.
+
+**Flowchart: Context vs Prop Drilling**
+
+The value skips every layer in between and goes straight to the consumers.
+
+```mermaid
+flowchart TD
+  P["App: ThemeContext.Provider value=dark"] --> L["Layout"]
+  L --> G["Page"]
+  G --> B["Button: useContext(ThemeContext)"]
+  P -.->|"value goes straight to the consumer"| B
+  B -.->|"when the value changes, every consumer re-renders"| P
+```
 
 ---
 
@@ -432,6 +494,20 @@ componentDidCatch(error, info) {}
 
 Used to catch runtime errors in UI.
 
+**Flowchart: Error Boundary**
+
+Only class components can be error boundaries.
+
+```mermaid
+flowchart TD
+  A["A child throws while rendering"] --> B["React looks for the nearest error boundary above it"]
+  B --> C["getDerivedStateFromError sets hasError = true"]
+  C --> D["Boundary re-renders and shows the fallback UI"]:::done
+  B --> E["componentDidCatch(error, info) can log the error"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 19. Reconciliation & Virtual DOM
@@ -447,6 +523,20 @@ Used to catch runtime errors in UI.
 - Same type → update
 - Different type → replace
 
+**Flowchart: Diffing Rule**
+
+React compares the old and new element at each position, and the element type decides everything.
+
+```mermaid
+flowchart TD
+  A["Compare the old and new element at the same position"] --> B{"Same type?"}
+  B -->|yes| U["Keep the DOM node and component state, update changed props"]:::done
+  B -->|no| R["Unmount the old subtree and mount a new one: state is lost"]
+  U --> C["Recurse into the children, matching list items by key"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 20. Rendering Behavior (Important Interview Topic)
@@ -454,6 +544,20 @@ Used to catch runtime errors in UI.
 - Parent re-render → children re-render
 - Memoization can stop unnecessary renders
 - State update triggers render, not mutation
+
+**Flowchart: Render and Commit**
+
+State updates trigger a render, and only the diff reaches the DOM.
+
+```mermaid
+flowchart TD
+  A["Trigger: first render, setState, or new props"] --> B["Render: React calls your components and builds a new Virtual DOM"]
+  B --> C["Reconciliation: diff against the previous tree"]
+  C --> D["Commit: update only the DOM nodes that changed"]
+  D --> E["Effects: useEffect callbacks run after paint"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
 
 ---
 
@@ -557,6 +661,23 @@ const [error, submitAction, isPending] = useActionState(
 </form>;
 ```
 
+**Sequence diagram: An Action Lifecycle**
+
+React tracks pending, result, and error, so you do not write that state by hand.
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant F as form action
+  participant A as Action function
+  U->>F: submit the form
+  F->>A: submitAction(previousState, formData)
+  Note over F: isPending = true
+  A->>A: await updateName(...)
+  A-->>F: return an error, or null
+  Note over F: isPending = false, state updated
+```
+
 ### useFormStatus
 
 Lets a nested component read the parent `<form>` status without prop drilling.
@@ -587,6 +708,21 @@ async function submitAction(formData) {
 }
 ```
 
+**Flowchart: Optimistic Update**
+
+The UI updates immediately, and the real result replaces the guess when the action ends.
+
+```mermaid
+flowchart TD
+  A["User submits a new name"] --> B["setOptimisticName(newName): UI shows it at once"]
+  B --> C["await updateName(newName)"]
+  C --> D{"Action succeeded?"}
+  D -->|yes| E["setName(updated): the real state now matches"]:::done
+  D -->|no| F["The optimistic value is dropped and the old state shows again"]
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ### use()
 
 Reads the value of a resource (a Promise or a Context) during render. Unlike hooks, `use()` can be called conditionally and inside loops.
@@ -605,6 +741,23 @@ function Button() {
   const theme = use(ThemeContext);
   return <button className={theme}>Click</button>;
 }
+```
+
+**Flowchart: use() and Suspense**
+
+`use()` suspends the component until the promise resolves, and the nearest Suspense boundary shows the fallback meanwhile.
+
+```mermaid
+flowchart TD
+  A["Component calls use(promise)"] --> B{"Promise already resolved?"}
+  B -->|yes| C["Return the value and keep rendering"]:::done
+  B -->|no| D["The component suspends"]
+  D --> E["Nearest Suspense boundary shows its fallback"]
+  E --> F["Promise resolves"]
+  F --> G["React re-renders the component with the value"]
+  G --> C
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ### Interview Question
@@ -721,6 +874,22 @@ import { unstable_Activity as Activity } from "react";
 </Activity>;
 ```
 
+**Flowchart: Activity vs Conditional Rendering**
+
+Hidden Activity keeps state and DOM alive, so showing it again is instant.
+
+```mermaid
+flowchart LR
+  subgraph Cond["Conditional rendering"]
+    C1["Hidden"] -->|"unmounted"| C2["State and DOM destroyed"] -->|"shown again"| C3["Full remount"]
+  end
+  subgraph Act["Activity mode hidden"]
+    A1["Hidden"] -->|"effects detached, low priority"| A2["State and DOM kept alive"] -->|"shown again"| A3["Instant restore"]:::done
+  end
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ### useEffectEvent
 
 Extracts non-reactive logic out of an Effect: the returned function always sees the latest props/state but never triggers the Effect to re-run, removing the need to over-list (or intentionally omit) dependencies.
@@ -737,6 +906,22 @@ function ChatRoom({ roomId, theme }) {
     return () => connection.disconnect();
   }, [roomId]);
 }
+```
+
+**Flowchart: What useEffectEvent Changes**
+
+Only reactive values in the dependency array re-run the Effect, and the Effect Event always reads the latest props and state.
+
+```mermaid
+flowchart TD
+  A["roomId changes"] --> B["Effect re-runs: disconnect, then reconnect"]
+  T["theme changes"] --> N["Effect does not re-run"]
+  B --> C["connected event fires"]
+  C --> D["onConnected runs the Effect Event"]
+  D --> E["It reads the latest theme"]:::done
+  N -.-> E
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ### cacheSignal

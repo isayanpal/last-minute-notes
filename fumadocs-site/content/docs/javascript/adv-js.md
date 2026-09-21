@@ -68,24 +68,12 @@ Async behavior is handled by:
 
 ## 1.2 Runtime Architecture (Mental Diagram)
 
-```
-┌──────────────┐
-│   Call Stack │
-└──────┬───────┘
-       │
-┌──────▼───────┐
-│  Web APIs    │  (setTimeout, fetch, DOM events)
-└──────┬───────┘
-       │
-┌──────▼──────────┐
-│  Task Queues    │
-│  - Microtasks   │  (Promises, queueMicrotask)
-│  - Macrotasks   │  (setTimeout, setInterval)
-└──────┬──────────┘
-       │
-┌──────▼───────┐
-│ Event Loop   │
-└──────────────┘
+```mermaid
+flowchart TD
+  CS["Call stack"] --> W["Web APIs<br/>setTimeout, fetch, DOM events"]
+  W --> Q["Task queues<br/>Microtasks: Promises, queueMicrotask<br/>Macrotasks: setTimeout, setInterval"]
+  Q --> EL["Event loop"]
+  EL -->|"pushes a task when the stack is empty"| CS
 ```
 
 ---
@@ -99,6 +87,24 @@ Execution order:
 3. Macrotask Queue
 
 **Microtasks always execute before macrotasks**
+
+**Flowchart: The Event Loop Cycle**
+
+Read it as a loop that never stops: script, then all microtasks, then one macrotask, then repeat.
+
+```mermaid
+flowchart TD
+  A["Run the current script on the call stack"] --> B{"Call stack empty?"}
+  B -->|no| A
+  B -->|yes| C{"Microtask queue empty?"}
+  C -->|no| D["Run the next microtask"]
+  D --> C
+  C -->|yes| E{"Macrotask queue empty?"}
+  E -->|no| F["Take ONE macrotask and run it"]
+  F --> B
+  E -->|yes| W["Wait for new events"]
+  W --> E
+```
 
 ---
 
@@ -153,6 +159,26 @@ A
 D
 C
 B
+```
+
+**Sequence diagram: Why the Output Is A D C B**
+
+Follow the arrows top to bottom.
+
+```mermaid
+sequenceDiagram
+  participant S as Call stack
+  participant W as Web API
+  participant Mi as Microtask queue
+  participant Ma as Macrotask queue
+  S->>S: log A
+  S->>W: setTimeout(B, 0)
+  W->>Ma: timer done, queue B
+  S->>Mi: Promise.then queues C
+  S->>S: log D
+  Note over S: stack is empty
+  Mi->>S: run C
+  Ma->>S: run B
 ```
 
 ---
@@ -215,6 +241,26 @@ D
 B
 ```
 
+**Sequence diagram: What await Does**
+
+`await` hands control back to the caller, and the rest of the function resumes later as a microtask.
+
+```mermaid
+sequenceDiagram
+  participant M as Main script
+  participant T as test()
+  participant Mi as Microtask queue
+  M->>M: log C
+  M->>T: call test()
+  T->>T: log A
+  T->>Mi: await: queue the rest of test()
+  T-->>M: return control
+  M->>M: log D
+  Note over M: stack is empty
+  Mi->>T: resume test()
+  T->>T: log B
+```
+
 ---
 
 ## 1.8 await vs then (Same Priority)
@@ -250,6 +296,20 @@ Why:
 - Call stack is blocked
 - Event loop cannot push tasks
 
+**Flowchart: Why a Blocked Stack Delays the Timer**
+
+The timer is ready after 0 ms, but nothing can run it until the call stack is free.
+
+```mermaid
+flowchart TD
+  A["setTimeout registers callback A with a 0 ms timer"] --> B["The long loop keeps the call stack busy"]
+  B --> C["console.log B runs when the loop ends"]
+  C --> D["Call stack is empty"]
+  D --> E["Event loop finally runs callback A"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 2. Output-Based Tricky JavaScript Questions
@@ -278,6 +338,22 @@ for (var i = 0; i < 3; i++) {
 for (let i = 0; i < 3; i++) {
   setTimeout(() => console.log(i), 0);
 }
+```
+
+**Flowchart: var vs let in a Loop**
+
+`var` gives every callback the same variable, `let` gives each iteration its own.
+
+```mermaid
+flowchart TD
+  subgraph Var["var i: one shared variable"]
+    V1["The loop runs 3 times and i ends at 3"] --> V2["All 3 callbacks read that same i"] --> V3["Prints 3, 3, 3"]
+  end
+  subgraph Let["let i: a new binding per iteration"]
+    L1["Each iteration gets its own i: 0, 1, 2"] --> L2["Each callback closes over its own copy"] --> L3["Prints 0, 1, 2"]:::done
+  end
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ---
@@ -404,6 +480,17 @@ Explanation:
 - `![]` → false
 - `[] == false` → `"" == 0` → true
 
+**Flowchart: Why [] == ![] Is true**
+
+Each step is one coercion, applied left to right.
+
+```mermaid
+flowchart LR
+  A["[] == ![]"] --> B["![] is false"] --> C["[] == false"] --> D["Both sides become numbers: empty string, then 0"] --> E["0 == 0"] --> F["true"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 2.8 Function Hoisting Priority
@@ -502,6 +589,23 @@ Promise.myAll = function (promises) {
 };
 ```
 
+**Flowchart: Promise.all Polyfill**
+
+Results are stored by index so the output order matches the input order, not the completion order.
+
+```mermaid
+flowchart TD
+  A["Wrap each item with Promise.resolve"] --> B["Each promise settles on its own"]
+  B --> C{"Settled how?"}
+  C -->|rejected| R["reject(err) immediately: the whole result rejects"]:::done
+  C -->|fulfilled| D["results[i] = value, completed++"]
+  D --> E{"completed === promises.length?"}
+  E -->|yes| Z["resolve(results) in original order"]:::done
+  E -->|no| B
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 3.4 Polyfill for bind
@@ -567,6 +671,21 @@ function once(fn) {
 }
 ```
 
+**Flowchart: once**
+
+The result is cached in the closure, so later calls return it without running `fn` again.
+
+```mermaid
+flowchart TD
+  A["Wrapped function is called"] --> B{"called is false?"}
+  B -->|yes| C["called = true, run fn, store result"]
+  B -->|no| D["Skip fn"]
+  C --> R["Return result"]:::done
+  D --> R
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
 ---
 
 ## 3.8 Implement Event Emitter
@@ -603,6 +722,23 @@ function retry(fn, retries) {
     return retry(fn, retries - 1);
   });
 }
+```
+
+**Flowchart: Retry**
+
+Each failure calls `retry` again with one fewer attempt, until the attempts run out.
+
+```mermaid
+flowchart TD
+  A["retry(fn, retries)"] --> B["Call fn()"]
+  B --> C{"Promise resolved?"}
+  C -->|yes| Z["Return the result"]:::done
+  C -->|"no: rejected"| D{"retries === 0?"}
+  D -->|yes| E["Throw the error"]
+  D -->|no| F["retry(fn, retries - 1)"]
+  F --> B
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 ---

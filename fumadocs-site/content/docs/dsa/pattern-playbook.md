@@ -60,33 +60,36 @@ Read the problem for these phrases before thinking about code.
 
 ## 2. A Decision Flow for Unknown Problems
 
-```text
-Is the input a graph or grid?
-  Weighted edges?          -> Dijkstra (heap)
-  Dependencies / order?    -> Topological sort
-  Shortest steps?          -> BFS
-  Count / explore regions? -> DFS or Union-Find
+```mermaid
+flowchart TD
+  S["Read the problem"] --> T{"Input type?"}
 
-Is it a tree?
-  Level-based question?    -> BFS
-  Everything else          -> DFS (decide: pass down, return up, or global)
+  T -->|"Graph or grid"| G{"What is asked?"}
+  G -->|"Weighted shortest path"| G1["Dijkstra (heap)"]:::done
+  G -->|"Dependencies or order"| G2["Topological sort"]:::done
+  G -->|"Shortest steps, equal cost"| G3["BFS"]:::done
+  G -->|"Count or explore regions"| G4["DFS or Union-Find"]:::done
 
-Is it a linked list?
-  Cycle / middle / kth end -> Fast and slow
-  Reverse / reorder        -> In-place reversal (dummy head)
-  Merge several lists      -> K-way merge
+  T -->|Tree| R{"Level-based question?"}
+  R -->|yes| R1["Tree BFS"]:::done
+  R -->|no| R2["Tree DFS: pass down, return up, or global"]:::done
 
-Is it an array or string?
-  Sorted?
-    yes -> Two pointers or binary search
-  Contiguous range?
-    all positive / countable state -> Sliding window
-    negatives allowed              -> Prefix sum + hash map
-  Values in 1..n with O(1) space   -> Cyclic sort
-  Ranges [start, end]              -> Merge intervals
-  Need top K / median / merge      -> Heap based patterns
-  Need all combinations            -> Subsets / backtracking
-  Optimal value with choices       -> DP or greedy
+  T -->|"Linked list"| L{"What is asked?"}
+  L -->|"Cycle, middle, kth from end"| L1["Fast and slow pointers"]:::done
+  L -->|"Reverse or reorder"| L2["In-place reversal with dummy head"]:::done
+  L -->|"Merge several lists"| L3["K-way merge"]:::done
+
+  T -->|"Array or string"| A{"What does it look like?"}
+  A -->|"Sorted"| A1["Two pointers or binary search"]:::done
+  A -->|"Contiguous range, positives or countable state"| A2["Sliding window"]:::done
+  A -->|"Contiguous range, negatives allowed"| A3["Prefix sum + hash map"]:::done
+  A -->|"Values in 1..n, O(1) space"| A4["Cyclic sort"]:::done
+  A -->|"Ranges [start, end]"| A5["Merge intervals"]:::done
+  A -->|"Top K, median, merge"| A6["Heap based patterns"]:::done
+  A -->|"All combinations"| A7["Subsets and backtracking"]:::done
+  A -->|"Optimal value with choices"| A8["DP or greedy"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
 
 If two patterns fit, prefer the one with the simpler invariant that you can **explain in one sentence**.
