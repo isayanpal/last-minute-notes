@@ -1,0 +1,13 @@
+{
+  "title": "Operating Systems",
+  "pages": [
+    "os-fundamentals",
+    "processes-and-threads",
+    "cpu-scheduling",
+    "synchronization-and-deadlocks",
+    "memory-management",
+    "file-systems-and-storage",
+    "io-and-linux-internals",
+    "os-interview-playbook"
+  ]
+}

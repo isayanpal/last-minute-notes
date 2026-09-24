@@ -1,0 +1,11 @@
+{
+  "title": "Computer Fundamentals",
+  "pages": [
+    "number-systems-and-data-representation",
+    "digital-logic-and-computer-architecture",
+    "memory-hierarchy-and-caches",
+    "compilers-and-program-execution",
+    "parallelism-and-modern-hardware",
+    "computer-fundamentals-interview-playbook"
+  ]
+}

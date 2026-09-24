@@ -12,8 +12,8 @@
   --fd-logo-font: var(--font-sans);
   --color-fd-primary: hsl(48, 97%, 62%);
   --color-fd-primary-foreground: hsl(0, 0%, 10%);
-  --color-fd-accent: hsl(48, 97%, 62%);
-  --color-fd-accent-foreground: hsl(0, 0%, 10%);
+  --color-fd-accent: hsla(48, 97%, 62%, 12%);
+  --color-fd-accent-foreground: hsl(48, 97%, 62%);
 }
 
 html {
@@ -28,8 +28,8 @@ body {
 .dark {
   --color-fd-primary: hsl(48, 97%, 62%);
   --color-fd-primary-foreground: hsl(0, 0%, 10%);
-  --color-fd-accent: hsl(48, 97%, 62%);
-  --color-fd-accent-foreground: hsl(0, 0%, 10%);
+  --color-fd-accent: hsla(48, 97%, 62%, 12%);
+  --color-fd-accent-foreground: hsl(48, 97%, 62%);
 }
 
 /* Offset headings so sticky nav doesn't obscure IntersectionObserver target */

@@ -20,9 +20,10 @@ const GITHUB = 'https://github.com/isayanpal/last-minute-notes';
 // Order that lets both the 2-column and 3-column grids fill without gaps (featured cards span 2).
 const GRID_ORDER = [
   'system-design', 'javascript', 'typescript', 'react', 'redux',
-  'dsa', 'backend', 'databases', 'sdui', 'sdlc', 'java', 'oops',
+  'dsa', 'backend', 'databases', 'networking', 'operating-systems', 'computer-fundamentals',
+  'sdui', 'sdlc', 'java', 'oops',
 ];
-const FEATURED = new Set(['system-design', 'dsa']);
+const FEATURED = new Set(['system-design', 'dsa', 'networking']);
 
 const vars = (v: Record<string, string | number>) => v as CSSProperties;
 

@@ -10,10 +10,12 @@ import {
   Braces,
   ChevronRight,
   Coffee,
+  Cpu,
   Database,
   FileCode2,
   FileText,
   Folder,
+  Globe,
   Layers,
   LayoutTemplate,
   MousePointerClick,
@@ -21,6 +23,7 @@ import {
   RefreshCw,
   Server,
   ServerCog,
+  SquareTerminal,
   type LucideIcon,
 } from 'lucide-react';
 import type { TreeItem } from '@/lib/topics';
@@ -37,6 +40,9 @@ export const ICONS: Record<string, LucideIcon> = {
   dsa: Network,
   backend: ServerCog,
   databases: Database,
+  networking: Globe,
+  'operating-systems': SquareTerminal,
+  'computer-fundamentals': Cpu,
   'system-design': Server,
 };
 
