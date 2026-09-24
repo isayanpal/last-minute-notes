@@ -1,0 +1,13 @@
+{
+  "title": "Networking",
+  "pages": [
+    "networking-fundamentals",
+    "ip-addressing-and-routing",
+    "tcp-udp-and-quic",
+    "dns-http-and-tls",
+    "application-protocols-and-infrastructure",
+    "network-security",
+    "troubleshooting-and-tools",
+    "networking-interview-playbook"
+  ]
+}

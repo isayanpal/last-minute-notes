@@ -42,7 +42,9 @@ export function HeroTree({ topics }: { topics: TreeItem[] }) {
         return (
           <g key={t.id} style={idx(i)}>
             <path d={d} pathLength={1} className="tt-path" data-active={on} />
-            <circle r={on ? 3.5 : 2.5} className="lp-hdot" data-active={on}>
+            {/* Hidden until motion starts, otherwise it sits at the SVG origin during the begin delay */}
+            <circle r={on ? 3.5 : 2.5} className="lp-hdot" data-active={on} visibility="hidden">
+              <set attributeName="visibility" to="visible" begin={`${i * 0.55}s`} fill="freeze" />
               <animateMotion dur={on ? '1.4s' : '3.6s'} begin={`${i * 0.55}s`} repeatCount="indefinite" path={d} />
             </circle>
           </g>

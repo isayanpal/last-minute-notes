@@ -27,6 +27,9 @@ const TOPICS: { slug: string; blurb: string }[] = [
   { slug: 'dsa', blurb: '14 interview patterns with templates and a playbook.' },
   { slug: 'backend', blurb: 'HTTP, APIs, auth, security, caching, queues, architecture, and deployment.' },
   { slug: 'databases', blurb: 'SQL, indexing, transactions, internals, NoSQL, sharding, and data modeling.' },
+  { slug: 'networking', blurb: 'OSI and TCP/IP, subnetting, TCP and QUIC, DNS, HTTP, TLS, and troubleshooting.' },
+  { slug: 'operating-systems', blurb: 'Processes, threads, scheduling, sync, deadlocks, memory, files, and Linux.' },
+  { slug: 'computer-fundamentals', blurb: 'Number systems, architecture, caches, compilers, and how code runs.' },
   { slug: 'system-design', blurb: 'HLD, LLD, case studies, machine coding, AI and frontend.' },
 ];
 
