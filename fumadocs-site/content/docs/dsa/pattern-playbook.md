@@ -60,37 +60,79 @@ Read the problem for these phrases before thinking about code.
 
 ## 2. A Decision Flow for Unknown Problems
 
+Two questions narrow almost any problem down to one or two patterns.
+First, look at the input type.
+Then, look at what the problem asks for, and follow the matching branch below.
+
 ```mermaid
-flowchart TD
-  S["Read the problem"] --> T{"Input type?"}
-
-  T -->|"Graph or grid"| G{"What is asked?"}
-  G -->|"Weighted shortest path"| G1["Dijkstra (heap)"]:::done
-  G -->|"Dependencies or order"| G2["Topological sort"]:::done
-  G -->|"Shortest steps, equal cost"| G3["BFS"]:::done
-  G -->|"Count or explore regions"| G4["DFS or Union-Find"]:::done
-
-  T -->|Tree| R{"Level-based question?"}
-  R -->|yes| R1["Tree BFS"]:::done
-  R -->|no| R2["Tree DFS: pass down, return up, or global"]:::done
-
-  T -->|"Linked list"| L{"What is asked?"}
-  L -->|"Cycle, middle, kth from end"| L1["Fast and slow pointers"]:::done
-  L -->|"Reverse or reorder"| L2["In-place reversal with dummy head"]:::done
-  L -->|"Merge several lists"| L3["K-way merge"]:::done
-
-  T -->|"Array or string"| A{"What does it look like?"}
-  A -->|"Sorted"| A1["Two pointers or binary search"]:::done
-  A -->|"Contiguous range, positives or countable state"| A2["Sliding window"]:::done
-  A -->|"Contiguous range, negatives allowed"| A3["Prefix sum + hash map"]:::done
-  A -->|"Values in 1..n, O(1) space"| A4["Cyclic sort"]:::done
-  A -->|"Ranges [start, end]"| A5["Merge intervals"]:::done
-  A -->|"Top K, median, merge"| A6["Heap based patterns"]:::done
-  A -->|"All combinations"| A7["Subsets and backtracking"]:::done
-  A -->|"Optimal value with choices"| A8["DP or greedy"]:::done
+flowchart LR
+  S["Read the problem"] --> T{"What is the input?"}
+  T --> G["Graph or grid"]:::done
+  T --> R["Tree"]:::done
+  T --> L["Linked list"]:::done
+  T --> A["Array or string"]:::done
 
   classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
 ```
+
+### Graph or grid
+
+```mermaid
+flowchart LR
+  G{"What is asked?"}
+  G -->|"Weighted shortest path"| G1["Dijkstra (heap)"]:::done
+  G -->|"Dependencies or order"| G2["Topological sort"]:::done
+  G -->|"Fewest steps, equal cost"| G3["BFS"]:::done
+  G -->|"Count or explore regions"| G4["DFS or Union-Find"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+### Tree
+
+```mermaid
+flowchart LR
+  R{"Is it about levels?"}
+  R -->|"Yes: level order, min depth"| R1["Tree BFS"]:::done
+  R -->|"No: paths, heights, subtrees"| R2["Tree DFS"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+For tree DFS, decide how state flows: pass it down as arguments, return it up from children, or keep a global answer.
+
+### Linked list
+
+```mermaid
+flowchart LR
+  L{"What is asked?"}
+  L -->|"Cycle, middle, kth from end"| L1["Fast and slow pointers"]:::done
+  L -->|"Reverse or reorder"| L2["In-place reversal"]:::done
+  L -->|"Merge several lists"| L3["K-way merge"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+Use a dummy head whenever the first node might change.
+
+### Array or string
+
+```mermaid
+flowchart LR
+  A{"What does it look like?"}
+  A -->|"Sorted"| A1["Two pointers or binary search"]:::done
+  A -->|"Contiguous range, no negatives"| A2["Sliding window"]:::done
+  A -->|"Contiguous range, negatives"| A3["Prefix sum + hash map"]:::done
+  A -->|"Values in 1..n, O(1) space"| A4["Cyclic sort"]:::done
+  A -->|"Ranges [start, end]"| A5["Merge intervals"]:::done
+  A -->|"Top K, median, merge"| A6["Heap patterns"]:::done
+  A -->|"All combinations"| A7["Subsets, backtracking"]:::done
+  A -->|"Best value with choices"| A8["DP or greedy"]:::done
+
+  classDef done fill:#facc15,stroke:#facc15,color:#111111,font-weight:bold
+```
+
+Sliding window also works with negatives when the window condition is a countable state, such as "at most K distinct characters".
 
 If two patterns fit, prefer the one with the simpler invariant that you can **explain in one sentence**.
 
