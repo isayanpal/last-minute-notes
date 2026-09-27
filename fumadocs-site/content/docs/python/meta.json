@@ -1,0 +1,14 @@
+{
+  "title": "Python",
+  "pages": [
+    "python-fundamentals",
+    "python-data-structures",
+    "functions-and-functional-python",
+    "python-oop",
+    "python-internals",
+    "concurrency-and-asyncio",
+    "numpy-and-data-stack",
+    "typing-tooling-and-modern-python",
+    "python-interview-playbook"
+  ]
+}

@@ -21,9 +21,9 @@ const GITHUB = 'https://github.com/isayanpal/last-minute-notes';
 const GRID_ORDER = [
   'system-design', 'javascript', 'typescript', 'react', 'redux',
   'dsa', 'backend', 'databases', 'networking', 'operating-systems', 'computer-fundamentals',
-  'sdui', 'sdlc', 'java', 'oops',
+  'sdui', 'sdlc', 'java', 'python', 'oops',
 ];
-const FEATURED = new Set(['system-design', 'dsa', 'networking']);
+const FEATURED = new Set(['system-design', 'dsa']);
 
 const vars = (v: Record<string, string | number>) => v as CSSProperties;
 
