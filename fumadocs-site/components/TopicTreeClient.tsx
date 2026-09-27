@@ -23,6 +23,7 @@ import {
   RefreshCw,
   Server,
   ServerCog,
+  SquareCode,
   SquareTerminal,
   type LucideIcon,
 } from 'lucide-react';
@@ -36,6 +37,7 @@ export const ICONS: Record<string, LucideIcon> = {
   sdui: LayoutTemplate,
   sdlc: RefreshCw,
   java: Coffee,
+  python: SquareCode,
   oops: Boxes,
   dsa: Network,
   backend: ServerCog,

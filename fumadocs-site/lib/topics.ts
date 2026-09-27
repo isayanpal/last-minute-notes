@@ -23,6 +23,7 @@ const TOPICS: { slug: string; blurb: string }[] = [
   { slug: 'sdui', blurb: 'Architecture, component registries, versioning, React Native.' },
   { slug: 'sdlc', blurb: 'Process models, Agile, Scrum, Kanban, DevOps, and CI/CD.' },
   { slug: 'java', blurb: 'Core language, collections, streams, concurrency, and JVM.' },
+  { slug: 'python', blurb: 'Data model, decorators, generators, GIL, asyncio, typing, and output puzzles.' },
   { slug: 'oops', blurb: 'Four pillars, SOLID principles, and design patterns.' },
   { slug: 'dsa', blurb: '14 interview patterns with templates and a playbook.' },
   { slug: 'backend', blurb: 'HTTP, APIs, auth, security, caching, queues, architecture, and deployment.' },
