@@ -20,6 +20,7 @@ const TOPICS: { slug: string; blurb: string }[] = [
   { slug: 'typescript', blurb: 'Advanced types, generics, utility types, and design patterns.' },
   { slug: 'react', blurb: 'Hooks, rendering, patterns, and performance.' },
   { slug: 'react-native', blurb: 'New Architecture, navigation, lists, Reanimated, native modules, performance, and OTA releases.' },
+  { slug: 'nextjs', blurb: 'App Router, Server Components, caching, Server Actions, proxy, performance, and deployment.' },
   { slug: 'redux', blurb: 'Redux Toolkit, RTK Query, async flows, and state patterns.' },
   { slug: 'sdui', blurb: 'Architecture, component registries, versioning, React Native.' },
   { slug: 'sdlc', blurb: 'Process models, Agile, Scrum, Kanban, DevOps, and CI/CD.' },

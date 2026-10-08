@@ -26,6 +26,7 @@ import {
   Smartphone,
   SquareCode,
   SquareTerminal,
+  Triangle,
   type LucideIcon,
 } from 'lucide-react';
 import type { TreeItem } from '@/lib/topics';
@@ -35,6 +36,7 @@ export const ICONS: Record<string, LucideIcon> = {
   typescript: FileCode2,
   react: Atom,
   'react-native': Smartphone,
+  nextjs: Triangle,
   redux: Layers,
   sdui: LayoutTemplate,
   sdlc: RefreshCw,
