@@ -1,0 +1,14 @@
+{
+  "title": "Next.js",
+  "pages": [
+    "nextjs-fundamentals",
+    "rendering-and-server-components",
+    "routing-and-navigation",
+    "data-fetching-and-caching",
+    "server-actions-and-route-handlers",
+    "auth-security-and-proxy",
+    "performance-and-optimization",
+    "testing-deployment-and-operations",
+    "nextjs-interview-playbook"
+  ]
+}
