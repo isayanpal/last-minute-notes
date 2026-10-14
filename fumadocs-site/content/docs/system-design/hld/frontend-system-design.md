@@ -9,6 +9,9 @@ Frontend system design asks you to design a client application or a UI component
 The server side is usually a black box with an API you negotiate.
 The interesting parts are rendering, state, performance, resilience and accessibility.
 
+This page is the one page summary.
+The full library is in [Frontend System Design](/docs/frontend-system-design): rendering and delivery, performance, state, real-time and offline, architecture, security, testing and release, 16 worked designs, and an interview playbook.
+
 This page connects to your existing notes on [React](/docs/react), [Redux and RTK Query](/docs/redux), [JavaScript](/docs/javascript), and [Server-Driven UI](/docs/sdui).
 
 ## Table of Contents

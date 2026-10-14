@@ -34,6 +34,7 @@ const TOPICS: { slug: string; blurb: string }[] = [
   { slug: 'operating-systems', blurb: 'Processes, threads, scheduling, sync, deadlocks, memory, files, and Linux.' },
   { slug: 'computer-fundamentals', blurb: 'Number systems, architecture, caches, compilers, and how code runs.' },
   { slug: 'system-design', blurb: 'HLD, LLD, case studies, machine coding, AI and frontend.' },
+  { slug: 'frontend-system-design', blurb: 'RADIO, rendering, Web Vitals, state, real-time and offline, micro-frontends, and 16 UI and app designs.' },
 ];
 
 const asText = (node: ReactNode): string | undefined => (typeof node === 'string' ? node : undefined);

@@ -20,6 +20,7 @@ import {
   LayoutTemplate,
   MousePointerClick,
   Network,
+  PanelsTopLeft,
   RefreshCw,
   Server,
   ServerCog,
@@ -50,6 +51,7 @@ export const ICONS: Record<string, LucideIcon> = {
   'operating-systems': SquareTerminal,
   'computer-fundamentals': Cpu,
   'system-design': Server,
+  'frontend-system-design': PanelsTopLeft,
 };
 
 type Path = { id: string; d: string; x2: number; y2: number };
