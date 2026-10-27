@@ -93,6 +93,74 @@ flowchart TD
   K --> AN["Analytics pipeline"]
 ```
 
+The same redirect traced as a packet, first with a cold cache and then with a warm one.
+Watch where the database read disappears and where the click event leaves the critical path.
+
+```flow
+{
+  "title": "URL shortener redirect, cold then warm cache",
+  "note": "Latencies are illustrative.",
+  "nodes": [
+    {"id": "browser", "label": "Browser", "col": 0, "row": 1, "ui": {"button": "sho.rt/aZ3x9Kq", "blocks": 1, "blockLabel": "Original page", "idleLabel": "waiting"}},
+    {"id": "edge", "label": "Edge", "sub": "CDN, LB", "col": 1, "row": 1},
+    {"id": "redirect", "label": "Redirect svc", "sub": "stateless", "col": 2, "row": 1},
+    {"id": "cache", "label": "Redis", "sub": "code to URL", "kind": "cache", "col": 3, "row": 0},
+    {"id": "db", "label": "KV store", "sub": "sharded", "kind": "db", "col": 3, "row": 2},
+    {"id": "kafka", "label": "Kafka", "sub": "click events", "kind": "queue", "col": 2, "row": 2}
+  ],
+  "links": [["browser", "edge"], ["edge", "redirect"], ["redirect", "cache"], ["redirect", "db"], ["redirect", "kafka"]],
+  "runs": [
+    {"label": "Run 1 - cold cache", "tone": "warn", "steps": [
+      {"say": "User opens the short link"},
+      {"tap": "browser"},
+      {"say": "Browser asks the edge"},
+      {"fly": ["browser", "edge", "redirect"], "label": "GET /aZ3x9Kq", "ms": 1200},
+      {"pulse": "redirect"},
+      {"say": "Redirect service checks Redis first"},
+      {"fly": ["redirect", "cache"], "label": "GET code", "ms": 700},
+      {"badge": {"at": "cache", "text": "MISS", "tone": "bad"}},
+      {"pulse": "cache"},
+      {"wait": 400},
+      {"fly": ["cache", "redirect"], "label": "nil", "tone": "miss", "ms": 700},
+      {"say": "Miss, so read the primary store"},
+      {"fly": ["redirect", "db"], "label": "SELECT", "tone": "data", "ms": 800},
+      {"pulse": "db"},
+      {"wait": 300},
+      {"fly": ["db", "redirect"], "label": "long_url", "tone": "data", "ms": 800},
+      {"say": "Backfill the cache with a TTL"},
+      {"fly": ["redirect", "cache"], "label": "SET ttl 1h", "tone": "ok", "ms": 700},
+      {"badge": {"at": "cache", "text": "STORED", "tone": "ok"}},
+      {"say": "302 goes back to the browser"},
+      {"fly": ["redirect", "edge", "browser"], "label": "302 Location", "tone": "res", "ms": 1200},
+      {"fill": "browser"},
+      {"count": 142},
+      {"say": "Cold: 142 ms, one database read on the path"},
+      {"fly": ["redirect", "kafka"], "label": "click event", "tone": "data", "ms": 700},
+      {"say": "Cold: 142 ms. The click event is async, off the critical path"}
+    ]},
+    {"label": "Run 2 - warm cache", "tone": "ok", "steps": [
+      {"say": "Same link, a second user"},
+      {"tap": "browser"},
+      {"say": "Browser asks the edge"},
+      {"fly": ["browser", "edge", "redirect"], "label": "GET /aZ3x9Kq", "ms": 1200},
+      {"pulse": "redirect"},
+      {"say": "Redirect service checks Redis first"},
+      {"fly": ["redirect", "cache"], "label": "GET code", "ms": 700},
+      {"badge": {"at": "cache", "text": "HIT", "tone": "ok"}},
+      {"pulse": "cache"},
+      {"wait": 300},
+      {"say": "Hit, the database is never touched"},
+      {"fly": ["cache", "redirect"], "label": "long_url", "tone": "res", "ms": 700},
+      {"fly": ["redirect", "edge", "browser"], "label": "302 Location", "tone": "res", "ms": 1200},
+      {"fill": "browser"},
+      {"count": 24},
+      {"fly": ["redirect", "kafka"], "label": "click event", "tone": "data", "ms": 700},
+      {"say": "Warm: 24 ms, no database read"}
+    ]}
+  ]
+}
+```
+
 ### 1.6 Deep Dive: Generating the Code
 
 | Approach | How | Pros | Cons |

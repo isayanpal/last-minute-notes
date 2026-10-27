@@ -255,6 +255,61 @@ flowchart TD
   H --> I
 ```
 
+The same flow traced as packets: the UI answers before the network does, then the server either confirms or forces a rollback.
+
+```flow
+{
+  "title": "Optimistic like, server accepts then server rejects",
+  "note": "Latencies are illustrative.",
+  "nodes": [
+    {"id": "phone", "label": "Phone", "col": 0, "row": 1, "ui": {"button": "Like", "blocks": 1, "blockLabel": "43 likes", "idleLabel": "42 likes"}},
+    {"id": "store", "label": "Query cache", "sub": "snapshot kept", "kind": "cache", "col": 1, "row": 1},
+    {"id": "api", "label": "API", "sub": "idempotency key", "col": 2, "row": 1},
+    {"id": "db", "label": "Database", "sub": "likes", "kind": "db", "col": 3, "row": 1}
+  ],
+  "links": [["phone", "store"], ["store", "api"], ["api", "db"]],
+  "runs": [
+    {"label": "Run 1 - server accepts", "tone": "ok", "steps": [
+      {"say": "User taps Like"},
+      {"tap": "phone"},
+      {"say": "Cache is written before any network call"},
+      {"fly": ["phone", "store"], "label": "onMutate", "tone": "data", "ms": 600},
+      {"badge": {"at": "store", "text": "OPTIMISTIC", "tone": "info"}},
+      {"fill": "phone"},
+      {"count": 16, "unit": "ms to feedback"},
+      {"wait": 500},
+      {"say": "Request goes out with an idempotency key"},
+      {"fly": ["store", "api", "db"], "label": "POST /like", "ms": 1300},
+      {"pulse": "db"},
+      {"wait": 300},
+      {"say": "Server confirms"},
+      {"fly": ["db", "api", "store"], "label": "200 OK", "tone": "res", "ms": 1200},
+      {"badge": {"at": "store", "text": "CONFIRMED", "tone": "ok"}},
+      {"say": "Keep the optimistic value, refetch to settle"}
+    ]},
+    {"label": "Run 2 - server rejects", "tone": "bad", "steps": [
+      {"say": "User taps Like"},
+      {"tap": "phone"},
+      {"say": "Cache is written before any network call"},
+      {"fly": ["phone", "store"], "label": "onMutate", "tone": "data", "ms": 600},
+      {"badge": {"at": "store", "text": "OPTIMISTIC", "tone": "info"}},
+      {"fill": "phone"},
+      {"count": 16, "unit": "ms to feedback"},
+      {"wait": 500},
+      {"say": "Request goes out with an idempotency key"},
+      {"fly": ["store", "api", "db"], "label": "POST /like", "ms": 1300},
+      {"pulse": "db"},
+      {"wait": 300},
+      {"say": "Server rejects the write"},
+      {"fly": ["db", "api", "store"], "label": "500", "tone": "miss", "ms": 1200},
+      {"badge": {"at": "store", "text": "ROLLBACK", "tone": "bad"}},
+      {"reset": "phone"},
+      {"say": "Restore the snapshot, show an error toast, offer retry"}
+    ]}
+  ]
+}
+```
+
 | Use optimistic updates for | Avoid for |
 | --- | --- |
 | Likes, toggles, reordering, checking off a todo, sending a chat message | Payments, destructive actions, anything with server side rules that often reject |
