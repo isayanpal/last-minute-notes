@@ -369,6 +369,148 @@ body {
   }
 }
 
+/* Interactive lessons (components/learn) */
+.lx-pop {
+  animation: lx-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+}
+
+.lx-fade {
+  animation: lp-fade 0.45s ease both;
+}
+
+.lx-in {
+  animation: lp-rise 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.lx-draw {
+  stroke-dashoffset: 1;
+  animation: lx-draw var(--dur, 1s) linear forwards;
+}
+
+.lx-moved {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lx-moved 1.6s ease-out both;
+}
+
+.lx-slide {
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.lx-key {
+  transition: fill 0.6s ease;
+}
+
+.lx-glow {
+  filter: drop-shadow(0 0 5px rgba(245, 213, 71, 0.9));
+}
+
+.lx-hot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lx-hot 1.4s ease-in-out infinite;
+}
+
+.lx-glow-ring {
+  filter: drop-shadow(0 0 6px rgba(245, 213, 71, 0.7));
+}
+
+.lx-meter,
+.lx-geom,
+.lx-window {
+  transition: x 0.45s cubic-bezier(0.65, 0, 0.35, 1), width 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.lx-grow {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: lx-grow 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.lx-stage[data-paused="true"] * {
+  animation-play-state: paused !important;
+}
+
+@keyframes lx-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lx-hot {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes lx-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes lx-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes lx-moved {
+  0% {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-pop,
+  .lx-fade,
+  .lx-in,
+  .lx-moved,
+  .lx-hot,
+  .lx-grow {
+    animation: none;
+  }
+
+  .lx-meter,
+  .lx-geom,
+  .lx-window {
+    transition: none;
+  }
+
+  .lx-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .lx-slide,
+  .lx-key {
+    transition: none;
+  }
+}
+
 /* Section hub (components/SectionHubClient.tsx) */
 .hub-row {
   animation: lp-rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;

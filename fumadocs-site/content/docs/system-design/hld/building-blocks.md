@@ -446,6 +446,8 @@ Design so the common path touches one shard, and accept scatter-gather for the r
 
 ### 10.3 Consistent Hashing
 
+> Interactive walkthrough: [Consistent Hashing lesson](/learn/consistent-hashing).
+
 Place nodes on a ring by hashing.
 A key goes to the first node clockwise from its hash.
 **Virtual nodes** give each physical node many positions on the ring, which smooths the distribution and lets heavier machines take more.

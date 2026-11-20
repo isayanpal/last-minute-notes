@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { source } from '@/lib/source';
-
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <DocsLayout
@@ -13,7 +12,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       themeSwitch={{ enabled: false }}
       links={[
         {
-          text: 'GitHub',
+          text: 'Learn',
+          url: '/learn',
+        },
+        {
+          text: 'Github',
           url: 'https://github.com/isayanpal/last-minute-notes',
           external: true,
         },
