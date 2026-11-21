@@ -5,7 +5,7 @@
  */
 
 export type LessonLevel = 'Beginner' | 'Intermediate' | 'Advanced';
-export type LessonTrack = 'system-design' | 'dsa';
+export type LessonTrack = 'system-design' | 'frontend-system-design' | 'dsa' | 'networking' | 'backend' | 'databases' | 'oops' | 'redux' | 'javascript';
 
 export type LessonMeta = {
   slug: string;
@@ -21,7 +21,14 @@ export type LessonMeta = {
 
 export const TRACKS: { id: LessonTrack; title: string; blurb: string }[] = [
   { id: 'system-design', title: 'System Design', blurb: 'From one request to planet-scale systems, one animated step at a time.' },
+  { id: 'frontend-system-design', title: 'Frontend System Design', blurb: 'Rendering, performance, state and real-time, from the browser to the release pipeline.' },
   { id: 'dsa', title: 'Data Structures & Algorithms', blurb: 'The interview patterns, traced element by element.' },
+  { id: 'networking', title: 'Networking', blurb: 'Packets, subnets, TCP, QUIC and TLS, from the wire to the browser.' },
+  { id: 'backend', title: 'Backend', blurb: 'Requests, auth, pagination, messaging and shutdown, the parts that break in production.' },
+  { id: 'databases', title: 'Databases', blurb: 'Query execution, joins, indexes, concurrency and durability, run on real rows.' },
+  { id: 'oops', title: 'OOP & Design Patterns', blurb: 'Pillars, SOLID and the patterns that bend with change, drawn as running diagrams.' },
+  { id: 'redux', title: 'Redux Toolkit', blurb: 'The store loop, thunks, normalized state and re-render debugging, simulated step by step.' },
+  { id: 'javascript', title: 'JavaScript', blurb: 'The event loop, closures, this and the prototype chain, with the output computed for real.' },
 ];
 
 export const LESSONS: LessonMeta[] = [
@@ -65,6 +72,20 @@ export const LESSONS: LessonMeta[] = [
     notes: {
       href: "/docs/system-design/fundamentals#7-latency-throughput-and-percentiles",
       label: "System Design Fundamentals, 7"
+    }
+  },
+  {
+    slug: "littles-law",
+    track: "system-design",
+    section: "Foundations",
+    title: "Little's Law",
+    subtitle: "Concurrency equals rate times latency: size pools and see how overload spirals.",
+    minutes: 6,
+    level: "Beginner",
+    steps: 6,
+    notes: {
+      href: "/docs/system-design/fundamentals#73-littles-law",
+      label: "System Design Fundamentals, 7.3"
     }
   },
   {
@@ -376,6 +397,20 @@ export const LESSONS: LessonMeta[] = [
     }
   },
   {
+    slug: "quorums",
+    track: "system-design",
+    section: "Distributed Systems",
+    title: "Quorums & Conflicts",
+    subtitle: "Pick W and R, survive failures, and merge writes that raced.",
+    minutes: 9,
+    level: "Advanced",
+    steps: 7,
+    notes: {
+      href: "/docs/system-design/hld/distributed-systems#3-replication-in-depth",
+      label: "Distributed Systems, 3"
+    }
+  },
+  {
     slug: "raft",
     track: "system-design",
     section: "Distributed Systems",
@@ -443,6 +478,20 @@ export const LESSONS: LessonMeta[] = [
     notes: {
       href: "/docs/system-design/hld/distributed-systems#8-idempotency-and-exactly-once",
       label: "Distributed Systems, 8"
+    }
+  },
+  {
+    slug: "monolith-microservices",
+    track: "system-design",
+    section: "Distributed Systems",
+    title: "Monolith or Microservices",
+    subtitle: "Start modular, split for real reasons, and count the cost of the network.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/system-design/hld/distributed-systems#14-monolith-or-microservices",
+      label: "Distributed Systems, 14"
     }
   },
   {
@@ -541,6 +590,286 @@ export const LESSONS: LessonMeta[] = [
     notes: {
       href: "/docs/system-design/hld/reliability-and-operations#4-backups-and-disaster-recovery",
       label: "Reliability and Operations, 4"
+    }
+  },
+  {
+    slug: "capacity-cost",
+    track: "system-design",
+    section: "Reliability & Operations",
+    title: "Capacity, Load Tests & Cost",
+    subtitle: "Find the knee, keep headroom, autoscale sanely and watch the bill.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/system-design/hld/reliability-and-operations#5-capacity-load-testing-and-cost",
+      label: "Reliability and Operations, 5"
+    }
+  },
+  {
+    slug: "security-architecture",
+    track: "system-design",
+    section: "Reliability & Operations",
+    title: "Security Architecture",
+    subtitle: "AuthN vs AuthZ, OAuth with PKCE, token hygiene and defence in depth.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/system-design/hld/reliability-and-operations#6-security-architecture",
+      label: "Reliability and Operations, 6"
+    }
+  },
+  {
+    slug: "incident-response",
+    track: "system-design",
+    section: "Reliability & Operations",
+    title: "Incident Response",
+    subtitle: "Detect fast, mitigate before diagnosing, and learn without blame.",
+    minutes: 6,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/system-design/hld/reliability-and-operations#7-incident-response",
+      label: "Reliability and Operations, 7"
+    }
+  },
+  {
+    slug: "url-shortener",
+    track: "system-design",
+    section: "HLD Case Studies",
+    title: "Design a URL Shortener",
+    subtitle: "Size it, mint short codes, and trace the redirect through cache and store.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/system-design/hld/classic-designs#1-url-shortener",
+      label: "Classic Designs, 1"
+    }
+  },
+  {
+    slug: "id-generator",
+    track: "system-design",
+    section: "HLD Case Studies",
+    title: "Design a Unique ID Generator",
+    subtitle: "Snowflake bit by bit, and the clock and machine-id traps.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/system-design/hld/classic-designs#3-unique-id-generator",
+      label: "Classic Designs, 3"
+    }
+  },
+  {
+    slug: "news-feed",
+    track: "system-design",
+    section: "HLD Case Studies",
+    title: "Design a News Feed",
+    subtitle: "Push, pull and the hybrid that survives a celebrity post.",
+    minutes: 9,
+    level: "Advanced",
+    steps: 7,
+    notes: {
+      href: "/docs/system-design/hld/large-scale-designs#1-news-feed",
+      label: "Large-Scale Designs, 1"
+    }
+  },
+  {
+    slug: "chat-system",
+    track: "system-design",
+    section: "HLD Case Studies",
+    title: "Design a Chat System",
+    subtitle: "Gateways, offline sync, dedupe and per-chat ordering.",
+    minutes: 9,
+    level: "Advanced",
+    steps: 7,
+    notes: {
+      href: "/docs/system-design/hld/large-scale-designs#2-chat-system",
+      label: "Large-Scale Designs, 2"
+    }
+  },
+  {
+    slug: "ticket-booking",
+    track: "system-design",
+    section: "HLD Case Studies",
+    title: "Design Ticket Booking",
+    subtitle: "Never double book: atomic holds, payments and a flash-sale waiting room.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 6,
+    notes: {
+      href: "/docs/system-design/hld/large-scale-designs#6-ticket-booking",
+      label: "Large-Scale Designs, 6"
+    }
+  },
+  {
+    slug: "fe-radio",
+    track: "frontend-system-design",
+    section: "Framework & Delivery",
+    title: "The RADIO Interview Framework",
+    subtitle: "Structure 45 minutes so every senior signal gets airtime.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/frontend-system-design-fundamentals#2-the-radio-framework",
+      label: "Fundamentals, 2"
+    }
+  },
+  {
+    slug: "fe-rendering-strategies",
+    track: "frontend-system-design",
+    section: "Framework & Delivery",
+    title: "CSR, SSR, SSG and Streaming",
+    subtitle: "See where the HTML is made and what the user waits for.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/rendering-and-delivery#2-rendering-strategies",
+      label: "Rendering and Delivery, 2"
+    }
+  },
+  {
+    slug: "fe-hydration",
+    track: "frontend-system-design",
+    section: "Framework & Delivery",
+    title: "Hydration and Its Alternatives",
+    subtitle: "Why a page that looks ready is not, and how to pay less for it.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/rendering-and-delivery#4-hydration-and-its-alternatives",
+      label: "Rendering and Delivery, 4"
+    }
+  },
+  {
+    slug: "fe-http-caching",
+    track: "frontend-system-design",
+    section: "Framework & Delivery",
+    title: "HTTP Caching and Deploys",
+    subtitle: "Cache-Control, ETags and stale-while-revalidate, one request at a time.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/rendering-and-delivery#6-http-caching",
+      label: "Rendering and Delivery, 6"
+    }
+  },
+  {
+    slug: "fe-web-vitals",
+    track: "frontend-system-design",
+    section: "Performance & Data",
+    title: "Core Web Vitals",
+    subtitle: "LCP, INP and CLS broken into parts, with a fix for each.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/performance-engineering#2-core-web-vitals",
+      label: "Performance Engineering, 2"
+    }
+  },
+  {
+    slug: "fe-state-data",
+    track: "frontend-system-design",
+    section: "Performance & Data",
+    title: "State and Data Fetching",
+    subtitle: "Query caches, normalization, optimistic updates and request races.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/state-and-data-management#3-server-state-and-query-caches",
+      label: "State and Data Management, 3"
+    }
+  },
+  {
+    slug: "fe-realtime-sync",
+    track: "frontend-system-design",
+    section: "Performance & Data",
+    title: "Real-Time, Offline and Sync",
+    subtitle: "Transports, resume, backpressure, outboxes and conflicts.",
+    minutes: 7,
+    level: "Advanced",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/real-time-offline-and-sync#4-reconnection-resume-and-ordering",
+      label: "Real-Time, Offline and Sync, 4"
+    }
+  },
+  {
+    slug: "fe-micro-frontends",
+    track: "frontend-system-design",
+    section: "Architecture & Quality",
+    title: "Micro-Frontends",
+    subtitle: "Split a frontend across teams, and know when it is not worth it.",
+    minutes: 7,
+    level: "Advanced",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/architecture-and-scalability#6-micro-frontends",
+      label: "Architecture and Scalability, 6"
+    }
+  },
+  {
+    slug: "fe-security",
+    track: "frontend-system-design",
+    section: "Architecture & Quality",
+    title: "Frontend Security",
+    subtitle: "XSS, CSP, CSRF and token storage, attack and defense.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/security-accessibility-and-i18n#2-xss-and-content-security-policy",
+      label: "Security, A11y and i18n, 2"
+    }
+  },
+  {
+    slug: "fe-accessibility-i18n",
+    track: "frontend-system-design",
+    section: "Architecture & Quality",
+    title: "Accessibility and i18n",
+    subtitle: "The accessibility tree, focus, comboboxes and plural rules.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/security-accessibility-and-i18n#6-accessibility-foundations",
+      label: "Security, A11y and i18n, 6"
+    }
+  },
+  {
+    slug: "fe-release",
+    track: "frontend-system-design",
+    section: "Architecture & Quality",
+    title: "Testing, Release and Incidents",
+    subtitle: "Pipelines, canaries, version skew and the incident loop.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/testing-observability-and-release#8-progressive-delivery",
+      label: "Testing and Release, 8"
+    }
+  },
+  {
+    slug: "fe-typeahead",
+    track: "frontend-system-design",
+    section: "Component Designs",
+    title: "Design a Typeahead",
+    subtitle: "Debounce, races, caching and ARIA in one component.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/frontend-system-design/ui-component-designs#2-typeahead-and-autocomplete",
+      label: "UI Component Designs, 2"
     }
   },
   {
@@ -751,6 +1080,650 @@ export const LESSONS: LessonMeta[] = [
     notes: {
       href: "/docs/dsa/pattern-playbook#65-trie",
       label: "DSA Pattern Playbook, 6.5"
+    }
+  },
+  {
+    slug: "binary-search",
+    track: "dsa",
+    section: "Search & Backtracking",
+    title: "Modified Binary Search",
+    subtitle: "One template for sorted, rotated and answer-space searches.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/dsa/trees-graphs-and-search#6-modified-binary-search",
+      label: "Trees, Graphs and Search, 6"
+    }
+  },
+  {
+    slug: "backtracking",
+    track: "dsa",
+    section: "Search & Backtracking",
+    title: "Subsets & Backtracking",
+    subtitle: "Choose, explore, undo, and watch the decision tree get walked.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/dsa/trees-graphs-and-search#5-subsets-and-backtracking",
+      label: "Trees, Graphs and Search, 5"
+    }
+  },
+  {
+    slug: "topological-sort",
+    track: "dsa",
+    section: "Graphs",
+    title: "Topological Sort",
+    subtitle: "Order tasks by dependency with Kahn's queue, and spot cycles.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/dsa/trees-graphs-and-search#9-topological-sort",
+      label: "Trees, Graphs and Search, 9"
+    }
+  },
+  {
+    slug: "union-find",
+    track: "dsa",
+    section: "Graphs",
+    title: "Union-Find",
+    subtitle: "Merge groups and answer same-group questions in near constant time.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/dsa/pattern-playbook#63-union-find-disjoint-set-union",
+      label: "Pattern Playbook, 6.3"
+    }
+  },
+  {
+    slug: "dijkstra",
+    track: "dsa",
+    section: "Graphs",
+    title: "Dijkstra",
+    subtitle: "Weighted shortest path with a min-heap, and why edges must be non-negative.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 6,
+    notes: {
+      href: "/docs/dsa/pattern-playbook#66-dijkstra-weighted-shortest-path",
+      label: "Pattern Playbook, 6.6"
+    }
+  },
+  {
+    slug: "dynamic-programming",
+    track: "dsa",
+    section: "DP, Greedy & Bits",
+    title: "Dynamic Programming",
+    subtitle: "The five-question recipe on house robber, coin change and LCS.",
+    minutes: 10,
+    level: "Advanced",
+    steps: 6,
+    notes: {
+      href: "/docs/dsa/pattern-playbook#64-dynamic-programming-recipe",
+      label: "Pattern Playbook, 6.4"
+    }
+  },
+  {
+    slug: "greedy",
+    track: "dsa",
+    section: "DP, Greedy & Bits",
+    title: "Greedy",
+    subtitle: "Take the best choice now, and know when that is provably safe.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/dsa/pattern-playbook#67-greedy",
+      label: "Pattern Playbook, 6.7"
+    }
+  },
+  {
+    slug: "bit-manipulation",
+    track: "dsa",
+    section: "DP, Greedy & Bits",
+    title: "Bit Manipulation",
+    subtitle: "XOR, n & (n - 1) and the 32-bit traps, bit by bit.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/dsa/pattern-playbook#68-bit-manipulation",
+      label: "Pattern Playbook, 6.8"
+    }
+  },
+  {
+    slug: "net-osi-encapsulation",
+    track: "networking",
+    section: "Foundations",
+    title: "Layers & Encapsulation",
+    subtitle: "Follow data down the stack as headers wrap it, and see which addresses change per hop.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 7,
+    notes: {
+      href: "/docs/networking/networking-fundamentals#5-encapsulation",
+      label: "Networking Fundamentals, 5"
+    }
+  },
+  {
+    slug: "net-subnetting",
+    track: "networking",
+    section: "IP & Routing",
+    title: "CIDR & Subnetting",
+    subtitle: "Split addresses into network and host bits, size blocks, and plan subnets with VLSM.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/networking/ip-addressing-and-routing#2-cidr-and-subnetting",
+      label: "IP Addressing & Routing, 2"
+    }
+  },
+  {
+    slug: "net-routing-nat",
+    track: "networking",
+    section: "IP & Routing",
+    title: "DHCP, Routing & NAT",
+    subtitle: "From getting an address to longest prefix match, TTL and sharing one public IP.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/networking/ip-addressing-and-routing#8-how-routing-works",
+      label: "IP Addressing & Routing, 8"
+    }
+  },
+  {
+    slug: "net-tcp-handshake",
+    track: "networking",
+    section: "Transport",
+    title: "TCP Lifecycle",
+    subtitle: "Handshake, SYN floods, loss recovery, closing and why connection reuse pays.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/networking/tcp-udp-and-quic#4-the-three-way-handshake",
+      label: "TCP, UDP & QUIC, 4"
+    }
+  },
+  {
+    slug: "net-tcp-congestion",
+    track: "networking",
+    section: "Transport",
+    title: "Flow & Congestion Control",
+    subtitle: "Two windows, slow start and the AIMD sawtooth, simulated RTT by RTT.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 7,
+    notes: {
+      href: "/docs/networking/tcp-udp-and-quic#9-congestion-control",
+      label: "TCP, UDP & QUIC, 9"
+    }
+  },
+  {
+    slug: "net-quic-http3",
+    track: "networking",
+    section: "Transport",
+    title: "HTTP/2, QUIC & HTTP/3",
+    subtitle: "Head-of-line blocking, 1-RTT setup, connection migration and 0-RTT.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 7,
+    notes: {
+      href: "/docs/networking/tcp-udp-and-quic#12-quic",
+      label: "TCP, UDP & QUIC, 12"
+    }
+  },
+  {
+    slug: "net-tls",
+    track: "networking",
+    section: "Security & Ops",
+    title: "TLS 1.3 & Certificates",
+    subtitle: "Key exchange, the 1-RTT handshake, chain validation and the errors you will see.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/networking/dns-http-and-tls#11-the-tls-13-handshake",
+      label: "DNS, HTTP & TLS, 11"
+    }
+  },
+  {
+    slug: "net-troubleshooting",
+    track: "networking",
+    section: "Security & Ops",
+    title: "Troubleshooting Method",
+    subtitle: "Work up the stack, read refused vs timeout, 5xx codes and a NAT port incident.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/networking/troubleshooting-and-tools#1-a-method",
+      label: "Troubleshooting & Tools, 1"
+    }
+  },
+  {
+    slug: "be-request-lifecycle",
+    track: "backend",
+    section: "Foundations",
+    title: "Life of a Request",
+    subtitle: "From the edge through validation and errors to health probes, hop by hop.",
+    minutes: 8,
+    level: "Beginner",
+    steps: 7,
+    notes: {
+      href: "/docs/backend/backend-fundamentals#1-the-life-of-a-request",
+      label: "Backend Fundamentals, 1"
+    }
+  },
+  {
+    slug: "be-event-loop",
+    track: "backend",
+    section: "Foundations",
+    title: "The Node Event Loop",
+    subtitle: "Why one thread serves thousands of waits, and what blocks it.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/backend/nodejs-and-spring#2-nodejs-runtime",
+      label: "Node.js & Spring, 2"
+    }
+  },
+  {
+    slug: "be-sessions-jwt",
+    track: "backend",
+    section: "Auth & Security",
+    title: "Sessions, CSRF & JWT",
+    subtitle: "Cookie sessions, CSRF, signed tokens, their attacks and refresh rotation.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/backend/authentication-and-security#2-sessions-and-tokens",
+      label: "Authentication & Security, 2"
+    }
+  },
+  {
+    slug: "be-pagination",
+    track: "backend",
+    section: "API & Data",
+    title: "Pagination That Scales",
+    subtitle: "Offset drift versus keyset cursors, traced on a real list.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/backend/api-design#5-collections-filtering-sorting-pagination",
+      label: "API Design, 5"
+    }
+  },
+  {
+    slug: "be-outbox-consumers",
+    track: "backend",
+    section: "Async & Reliability",
+    title: "Outbox & Reliable Consumers",
+    subtitle: "Dual writes, the outbox, duplicates, idempotent consumers and dead letters.",
+    minutes: 9,
+    level: "Advanced",
+    steps: 6,
+    notes: {
+      href: "/docs/backend/async-processing-and-messaging#5-reliable-producers-the-outbox",
+      label: "Async Processing, 5"
+    }
+  },
+  {
+    slug: "be-graceful-shutdown",
+    track: "backend",
+    section: "Deploy & Ops",
+    title: "Graceful Shutdown & Probes",
+    subtitle: "SIGTERM, the load balancer race, clean drains and shallow liveness.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/backend/deployment-and-runtime#5-health-checks-and-graceful-shutdown",
+      label: "Deployment & Runtime, 5"
+    }
+  },
+  {
+    slug: "db-query-execution",
+    track: "databases",
+    section: "SQL & Queries",
+    title: "How a Query Executes",
+    subtitle: "Logical order of FROM, WHERE, GROUP BY and SELECT, traced on real rows.",
+    minutes: 8,
+    level: "Beginner",
+    steps: 6,
+    notes: {
+      href: "/docs/databases/sql-essentials#2-how-a-query-executes",
+      label: "SQL Essentials, 2"
+    }
+  },
+  {
+    slug: "db-join-algorithms",
+    track: "databases",
+    section: "SQL & Queries",
+    title: "Join Algorithms",
+    subtitle: "Nested loop, hash and merge joins, each run and counted on real data.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/databases/database-internals#7-join-algorithms",
+      label: "Database Internals, 7"
+    }
+  },
+  {
+    slug: "db-composite-index",
+    track: "databases",
+    section: "Indexing",
+    title: "Composite & Covering Indexes",
+    subtitle: "Leftmost prefix, column order, sargable predicates and index-only scans.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/databases/indexing-and-query-performance#3-composite-covering-partial-expression",
+      label: "Indexing & Performance, 3"
+    }
+  },
+  {
+    slug: "db-mvcc-locks",
+    track: "databases",
+    section: "Transactions",
+    title: "MVCC, Locks & Deadlocks",
+    subtitle: "Snapshots, row locks, SKIP LOCKED queues and how deadlocks form.",
+    minutes: 9,
+    level: "Advanced",
+    steps: 7,
+    notes: {
+      href: "/docs/databases/transactions-and-concurrency#4-mvcc",
+      label: "Transactions & Concurrency, 4"
+    }
+  },
+  {
+    slug: "db-wal-recovery",
+    track: "databases",
+    section: "Durability",
+    title: "WAL & Crash Recovery",
+    subtitle: "Log first, page later, and how ARIES redoes and undoes after a crash.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 6,
+    notes: {
+      href: "/docs/databases/database-internals#5-write-ahead-logging-and-recovery",
+      label: "Database Internals, 5"
+    }
+  },
+  {
+    slug: "db-migrations",
+    track: "databases",
+    section: "Operations",
+    title: "Zero-Downtime Migrations",
+    subtitle: "Expand and contract, batched backfills, lock_timeout and concurrent indexes.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/databases/replication-sharding-and-operations#8-schema-migrations-without-downtime",
+      label: "Replication & Operations, 8"
+    }
+  },
+  {
+    slug: "oop-four-pillars",
+    track: "oops",
+    section: "Foundations",
+    title: "The Four Pillars",
+    subtitle: "Encapsulation, abstraction, inheritance and polymorphism, each shown as a real call.",
+    minutes: 9,
+    level: "Beginner",
+    steps: 7,
+    notes: {
+      href: "/docs/oops/oops#3-the-four-pillars",
+      label: "OOPS Notes, 3"
+    }
+  },
+  {
+    slug: "oop-composition-uml",
+    track: "oops",
+    section: "Foundations",
+    title: "Composition & UML",
+    subtitle: "Why favor has-a, when inheritance is fine, and the five UML relationships.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/oops/oops#5-composition-vs-inheritance",
+      label: "OOPS Notes, 5"
+    }
+  },
+  {
+    slug: "oop-solid-srp-ocp-lsp",
+    track: "oops",
+    section: "SOLID",
+    title: "SRP, OCP & LSP",
+    subtitle: "Split god classes, extend without edits, and spot a Liskov violation.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/oops/oops#6-solid-principles",
+      label: "OOPS Notes, 6"
+    }
+  },
+  {
+    slug: "oop-solid-isp-dip",
+    track: "oops",
+    section: "SOLID",
+    title: "ISP & Dependency Inversion",
+    subtitle: "Small interfaces, injected dependencies and tests without real infrastructure.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/oops/oops#64-interface-segregation-principle",
+      label: "OOPS Notes, 6.4"
+    }
+  },
+  {
+    slug: "oop-patterns-creation-strategy",
+    track: "oops",
+    section: "Design Patterns",
+    title: "Singleton, Factory & Strategy",
+    subtitle: "Control creation and swap algorithms at runtime.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/oops/oops#81-singleton",
+      label: "OOPS Notes, 8.1"
+    }
+  },
+  {
+    slug: "oop-patterns-observer-decorator",
+    track: "oops",
+    section: "Design Patterns",
+    title: "Observer, Decorator & Prototypes",
+    subtitle: "Notify without knowing listeners, wrap to extend, and the JS prototype chain.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/oops/oops#84-observer",
+      label: "OOPS Notes, 8.4"
+    }
+  },
+  {
+    slug: "redux-data-flow",
+    track: "redux",
+    section: "Core",
+    title: "The Redux Loop",
+    subtitle: "Dispatch, reduce, select: slices, Immer and why selectors decide who re-renders.",
+    minutes: 8,
+    level: "Beginner",
+    steps: 6,
+    notes: {
+      href: "/docs/redux/redux#2-createslice-most-important-concept",
+      label: "Redux Notes, 2"
+    }
+  },
+  {
+    slug: "redux-async-thunk",
+    track: "redux",
+    section: "Core",
+    title: "Async with createAsyncThunk",
+    subtitle: "Pending, fulfilled and rejected: one dispatch, the lifecycle actions and extraReducers.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/redux/redux#5-async-logic--createasyncthunk",
+      label: "Redux Notes, 5"
+    }
+  },
+  {
+    slug: "redux-normalized-selectors",
+    track: "redux",
+    section: "State Design",
+    title: "Normalized State & Selectors",
+    subtitle: "Why nested state widens updates, entity adapters and memoized selectors with real counts.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/redux/redux#8-normalized-state-shape",
+      label: "Redux Notes, 8"
+    }
+  },
+  {
+    slug: "redux-rerender-debugging",
+    track: "redux",
+    section: "Performance",
+    title: "Debugging Re-renders",
+    subtitle: "Which components re-render and why: whole-store selectors, monolithic slices and spreads.",
+    minutes: 9,
+    level: "Advanced",
+    steps: 6,
+    notes: {
+      href: "/docs/redux/rtk-rq#how-redux-causes-performance-issues",
+      label: "RTK Query & Performance"
+    }
+  },
+  {
+    slug: "redux-rtk-query",
+    track: "redux",
+    section: "Data Fetching",
+    title: "RTK Query & Caching",
+    subtitle: "Cache keys, lifetimes, tag invalidation and how it compares to React Query.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/redux/redux#12-redux-toolkit-query-rtk-query",
+      label: "Redux Notes, 12"
+    }
+  },
+  {
+    slug: "js-event-loop",
+    track: "javascript",
+    section: "Async",
+    title: "The Event Loop",
+    subtitle: "Call stack, microtasks and macrotasks, traced by a small simulator.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/javascript/adv-js#13-event-loop-priority-order-critical",
+      label: "Advanced JS, 1.3"
+    }
+  },
+  {
+    slug: "js-async-await",
+    track: "javascript",
+    section: "Async",
+    title: "async and await",
+    subtitle: "What await really does, why C A D B, and why a busy stack stalls timers.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/javascript/adv-js#17-async--await-internals-important",
+      label: "Advanced JS, 1.7"
+    }
+  },
+  {
+    slug: "js-closures",
+    track: "javascript",
+    section: "Core",
+    title: "Closures & Scope",
+    subtitle: "Closures that remember, and the var versus let loop trap, run for real.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/javascript/js#6-closures",
+      label: "JavaScript, 6"
+    }
+  },
+  {
+    slug: "js-this",
+    track: "javascript",
+    section: "Core",
+    title: "How this Is Decided",
+    subtitle: "Method call, lost context, call, bind and arrows, each evaluated.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/javascript/js#10-this-keyword",
+      label: "JavaScript, 10"
+    }
+  },
+  {
+    slug: "js-coercion",
+    track: "javascript",
+    section: "Core",
+    title: "Coercion & Equality",
+    subtitle: "Why \"5\" + 1 and \"5\" - 1 differ, and why [] == ![] is true, step by step.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/javascript/js#8-type-coercion",
+      label: "JavaScript, 8"
+    }
+  },
+  {
+    slug: "js-prototypes",
+    track: "javascript",
+    section: "Objects",
+    title: "Prototype Chain",
+    subtitle: "Shared methods, new, the lookup walk to null, and class as sugar.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/javascript/js#17-prototype--prototypal-inheritance",
+      label: "JavaScript, 17"
+    }
+  },
+  {
+    slug: "js-debounce-throttle",
+    track: "javascript",
+    section: "Patterns",
+    title: "Debounce & Throttle",
+    subtitle: "The same events run through both wrappers, so you see exactly when fn fires.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/javascript/js#22-debouncing--throttling",
+      label: "JavaScript, 22"
     }
   }
 ];

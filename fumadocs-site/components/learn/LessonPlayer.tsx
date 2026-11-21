@@ -16,7 +16,6 @@ import {
   SignalMedium,
 } from 'lucide-react';
 import { LESSONS, TRACKS } from '@/lib/learn/catalog';
-import { markComplete } from '@/lib/learn/progress';
 import type { LegendItem, Lesson, Stat, StepTag } from './types';
 
 const TAG_STYLE: Record<StepTag, string> = {
@@ -127,9 +126,6 @@ export function LessonPlayer({ lesson, initialStep }: { lesson: Lesson<unknown>;
   const reducedMotion = useRef(false);
 
   const step = lesson.steps[stepIdx];
-  useEffect(() => {
-    if (stepIdx === total - 1) markComplete(lesson.meta.slug);
-  }, [stepIdx, total, lesson.meta.slug]);
   const state = step.frames[frame].state;
   const frameKey = `${stepIdx}-${frame}-${run}`;
 

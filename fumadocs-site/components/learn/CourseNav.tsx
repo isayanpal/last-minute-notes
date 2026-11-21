@@ -2,10 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { CheckCircle2, ChevronRight, FileText, Folder, FolderOpen, Menu, X } from 'lucide-react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Check, ChevronDown, ChevronRight, FileText, Folder, FolderOpen, Menu, X } from 'lucide-react';
 import { LESSONS, TRACKS, type LessonLevel, type LessonMeta, type LessonTrack } from '@/lib/learn/catalog';
-import { useCompleted } from '@/lib/learn/progress';
 
 const FOLDER_COLORS = ['#c9a36b', '#3fb97a', '#8b6fe0', '#e8814a', '#3f8fe0', '#2fb8a8', '#e0577f', '#a6b84a'];
 const LEVELS: ('All' | LessonLevel)[] = ['All', 'Beginner', 'Intermediate', 'Advanced'];
@@ -17,11 +16,89 @@ function groupBySection(lessons: LessonMeta[]) {
   return [...map.entries()];
 }
 
+/** Track switcher. A dropdown, so it holds any number of tracks without squeezing labels. */
+function TrackPicker({ value, onChange }: { value: LessonTrack; onChange: (t: LessonTrack) => void }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const listId = useId();
+  const current = TRACKS.find((t) => t.id === value) ?? TRACKS[0];
+  const countOf = (t: LessonTrack) => LESSONS.filter((l) => l.track === t).length;
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.stopPropagation();
+      setOpen(false);
+      root.current?.querySelector('button')?.focus();
+    };
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey, true);
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+      document.removeEventListener('keydown', onKey, true);
+    };
+  }, [open]);
+
+  return (
+    <div ref={root} className="relative mx-4">
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listId}
+        onClick={() => setOpen((o) => !o)}
+        className={`flex w-full items-center gap-2 rounded-lg border bg-fd-background/60 px-3 py-2 text-left transition-colors ${open ? 'border-fd-primary/60' : 'border-fd-border hover:border-fd-primary/40'}`}
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block font-mono text-[10px] uppercase tracking-wider text-fd-muted-foreground">Track</span>
+          <span className="block truncate text-sm font-medium">{current.title}</span>
+        </span>
+        <span className="font-mono text-xs text-fd-muted-foreground">{countOf(value)}</span>
+        <ChevronDown className={`size-4 shrink-0 text-fd-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
+      </button>
+
+      {open ? (
+        <ul id={listId} role="listbox" aria-label="Track" className="lx-in absolute inset-x-0 top-full z-30 mt-1.5 max-h-[min(20rem,60dvh)] overflow-y-auto rounded-lg border border-fd-border bg-fd-popover p-1 shadow-xl">
+          {TRACKS.map((t) => {
+            const total = countOf(t.id);
+            const selected = t.id === value;
+            return (
+              <li key={t.id} role="presentation">
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => {
+                    onChange(t.id);
+                    setOpen(false);
+                  }}
+                  className={`flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left transition-colors ${selected ? 'bg-fd-primary/15' : 'hover:bg-fd-muted'}`}
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium">{t.title}</span>
+                    <span className="block font-mono text-[11px] text-fd-muted-foreground">
+                      {total} lessons
+                    </span>
+                  </span>
+                  {selected ? <Check className="size-4 shrink-0 text-fd-primary" aria-hidden /> : null}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
 function Nav({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () => void }) {
   const pathname = usePathname();
   const currentSlug = pathname.startsWith('/learn/') ? pathname.split('/')[2] : undefined;
   const current = LESSONS.find((l) => l.slug === currentSlug);
-  const completed = useCompleted();
 
   const [track, setTrack] = useState<LessonTrack>(current?.track ?? 'system-design');
   const [level, setLevel] = useState<'All' | LessonLevel>('All');
@@ -37,8 +114,6 @@ function Nav({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () =>
   const trackLessons = useMemo(() => LESSONS.filter((l) => l.track === track), [track]);
   const shown = useMemo(() => trackLessons.filter((l) => level === 'All' || l.level === level), [trackLessons, level]);
   const sections = groupBySection(shown);
-  const done = trackLessons.filter((l) => completed.has(l.slug)).length;
-  const counts = (t: LessonTrack) => LESSONS.filter((l) => l.track === t).length;
 
   const toggle = (key: string) =>
     setOpen((o) => {
@@ -57,7 +132,7 @@ function Nav({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () =>
         </Link>
         <div className="flex items-center gap-2">
           <span className="font-mono text-[11px] text-fd-muted-foreground">
-            {done}/{trackLessons.length} done
+            {trackLessons.length} lessons
           </span>
           {onClose ? (
             <button type="button" onClick={onClose} aria-label="Close lessons menu" className="grid size-7 place-items-center rounded-md border border-fd-border text-fd-muted-foreground hover:text-fd-foreground">
@@ -67,20 +142,7 @@ function Nav({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () =>
         </div>
       </div>
 
-      <div role="tablist" aria-label="Track" className="mx-4 grid grid-cols-2 gap-1 rounded-lg border border-fd-border bg-fd-background/60 p-1">
-        {TRACKS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            aria-selected={track === t.id}
-            onClick={() => setTrack(t.id)}
-            className={`rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${track === t.id ? 'bg-fd-primary text-fd-primary-foreground' : 'text-fd-muted-foreground hover:text-fd-foreground'}`}
-          >
-            {t.id === 'dsa' ? 'DSA' : 'System Design'} <span className="font-mono opacity-70">{counts(t.id)}</span>
-          </button>
-        ))}
-      </div>
+      <TrackPicker value={track} onChange={setTrack} />
 
       <div className="mx-4 mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Filter by level">
         {LEVELS.map((lv) => (
@@ -104,7 +166,6 @@ function Nav({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () =>
           const forced = level !== 'All';
           const expanded = forced || open.has(key);
           const all = trackLessons.filter((l) => l.section === section);
-          const sectionDone = all.filter((l) => completed.has(l.slug)).length;
           const Icon = expanded ? FolderOpen : Folder;
           return (
             <div key={key} className="mt-1">
@@ -120,14 +181,13 @@ function Nav({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () =>
                   {String(si + 1).padStart(2, '0')}. {section}
                 </span>
                 <span className="font-mono text-[11px] text-fd-muted-foreground">
-                  {sectionDone}/{all.length}
+                  {all.length}
                 </span>
               </button>
               {expanded ? (
                 <ul className="ml-[1.35rem] mt-0.5 border-l border-fd-border pl-3">
                   {lessons.map((l) => {
                     const isCurrent = l.slug === currentSlug;
-                    const isDone = completed.has(l.slug);
                     return (
                       <li key={l.slug} className="relative">
                         <Link
@@ -136,7 +196,7 @@ function Nav({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () =>
                           aria-current={isCurrent ? 'page' : undefined}
                           className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors ${isCurrent ? 'bg-fd-primary/15 text-fd-foreground ring-1 ring-fd-primary/40' : 'text-fd-muted-foreground hover:bg-fd-muted hover:text-fd-foreground'}`}
                         >
-                          {isDone ? <CheckCircle2 className="size-4 shrink-0 text-emerald-400" aria-label="Completed" /> : <FileText className="size-4 shrink-0 opacity-60" aria-hidden />}
+                          <FileText className="size-4 shrink-0 opacity-60" aria-hidden />
                           <span className="min-w-0 flex-1 truncate">{l.title}</span>
                           <span className={`size-1.5 shrink-0 rounded-full ${LEVEL_DOT[l.level]}`} title={l.level} aria-label={l.level} />
                         </Link>

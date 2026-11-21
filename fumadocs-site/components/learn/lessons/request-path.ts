@@ -231,13 +231,13 @@ const ledger = (side: 'adds' | 'buys'): FlowState =>
         side === 'adds'
           ? [
               { label: 'Adds', value: 'latency', tone: 'bad' },
-              { label: 'Adds', value: 'failure modes', tone: 'bad' },
-              { label: 'Adds', value: 'cost', tone: 'bad' },
+              { label: 'And', value: 'failure modes', tone: 'bad' },
+              { label: 'Plus', value: 'cost', tone: 'bad' },
             ]
           : [
               { label: 'Buys', value: 'scale', tone: 'ok' },
-              { label: 'Buys', value: 'safety', tone: 'ok' },
-              { label: 'Buys', value: 'speed', tone: 'ok' },
+              { label: 'And', value: 'safety', tone: 'ok' },
+              { label: 'Plus', value: 'speed', tone: 'ok' },
             ],
       note: side === 'adds' ? { text: 'what does this hop add?', tone: 'bad' } : { text: 'what does this hop buy?', tone: 'ok' },
     },

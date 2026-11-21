@@ -208,8 +208,29 @@ function Hero({ topics }: { topics: TreeItem[] }) {
                   <Link href="/learn#system-design" className="transition-colors hover:text-[#f5d547]">
                     System Design <span className="font-mono">{LESSONS.filter((l) => l.track === 'system-design').length}</span>
                   </Link>
+                  <Link href="/learn#frontend-system-design" className="transition-colors hover:text-[#f5d547]">
+                    Frontend <span className="font-mono">{LESSONS.filter((l) => l.track === 'frontend-system-design').length}</span>
+                  </Link>
                   <Link href="/learn#dsa" className="transition-colors hover:text-[#f5d547]">
                     DSA <span className="font-mono">{LESSONS.filter((l) => l.track === 'dsa').length}</span>
+                  </Link>
+                  <Link href="/learn#networking" className="transition-colors hover:text-[#f5d547]">
+                    Networking <span className="font-mono">{LESSONS.filter((l) => l.track === 'networking').length}</span>
+                  </Link>
+                  <Link href="/learn#backend" className="transition-colors hover:text-[#f5d547]">
+                    Backend <span className="font-mono">{LESSONS.filter((l) => l.track === 'backend').length}</span>
+                  </Link>
+                  <Link href="/learn#databases" className="transition-colors hover:text-[#f5d547]">
+                    Databases <span className="font-mono">{LESSONS.filter((l) => l.track === 'databases').length}</span>
+                  </Link>
+                  <Link href="/learn#oops" className="transition-colors hover:text-[#f5d547]">
+                    OOP <span className="font-mono">{LESSONS.filter((l) => l.track === 'oops').length}</span>
+                  </Link>
+                  <Link href="/learn#redux" className="transition-colors hover:text-[#f5d547]">
+                    Redux <span className="font-mono">{LESSONS.filter((l) => l.track === 'redux').length}</span>
+                  </Link>
+                  <Link href="/learn#javascript" className="transition-colors hover:text-[#f5d547]">
+                    JS <span className="font-mono">{LESSONS.filter((l) => l.track === 'javascript').length}</span>
                   </Link>
                 </span>
               </>
@@ -227,8 +248,9 @@ function TopicCard({ topic, index }: { topic: TreeItem; index: number }) {
   const featured = FEATURED.has(topic.icon ?? '');
   const Icon = ICONS[topic.icon ?? ''];
   const chips = (topic.children ?? []).slice(0, 5);
-  const learnTrack = topic.icon === 'dsa' ? 'dsa' : 'system-design';
-  const lessonCount = topic.icon === 'dsa' || topic.icon === 'system-design' ? LESSONS.filter((l) => l.track === learnTrack).length : 0;
+  const LEARN_TRACKS = ['dsa', 'frontend-system-design', 'system-design', 'networking', 'backend', 'databases', 'oops', 'redux', 'javascript'];
+  const learnTrack = LEARN_TRACKS.includes(topic.icon ?? '') ? topic.icon : 'system-design';
+  const lessonCount = LEARN_TRACKS.includes(topic.icon ?? '') ? LESSONS.filter((l) => l.track === learnTrack).length : 0;
 
   return (
     <Reveal delay={index * 60} className={`relative ${featured ? 'sm:col-span-2' : ''}`}>
