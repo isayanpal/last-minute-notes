@@ -124,6 +124,7 @@ function HeroCard({
 function Hero({ topics }: { topics: TreeItem[] }) {
   const words = topics.map((t) => t.title);
   const totalPages = topics.reduce((sum, t) => sum + t.pages, 0);
+  const trackCount = new Set(LESSONS.map((l) => l.track)).size;
 
   return (
     <section
@@ -204,34 +205,8 @@ function Hero({ topics }: { topics: TreeItem[] }) {
                   Watch it run
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </Link>
-                <span className="flex items-center gap-3 text-xs text-zinc-500">
-                  <Link href="/learn#system-design" className="transition-colors hover:text-[#f5d547]">
-                    System Design <span className="font-mono">{LESSONS.filter((l) => l.track === 'system-design').length}</span>
-                  </Link>
-                  <Link href="/learn#frontend-system-design" className="transition-colors hover:text-[#f5d547]">
-                    Frontend <span className="font-mono">{LESSONS.filter((l) => l.track === 'frontend-system-design').length}</span>
-                  </Link>
-                  <Link href="/learn#dsa" className="transition-colors hover:text-[#f5d547]">
-                    DSA <span className="font-mono">{LESSONS.filter((l) => l.track === 'dsa').length}</span>
-                  </Link>
-                  <Link href="/learn#networking" className="transition-colors hover:text-[#f5d547]">
-                    Networking <span className="font-mono">{LESSONS.filter((l) => l.track === 'networking').length}</span>
-                  </Link>
-                  <Link href="/learn#backend" className="transition-colors hover:text-[#f5d547]">
-                    Backend <span className="font-mono">{LESSONS.filter((l) => l.track === 'backend').length}</span>
-                  </Link>
-                  <Link href="/learn#databases" className="transition-colors hover:text-[#f5d547]">
-                    Databases <span className="font-mono">{LESSONS.filter((l) => l.track === 'databases').length}</span>
-                  </Link>
-                  <Link href="/learn#oops" className="transition-colors hover:text-[#f5d547]">
-                    OOP <span className="font-mono">{LESSONS.filter((l) => l.track === 'oops').length}</span>
-                  </Link>
-                  <Link href="/learn#redux" className="transition-colors hover:text-[#f5d547]">
-                    Redux <span className="font-mono">{LESSONS.filter((l) => l.track === 'redux').length}</span>
-                  </Link>
-                  <Link href="/learn#javascript" className="transition-colors hover:text-[#f5d547]">
-                    JS <span className="font-mono">{LESSONS.filter((l) => l.track === 'javascript').length}</span>
-                  </Link>
+                <span className="text-xs text-zinc-500">
+                  <span className="font-mono text-zinc-400">{trackCount}</span> tracks, from system design to DSA
                 </span>
               </>
             }
