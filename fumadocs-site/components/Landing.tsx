@@ -223,7 +223,7 @@ function TopicCard({ topic, index }: { topic: TreeItem; index: number }) {
   const featured = FEATURED.has(topic.icon ?? '');
   const Icon = ICONS[topic.icon ?? ''];
   const chips = (topic.children ?? []).slice(0, 5);
-  const LEARN_TRACKS = ['dsa', 'frontend-system-design', 'system-design', 'networking', 'backend', 'databases', 'oops', 'redux', 'javascript'];
+  const LEARN_TRACKS = ['dsa', 'frontend-system-design', 'system-design', 'networking', 'backend', 'databases', 'oops', 'redux', 'javascript', 'typescript', 'java', 'react', 'nextjs', 'react-native', 'operating-systems', 'computer-fundamentals', 'python', 'sdlc', 'sdui'];
   const learnTrack = LEARN_TRACKS.includes(topic.icon ?? '') ? topic.icon : 'system-design';
   const lessonCount = LEARN_TRACKS.includes(topic.icon ?? '') ? LESSONS.filter((l) => l.track === learnTrack).length : 0;
 

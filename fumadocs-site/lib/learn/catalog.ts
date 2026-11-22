@@ -5,7 +5,7 @@
  */
 
 export type LessonLevel = 'Beginner' | 'Intermediate' | 'Advanced';
-export type LessonTrack = 'system-design' | 'frontend-system-design' | 'dsa' | 'networking' | 'backend' | 'databases' | 'oops' | 'redux' | 'javascript';
+export type LessonTrack = 'system-design' | 'frontend-system-design' | 'dsa' | 'networking' | 'backend' | 'databases' | 'oops' | 'redux' | 'javascript' | 'typescript' | 'java' | 'react' | 'nextjs' | 'react-native' | 'operating-systems' | 'computer-fundamentals' | 'python' | 'sdlc' | 'sdui';
 
 export type LessonMeta = {
   slug: string;
@@ -29,6 +29,16 @@ export const TRACKS: { id: LessonTrack; title: string; blurb: string }[] = [
   { id: 'oops', title: 'OOP & Design Patterns', blurb: 'Pillars, SOLID and the patterns that bend with change, drawn as running diagrams.' },
   { id: 'redux', title: 'Redux Toolkit', blurb: 'The store loop, thunks, normalized state and re-render debugging, simulated step by step.' },
   { id: 'javascript', title: 'JavaScript', blurb: 'The event loop, closures, this and the prototype chain, with the output computed for real.' },
+  { id: 'typescript', title: 'TypeScript', blurb: 'Narrowing, generics, unions and boundaries, shown as types flowing through real checks.' },
+  { id: 'react', title: 'React', blurb: 'Rendering, state, hooks, memoization and React 19, simulated with real queues, slots and comparisons.' },
+  { id: 'nextjs', title: 'Next.js', blurb: 'Rendering, Server Components, caching layers, navigation and auth, run through small real models.' },
+  { id: 'react-native', title: 'React Native', blurb: 'Threads, JSI, Fabric, lists, navigation and OTA updates, run through small real models.' },
+  { id: 'operating-systems', title: 'Operating Systems', blurb: 'Scheduling, paging, synchronization, storage and containers, run through real simulators.' },
+  { id: 'computer-fundamentals', title: 'Computer Fundamentals', blurb: 'Bits, floats, caches, pipelines and compilers, computed from real encodings and simulators.' },
+  { id: 'python', title: 'Python', blurb: 'Names, the GIL, asyncio, generators and NumPy, run through small models of how CPython behaves.' },
+  { id: 'sdlc', title: 'SDLC', blurb: 'The phases, the models and the delivery pipeline, run through small simulations of real projects.' },
+  { id: 'sdui', title: 'Server-Driven UI', blurb: 'Registries, validation, versioning, actions and orchestration, shown as a payload meeting a client.' },
+  { id: 'java', title: 'Java', blurb: 'The JVM, HashMap, streams, threads and GC, with hashes and schedules computed for real.' },
 ];
 
 export const LESSONS: LessonMeta[] = [
@@ -1724,6 +1734,1504 @@ export const LESSONS: LessonMeta[] = [
     notes: {
       href: "/docs/javascript/js#22-debouncing--throttling",
       label: "JavaScript, 22"
+    }
+  },
+  {
+    slug: "ts-unknown-narrowing",
+    track: "typescript",
+    section: "Core types",
+    title: "any, unknown and Narrowing",
+    subtitle: "Why any hides bugs, how unknown forces a check, and typeof, in and instanceof run on real values.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/typescript/ts#5-any-vs-unknown",
+      label: "TypeScript, 5"
+    }
+  },
+  {
+    slug: "ts-generics",
+    track: "typescript",
+    section: "Core types",
+    title: "Generics",
+    subtitle: "Inference, constraints and useState<T>, shown as a type flowing through a call.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/typescript/ts#17-generics-very-important",
+      label: "TypeScript, 17"
+    }
+  },
+  {
+    slug: "ts-mapped-types",
+    track: "typescript",
+    section: "Type tools",
+    title: "keyof, Mapped and Utility Types",
+    subtitle: "Rebuild a type key by key, then see Partial, Pick and Omit do it for you.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/typescript/ts#23-mapped-types",
+      label: "TypeScript, 23"
+    }
+  },
+  {
+    slug: "ts-discriminated-unions",
+    track: "typescript",
+    section: "Modelling",
+    title: "Discriminated Unions",
+    subtitle: "A kind tag narrows each case, and never turns a forgotten variant into a compile error.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/typescript/adv-ts-patterns#3-discriminated-unions-most-asked-advanced-topic",
+      label: "Advanced TS, 3"
+    }
+  },
+  {
+    slug: "ts-impossible-states",
+    track: "typescript",
+    section: "Modelling",
+    title: "Impossible States",
+    subtitle: "Count the states three flags allow, then replace them with a status union.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/typescript/system-design-decisions#3-preventing-impossible-states-most-important",
+      label: "TS System Design, 3"
+    }
+  },
+  {
+    slug: "ts-boundaries",
+    track: "typescript",
+    section: "Design",
+    title: "Types at Boundaries",
+    subtitle: "unknown plus a type guard at the edge, and one mapper that converts the API shape.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/typescript/system-design-decisions#2-core-principle-types-at-boundaries",
+      label: "TS System Design, 2"
+    }
+  },
+  {
+    slug: "java-jvm-flow",
+    track: "java",
+    section: "Platform",
+    title: "From Source to Running Code",
+    subtitle: "javac, bytecode, the interpreter and the JIT, and how JDK, JRE and JVM nest.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java#1-the-java-platform",
+      label: "Java, 1"
+    }
+  },
+  {
+    slug: "java-pass-by-value",
+    track: "java",
+    section: "Language",
+    title: "Pass by Value",
+    subtitle: "Why a method can mutate your object but never repoint your variable.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java#4-pass-by-value",
+      label: "Java, 4"
+    }
+  },
+  {
+    slug: "java-string-boxing",
+    track: "java",
+    section: "Language",
+    title: "String Pool & Integer Cache",
+    subtitle: "Why == works for 127 and \"java\" literals, and fails for 128 and new String.",
+    minutes: 8,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java#51-the-string-pool",
+      label: "Java, 5.1"
+    }
+  },
+  {
+    slug: "java-init-order",
+    track: "java",
+    section: "Language",
+    title: "Initialization Order",
+    subtitle: "Static blocks, instance blocks and constructors, recorded by running the hierarchy.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java#81-initialization-order",
+      label: "Java, 8.1"
+    }
+  },
+  {
+    slug: "java-equals-hashcode",
+    track: "java",
+    section: "Collections",
+    title: "equals and hashCode",
+    subtitle: "Real bucket numbers show why overriding only equals loses entries.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java#101-the-equals-and-hashcode-contract",
+      label: "Java, 10.1"
+    }
+  },
+  {
+    slug: "java-hashmap",
+    track: "java",
+    section: "Collections",
+    title: "HashMap Internals",
+    subtitle: "Java's own hash arithmetic places keys, chains collisions and doubles the table.",
+    minutes: 10,
+    level: "Intermediate",
+    steps: 6,
+    notes: {
+      href: "/docs/java/java-collections-streams#6-hashmap-internals",
+      label: "Java Collections, 6"
+    }
+  },
+  {
+    slug: "java-streams",
+    track: "java",
+    section: "Collections",
+    title: "Streams",
+    subtitle: "A lazy pipeline run element by element, with limit stopping early.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java-collections-streams#13-streams",
+      label: "Java Collections, 13"
+    }
+  },
+  {
+    slug: "java-thread-states",
+    track: "java",
+    section: "Concurrency",
+    title: "Thread States",
+    subtitle: "Move one thread through NEW, RUNNABLE, BLOCKED, WAITING and TERMINATED.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java-concurrency-jvm#2-thread-lifecycle",
+      label: "Java Concurrency, 2"
+    }
+  },
+  {
+    slug: "java-race-synchronized",
+    track: "java",
+    section: "Concurrency",
+    title: "Races and synchronized",
+    subtitle: "A lost update replayed step by step, then fixed with a lock and with CAS.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java-concurrency-jvm#3-race-conditions-and-synchronized",
+      label: "Java Concurrency, 3"
+    }
+  },
+  {
+    slug: "java-thread-pool",
+    track: "java",
+    section: "Concurrency",
+    title: "Thread Pool Executor",
+    subtitle: "Core, queue, extra threads, reject: seven tasks placed by the real rule.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java-concurrency-jvm#8-executor-framework-and-thread-pools",
+      label: "Java Concurrency, 8"
+    }
+  },
+  {
+    slug: "java-gc-generational",
+    track: "java",
+    section: "JVM",
+    title: "Generational GC",
+    subtitle: "Eden, survivor and old generation, and how a leak survives the collector.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/java/java-concurrency-jvm#15-garbage-collection",
+      label: "Java JVM, 15"
+    }
+  },
+  {
+    slug: "react-render-commit",
+    track: "react",
+    section: "Rendering",
+    title: "Render and Commit",
+    subtitle: "Trigger, render, reconcile, commit and effects, with a real tree diff.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#20-rendering-behavior-important-interview-topic",
+      label: "React, 20"
+    }
+  },
+  {
+    slug: "react-keys-reconciliation",
+    track: "react",
+    section: "Rendering",
+    title: "Keys & Reconciliation",
+    subtitle: "Delete a row with index keys and with ids, and watch the typed text land on the wrong row.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#19-reconciliation--virtual-dom",
+      label: "React, 19"
+    }
+  },
+  {
+    slug: "react-setstate-batching",
+    track: "react",
+    section: "State",
+    title: "setState & Batching",
+    subtitle: "Why three setCount(count + 1) calls add 1, and how updater functions fix it.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#4-state",
+      label: "React, 4"
+    }
+  },
+  {
+    slug: "react-context",
+    track: "react",
+    section: "State",
+    title: "Context API",
+    subtitle: "Prop drilling, a direct provider, and what re-renders when the value changes.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#16-context-api",
+      label: "React, 16"
+    }
+  },
+  {
+    slug: "react-hook-order",
+    track: "react",
+    section: "Hooks",
+    title: "Why Hooks Have Rules",
+    subtitle: "A tiny hook runtime shows a conditional hook reading the wrong slot.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#q-why-hooks-must-be-called-at-top-level",
+      label: "React, 25"
+    }
+  },
+  {
+    slug: "react-useeffect",
+    track: "react",
+    section: "Hooks",
+    title: "useEffect Dependencies",
+    subtitle: "No array, empty array and [a], run or skip decided by Object.is, plus cleanup.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#11-useeffect-hook",
+      label: "React, 11"
+    }
+  },
+  {
+    slug: "react-memo",
+    track: "react",
+    section: "Performance",
+    title: "memo, useMemo, useCallback",
+    subtitle: "Count child renders with and without memo, and see inline props defeat it.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#15-reactmemo",
+      label: "React, 15"
+    }
+  },
+  {
+    slug: "react-actions",
+    track: "react",
+    section: "React 19",
+    title: "Actions & Optimistic UI",
+    subtitle: "useActionState, useFormStatus and useOptimistic, including the failure rollback.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#27-react-19-actions--new-hooks",
+      label: "React, 27"
+    }
+  },
+  {
+    slug: "react-use-suspense",
+    track: "react",
+    section: "React 19",
+    title: "use() and Suspense",
+    subtitle: "Read a promise in render, suspend, fall back, and re-render with the value.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#use",
+      label: "React, 27"
+    }
+  },
+  {
+    slug: "react-19-2",
+    track: "react",
+    section: "React 19",
+    title: "Activity & useEffectEvent",
+    subtitle: "Hidden UI that keeps its state, and effects that stop re-running on every theme change.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/react/react#29-react-192-updates",
+      label: "React, 29"
+    }
+  },
+  {
+    slug: "next-rendering-spectrum",
+    track: "nextjs",
+    section: "Rendering",
+    title: "The Rendering Spectrum",
+    subtitle: "CSR, SSR, SSG, ISR and streaming on one timeline, with example latencies.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/rendering-and-server-components#1-the-rendering-spectrum",
+      label: "Next.js Rendering, 1"
+    }
+  },
+  {
+    slug: "next-static-dynamic-ppr",
+    track: "nextjs",
+    section: "Rendering",
+    title: "Static, Dynamic and PPR",
+    subtitle: "A classifier applies the real rules: cookies, searchParams, Suspense and the static shell.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/rendering-and-server-components#2-static-vs-dynamic-rendering",
+      label: "Next.js Rendering, 2"
+    }
+  },
+  {
+    slug: "next-server-client-boundary",
+    track: "nextjs",
+    section: "Server Components",
+    title: "The use client Boundary",
+    subtitle: "Walk the import graph to see how many KB each boundary placement ships.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/rendering-and-server-components#4-the-use-client-boundary",
+      label: "Next.js Rendering, 4"
+    }
+  },
+  {
+    slug: "next-rsc-hydration",
+    track: "nextjs",
+    section: "Server Components",
+    title: "RSC Payload and Hydration",
+    subtitle: "Why only Client Components hydrate, and a real hydration mismatch.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/rendering-and-server-components#8-hydration",
+      label: "Next.js Rendering, 8"
+    }
+  },
+  {
+    slug: "next-fetch-waterfall",
+    track: "nextjs",
+    section: "Data",
+    title: "Waterfalls and Streaming",
+    subtitle: "200 + 300 + 150 ms awaited in a row, then in parallel, then streamed per section.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/data-fetching-and-caching#3-parallel-vs-sequential-fetching",
+      label: "Next.js Data, 3"
+    }
+  },
+  {
+    slug: "next-caching-layers",
+    track: "nextjs",
+    section: "Caching",
+    title: "The Four Caching Layers",
+    subtitle: "A layered lookup shows which cache answers each request and what revalidate clears.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/data-fetching-and-caching#5-the-classic-caching-layers",
+      label: "Next.js Data, 5"
+    }
+  },
+  {
+    slug: "next-cache-lifetimes",
+    track: "nextjs",
+    section: "Caching",
+    title: "cacheLife: stale, revalidate, expire",
+    subtitle: "Three requests at different ages get fresh, stale plus refresh, and a wait.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/data-fetching-and-caching#7-cache-lifetimes-and-tags",
+      label: "Next.js Data, 7"
+    }
+  },
+  {
+    slug: "next-revalidation",
+    track: "nextjs",
+    section: "Caching",
+    title: "revalidateTag vs updateTag",
+    subtitle: "Stale-while-revalidate for visitors, read-your-writes for the author, and a safe webhook.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/data-fetching-and-caching#8-revalidation-apis",
+      label: "Next.js Data, 8"
+    }
+  },
+  {
+    slug: "next-client-navigation",
+    track: "nextjs",
+    section: "Routing",
+    title: "How Link Navigates",
+    subtitle: "A path diff shows which segments are fetched and which layouts stay mounted.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/routing-and-navigation#9-client-navigation-behavior",
+      label: "Next.js Routing, 9"
+    }
+  },
+  {
+    slug: "next-server-actions-security",
+    track: "nextjs",
+    section: "Security",
+    title: "Server Action Security",
+    subtitle: "The same deletePost called anonymously, by another user, and by the owner.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/server-actions-and-route-handlers#11-security-model",
+      label: "Next.js Actions, 11"
+    }
+  },
+  {
+    slug: "next-proxy-dal",
+    track: "nextjs",
+    section: "Security",
+    title: "proxy.ts and the DAL",
+    subtitle: "Four requests through the layers show what a proxy alone misses.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/nextjs/auth-security-and-proxy#5-the-data-access-layer",
+      label: "Next.js Auth, 5"
+    }
+  },
+  {
+    slug: "rn-thread-frame-budget",
+    track: "react-native",
+    section: "Architecture",
+    title: "Threads and the Frame Budget",
+    subtitle: "A frame simulator shows which frames a busy JS thread drops, and which ones UI-driven motion keeps.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/architecture-and-internals#2-threads",
+      label: "RN Architecture, 2"
+    }
+  },
+  {
+    slug: "rn-bridge-to-jsi",
+    track: "react-native",
+    section: "Architecture",
+    title: "Bridge to JSI",
+    subtitle: "JSON bytes from a real batch, a synchronous host call, and lazy versus eager modules.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/architecture-and-internals#3-the-legacy-bridge",
+      label: "RN Architecture, 3"
+    }
+  },
+  {
+    slug: "rn-fabric-pipeline",
+    track: "react-native",
+    section: "Architecture",
+    title: "Fabric: Render, Commit, Mount",
+    subtitle: "An immutable shadow tree clones a path, and the diff yields one mutation.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/architecture-and-internals#6-fabric-the-renderer",
+      label: "RN Architecture, 6"
+    }
+  },
+  {
+    slug: "rn-startup",
+    track: "react-native",
+    section: "Architecture",
+    title: "App Startup",
+    subtitle: "Five startup phases, then Hermes, inline requires and cached data each remove time.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/architecture-and-internals#11-app-startup",
+      label: "RN Architecture, 11"
+    }
+  },
+  {
+    slug: "rn-flatlist-virtualization",
+    track: "react-native",
+    section: "Lists",
+    title: "FlatList and FlashList",
+    subtitle: "A mounted window, blank areas on a fling, and a recycled cell that leaks state.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/lists-state-and-data#2-flatlist",
+      label: "RN Lists, 2"
+    }
+  },
+  {
+    slug: "rn-offline-first",
+    track: "react-native",
+    section: "Data",
+    title: "Offline-first",
+    subtitle: "Local database, an outbox, and a retry that duplicates without a client id.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/lists-state-and-data#10-offline-first",
+      label: "RN Lists, 10"
+    }
+  },
+  {
+    slug: "rn-animation-tools",
+    track: "react-native",
+    section: "Animation",
+    title: "Animation Tools",
+    subtitle: "Native driver limits, worklets, a lagging drag gesture, and picking the right tool.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/animations-and-gestures#3-the-native-driver",
+      label: "RN Animations, 3"
+    }
+  },
+  {
+    slug: "rn-screen-lifecycle",
+    track: "react-native",
+    section: "Navigation",
+    title: "Screens Stay Mounted",
+    subtitle: "A stack simulator emits every mount, focus and blur, and why useFocusEffect exists.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/navigation-and-routing#10-screen-lifecycle-and-focus",
+      label: "RN Navigation, 10"
+    }
+  },
+  {
+    slug: "rn-auth-deeplink",
+    track: "react-native",
+    section: "Navigation",
+    title: "Auth Flows and Deep Links",
+    subtitle: "Screens from auth state, no back into private screens, and a link queued until sign-in.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/navigation-and-routing#7-authentication-flows",
+      label: "RN Navigation, 7"
+    }
+  },
+  {
+    slug: "rn-ota-updates",
+    track: "react-native",
+    section: "Release",
+    title: "Over-the-Air Updates",
+    subtitle: "A real fingerprint hash decides who gets an update and what needs a store build.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/react-native/testing-build-and-release#7-over-the-air-updates",
+      label: "RN Release, 7"
+    }
+  },
+  {
+    slug: "os-cpu-scheduling",
+    track: "operating-systems",
+    section: "Scheduling",
+    title: "CPU Scheduling",
+    subtitle: "FCFS, SJF, SRTF and round robin on the notes' workload, with every Gantt bar computed.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/cpu-scheduling#5-sjf-and-srtf",
+      label: "CPU Scheduling, 5"
+    }
+  },
+  {
+    slug: "os-priority-inversion",
+    track: "operating-systems",
+    section: "Scheduling",
+    title: "Priority Inversion",
+    subtitle: "A tick scheduler runs three tasks with and without priority inheritance.",
+    minutes: 7,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/cpu-scheduling#7-priority-scheduling",
+      label: "CPU Scheduling, 7"
+    }
+  },
+  {
+    slug: "os-address-translation",
+    track: "operating-systems",
+    section: "Memory",
+    title: "Address Translation and the TLB",
+    subtitle: "Translate 0x00403ABC through a page table, then compute the effective access time.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/memory-management#4-paging",
+      label: "Memory, 4"
+    }
+  },
+  {
+    slug: "os-page-faults",
+    track: "operating-systems",
+    section: "Memory",
+    title: "Page Faults",
+    subtitle: "Valid and invalid faults step by step, and why one fault per 100,000 accesses doubles access time.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/memory-management#7-demand-paging-and-page-faults",
+      label: "Memory, 7"
+    }
+  },
+  {
+    slug: "os-page-replacement",
+    track: "operating-systems",
+    section: "Memory",
+    title: "Page Replacement",
+    subtitle: "FIFO, LRU and Optimal on one reference string, plus Belady's anomaly.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/memory-management#8-page-replacement",
+      label: "Memory, 8"
+    }
+  },
+  {
+    slug: "os-fork-cow",
+    track: "operating-systems",
+    section: "Processes",
+    title: "fork, Copy-on-Write and Zombies",
+    subtitle: "Three forks make 8 processes, pages are copied only on write, and zombies hold a PID.",
+    minutes: 8,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/processes-and-threads#6-creating-processes-fork-and-exec",
+      label: "Processes, 6"
+    }
+  },
+  {
+    slug: "os-process-states",
+    track: "operating-systems",
+    section: "Processes",
+    title: "Process States",
+    subtitle: "Fold real events through the state machine, including preemption and I/O waits.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/processes-and-threads#4-process-states",
+      label: "Processes, 4"
+    }
+  },
+  {
+    slug: "os-producer-consumer",
+    track: "operating-systems",
+    section: "Synchronization",
+    title: "Producer-Consumer",
+    subtitle: "Two semaphores and a mutex, and the lock order that deadlocks a full buffer.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/synchronization-and-deadlocks#8-classic-problems",
+      label: "Synchronization, 8"
+    }
+  },
+  {
+    slug: "os-deadlock-cycle",
+    track: "operating-systems",
+    section: "Synchronization",
+    title: "Deadlock and Lock Ordering",
+    subtitle: "A real wait-for cycle detector, and the global lock order that removes the cycle.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/synchronization-and-deadlocks#10-deadlock",
+      label: "Synchronization, 10"
+    }
+  },
+  {
+    slug: "os-banker",
+    track: "operating-systems",
+    section: "Synchronization",
+    title: "The Banker's Algorithm",
+    subtitle: "The safety check runs on the notes' table and finds P1, P3, P0, P2, P4.",
+    minutes: 9,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/synchronization-and-deadlocks#12-the-bankers-algorithm",
+      label: "Synchronization, 12"
+    }
+  },
+  {
+    slug: "os-disk-scheduling",
+    track: "operating-systems",
+    section: "Storage",
+    title: "Disk Scheduling",
+    subtitle: "The same eight requests under FCFS, SSTF, SCAN and C-SCAN: 640, 236, 236 and 382 cylinders.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/file-systems-and-storage#10-disk-scheduling",
+      label: "Storage, 10"
+    }
+  },
+  {
+    slug: "os-inodes-journaling",
+    track: "operating-systems",
+    section: "Storage",
+    title: "Inodes, Links and Journaling",
+    subtitle: "Link counts and open files decide when data is freed, and a journal survives every crash point.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/file-systems-and-storage#3-inodes",
+      label: "Storage, 3"
+    }
+  },
+  {
+    slug: "os-io-multiplexing",
+    track: "operating-systems",
+    section: "Linux",
+    title: "select, poll and epoll",
+    subtitle: "Count the work per wakeup for 10,000 connections with 5 ready.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/io-and-linux-internals#2-io-multiplexing-select-poll-epoll",
+      label: "Linux I/O, 2"
+    }
+  },
+  {
+    slug: "os-containers",
+    track: "operating-systems",
+    section: "Linux",
+    title: "What a Container Is",
+    subtitle: "Namespaces decide what a process sees, cgroups decide how much it can use.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/operating-systems/io-and-linux-internals#9-what-a-container-really-is",
+      label: "Linux I/O, 9"
+    }
+  },
+  {
+    slug: "cf-number-bases",
+    track: "computer-fundamentals",
+    section: "Data representation",
+    title: "Number Bases",
+    subtitle: "Divide by 2 for binary, group 4 bits for hex, and why Unix permissions are octal.",
+    minutes: 6,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/number-systems-and-data-representation#2-number-bases-and-conversion",
+      label: "Number Systems, 2"
+    }
+  },
+  {
+    slug: "cf-twos-complement",
+    track: "computer-fundamentals",
+    section: "Data representation",
+    title: "Two's Complement",
+    subtitle: "Invert and add one, a negative top bit, and an overflow that wraps 127 to -128.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/number-systems-and-data-representation#4-signed-integers-and-twos-complement",
+      label: "Number Systems, 4"
+    }
+  },
+  {
+    slug: "cf-bitwise",
+    track: "computer-fundamentals",
+    section: "Data representation",
+    title: "Bitwise Operations",
+    subtitle: "AND, OR, XOR and the lowest-set-bit tricks, run on real integers.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/number-systems-and-data-representation#6-bitwise-operations",
+      label: "Number Systems, 6"
+    }
+  },
+  {
+    slug: "cf-ieee754",
+    track: "computer-fundamentals",
+    section: "Data representation",
+    title: "Floating Point (IEEE 754)",
+    subtitle: "Encode -5.75 as 0xC0B80000 from real bits, and see why 0.1 + 0.2 is off.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/number-systems-and-data-representation#7-floating-point-ieee-754",
+      label: "Number Systems, 7"
+    }
+  },
+  {
+    slug: "cf-utf8",
+    track: "computer-fundamentals",
+    section: "Data representation",
+    title: "Unicode and UTF-8",
+    subtitle: "One emoji, four different lengths, and the byte patterns behind UTF-8.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/number-systems-and-data-representation#9-characters-and-text-encoding",
+      label: "Number Systems, 9"
+    }
+  },
+  {
+    slug: "cf-cache-address",
+    track: "computer-fundamentals",
+    section: "Memory",
+    title: "Cache Address Breakdown",
+    subtitle: "Tag, index and offset bits for a 32 KB 8-way cache, and a 4 KB stride that thrashes one set.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/memory-hierarchy-and-caches#5-address-breakdown-example",
+      label: "Memory Hierarchy, 5"
+    }
+  },
+  {
+    slug: "cf-amat",
+    track: "computer-fundamentals",
+    section: "Memory",
+    title: "Average Memory Access Time",
+    subtitle: "6 ns with one level, 3 ns with an L2, and 9 ns without it.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/memory-hierarchy-and-caches#8-average-memory-access-time",
+      label: "Memory Hierarchy, 8"
+    }
+  },
+  {
+    slug: "cf-false-sharing",
+    track: "computer-fundamentals",
+    section: "Memory",
+    title: "MESI and False Sharing",
+    subtitle: "A real MESI model counts the invalidations two threads cause on one cache line.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/memory-hierarchy-and-caches#10-false-sharing",
+      label: "Memory Hierarchy, 10"
+    }
+  },
+  {
+    slug: "cf-pipelining",
+    track: "computer-fundamentals",
+    section: "CPU",
+    title: "Pipelining and Hazards",
+    subtitle: "Four instructions in 8 cycles, then data hazards, stalls and forwarding.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/digital-logic-and-computer-architecture#9-pipelining",
+      label: "Architecture, 9"
+    }
+  },
+  {
+    slug: "cf-branch-prediction",
+    track: "computer-fundamentals",
+    section: "CPU",
+    title: "Branch Prediction",
+    subtitle: "A 2-bit predictor on random and sorted data shows why sorted arrays run faster.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/digital-logic-and-computer-architecture#10-branch-prediction-and-speculation",
+      label: "Architecture, 10"
+    }
+  },
+  {
+    slug: "cf-amdahl",
+    track: "computer-fundamentals",
+    section: "CPU",
+    title: "Amdahl's Law",
+    subtitle: "Speedup caps at 10x when 10 percent of the work is serial.",
+    minutes: 6,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/digital-logic-and-computer-architecture#12-measuring-cpu-performance",
+      label: "Architecture, 12"
+    }
+  },
+  {
+    slug: "cf-compiler-phases",
+    track: "computer-fundamentals",
+    section: "Programs",
+    title: "Compiler Phases",
+    subtitle: "A tiny lexer, parser and optimizer turn total = price * 2 into addsd.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/compilers-and-program-execution#2-compiler-phases",
+      label: "Compilers, 2"
+    }
+  },
+  {
+    slug: "cf-call-stack",
+    track: "computer-fundamentals",
+    section: "Programs",
+    title: "The Call Stack",
+    subtitle: "Frames for factorial(4) push and unwind, and where stack overflow comes from.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/compilers-and-program-execution#7-the-call-stack",
+      label: "Compilers, 7"
+    }
+  },
+  {
+    slug: "cf-gc",
+    track: "computer-fundamentals",
+    section: "Programs",
+    title: "Reference Counting vs Mark and Sweep",
+    subtitle: "A reference cycle leaks under counting and is collected by tracing from roots.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/computer-fundamentals/compilers-and-program-execution#9-garbage-collection",
+      label: "Compilers, 9"
+    }
+  },
+  {
+    slug: "py-names-references",
+    track: "python",
+    section: "Names and objects",
+    title: "Names, Objects and References",
+    subtitle: "b = a names the same list, mutation is shared, rebinding is not, and functions pass references by value.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/python/python-fundamentals#2-names-objects-and-references",
+      label: "Fundamentals, 2"
+    }
+  },
+  {
+    slug: "py-mutable-defaults",
+    track: "python",
+    section: "Names and objects",
+    title: "The Mutable Default Argument",
+    subtitle: "A default list is created once, and [[0]*3]*3 is three names for one row.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/python/python-fundamentals#12-common-pitfalls",
+      label: "Fundamentals, 12"
+    }
+  },
+  {
+    slug: "py-late-binding",
+    track: "python",
+    section: "Names and objects",
+    title: "Late-Binding Closures",
+    subtitle: "One shared cell makes [lambda: i for i in range(3)] return [2, 2, 2].",
+    minutes: 6,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/python/functions-and-functional-python#4-closures",
+      label: "Functions, 4"
+    }
+  },
+  {
+    slug: "py-small-ints",
+    track: "python",
+    section: "Names and objects",
+    title: "is vs ==, and the Small Int Cache",
+    subtitle: "256 is 256 but 1000 is not 1000, and 1, 1.0 and True are one dict key.",
+    minutes: 6,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/python/python-internals#7-caching-and-interning",
+      label: "Internals, 7"
+    }
+  },
+  {
+    slug: "py-refcount-gc",
+    track: "python",
+    section: "Memory",
+    title: "Reference Counting and the Cycle GC",
+    subtitle: "Counts free at zero, cycles leak, and the gc_ref subtraction finds them.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/python/python-internals#5-the-garbage-collector",
+      label: "Internals, 5"
+    }
+  },
+  {
+    slug: "py-list-dynamic-array",
+    track: "python",
+    section: "Data structures",
+    title: "list: A Dynamic Array",
+    subtitle: "Capacity grows at lengths 1, 5, 9, 17, 25, 33, and insert(0) shifts every pointer.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/python/python-data-structures#2-list-a-dynamic-array",
+      label: "Data Structures, 2"
+    }
+  },
+  {
+    slug: "py-dict-internals",
+    track: "python",
+    section: "Data structures",
+    title: "dict: A Compact Hash Table",
+    subtitle: "A sparse index table points into a dense, ordered entries array.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/python/python-data-structures#4-dict-a-compact-hash-table",
+      label: "Data Structures, 4"
+    }
+  },
+  {
+    slug: "py-gil",
+    track: "python",
+    section: "Concurrency",
+    title: "The GIL",
+    subtitle: "Two CPU-bound threads gain nothing, two I/O-bound threads overlap, two processes really run in parallel.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/python/python-internals#8-the-gil",
+      label: "Internals, 8"
+    }
+  },
+  {
+    slug: "py-asyncio",
+    track: "python",
+    section: "Concurrency",
+    title: "asyncio: One Thread, Many Tasks",
+    subtitle: "Sequential awaits take 3 s, gather takes 1 s, and one blocking call freezes the loop.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/python/concurrency-and-asyncio#7-asyncio-the-mental-model",
+      label: "Concurrency, 7"
+    }
+  },
+  {
+    slug: "py-generators",
+    track: "python",
+    section: "Functions",
+    title: "Iterators and Generators",
+    subtitle: "An exhausted iterator is empty, a generator resumes where it paused, and pipelines stay lazy.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/python/functions-and-functional-python#7-generators",
+      label: "Functions, 7"
+    }
+  },
+  {
+    slug: "py-decorators",
+    track: "python",
+    section: "Functions",
+    title: "Decorators",
+    subtitle: "@deco is f = deco(f), stacked decorators wrap inside out, and functools.wraps keeps the name.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/python/functions-and-functional-python#5-decorators",
+      label: "Functions, 5"
+    }
+  },
+  {
+    slug: "py-mro-super",
+    track: "python",
+    section: "Classes",
+    title: "MRO and super()",
+    subtitle: "C3 linearization orders M, L, R, Base, and super() means the next class in that order.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/python/python-oop#6-inheritance-super-and-the-mro",
+      label: "OOP, 6"
+    }
+  },
+  {
+    slug: "py-numpy-strides",
+    track: "python",
+    section: "NumPy",
+    title: "ndarray Strides and Views",
+    subtitle: "A header over one buffer: transpose swaps strides, slicing writes through, fancy indexing copies.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/python/numpy-and-data-stack#2-the-ndarray-memory-model",
+      label: "NumPy, 2"
+    }
+  },
+  {
+    slug: "py-numpy-broadcasting",
+    track: "python",
+    section: "NumPy",
+    title: "Broadcasting",
+    subtitle: "Align shapes from the right, stretch size-1 dimensions, and see (3, 4) plus (3,) fail.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/python/numpy-and-data-stack#6-broadcasting",
+      label: "NumPy, 6"
+    }
+  },
+  {
+    slug: "sdlc-phases",
+    track: "sdlc",
+    section: "Phases",
+    title: "The Seven Phases and Their Loops",
+    subtitle: "Fold a project through requirements to maintenance, including the bug loop and the new-needs loop.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/sdlc/sdlc#2-the-core-phases",
+      label: "SDLC, 2"
+    }
+  },
+  {
+    slug: "sdlc-waterfall-vs-agile",
+    track: "sdlc",
+    section: "Models",
+    title: "Waterfall vs Iterative vs Agile",
+    subtitle: "The same project on three schedules: when does working software first appear, and what does a wrong requirement cost?",
+    minutes: 8,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/sdlc/sdlc#31-waterfall-model",
+      label: "SDLC, 3.1"
+    }
+  },
+  {
+    slug: "sdlc-model-picker",
+    track: "sdlc",
+    section: "Models",
+    title: "Picking a Model",
+    subtitle: "The notes' decision tree as real code, run on five project descriptions.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdlc/sdlc#4-comparing-the-models",
+      label: "SDLC, 4"
+    }
+  },
+  {
+    slug: "sdlc-spiral-risk",
+    track: "sdlc",
+    section: "Models",
+    title: "The Spiral Model",
+    subtitle: "Why risk analysis comes first: the same unknown found in loop 1 or in the final build.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdlc/sdlc#34-spiral-model",
+      label: "SDLC, 3.4"
+    }
+  },
+  {
+    slug: "sdlc-scrum-sprint",
+    track: "sdlc",
+    section: "Agile",
+    title: "One Scrum Sprint",
+    subtitle: "A 20 point sprint, daily standups and a burndown computed from story completions.",
+    minutes: 8,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/sdlc/sdlc#36-scrum",
+      label: "SDLC, 3.6"
+    }
+  },
+  {
+    slug: "sdlc-kanban-wip",
+    track: "sdlc",
+    section: "Agile",
+    title: "Kanban and WIP Limits",
+    subtitle: "A pull system that refuses the fourth card until something finishes.",
+    minutes: 7,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/sdlc/sdlc#37-kanban",
+      label: "SDLC, 3.7"
+    }
+  },
+  {
+    slug: "sdlc-ci-cd",
+    track: "sdlc",
+    section: "Delivery",
+    title: "CI, Delivery and Deployment",
+    subtitle: "A change runs a pipeline, fails, is fixed, and stops at the approval gate or goes straight to production.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdlc/sdlc#5-devops-and-cicd-in-sdlc",
+      label: "SDLC, 5"
+    }
+  },
+  {
+    slug: "sdlc-testing-regression",
+    track: "sdlc",
+    section: "Delivery",
+    title: "Testing Levels and Regression",
+    subtitle: "A double-click race creates two orders, and the regression test keeps it fixed.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdlc/sdlc#6-testing-levels-across-sdlc",
+      label: "SDLC, 6"
+    }
+  },
+  {
+    slug: "sdui-registry",
+    track: "sdui",
+    section: "Foundations",
+    title: "Registry and Renderer",
+    subtitle: "The server composes, the client implements: a payload becomes components through a registry lookup.",
+    minutes: 8,
+    level: "Beginner",
+    steps: 5,
+    notes: {
+      href: "/docs/sdui/server-driven-ui#7-component-registry",
+      label: "SDUI, 7"
+    }
+  },
+  {
+    slug: "sdui-validation",
+    track: "sdui",
+    section: "Foundations",
+    title: "Validate, Then Render",
+    subtitle: "A payload passes schema, registry, action and URL checks, or the screen falls back safely.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdui/server-driven-ui#83-runtime-validation",
+      label: "SDUI, 8.3"
+    }
+  },
+  {
+    slug: "sdui-versioning",
+    track: "sdui",
+    section: "Contract",
+    title: "Versioning and Fallback",
+    subtitle: "Old clients stay installed: negotiate a schema version and decide what an unknown component does.",
+    minutes: 9,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/sdui/server-driven-ui#10-versioning-and-fallback",
+      label: "SDUI, 10"
+    }
+  },
+  {
+    slug: "sdui-actions",
+    track: "sdui",
+    section: "Contract",
+    title: "Actions and the Allowlist",
+    subtitle: "The payload names an action, and the client decides whether and how to run it.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdui/server-driven-ui#11-actions",
+      label: "SDUI, 11"
+    }
+  },
+  {
+    slug: "sdui-personalization",
+    track: "sdui",
+    section: "Server",
+    title: "Personalization and Cache Keys",
+    subtitle: "Stable A/B assignment from a user hash, and how segments multiply cache keys.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdui/server-driven-ui#5-why-companies-use-it",
+      label: "SDUI, 5"
+    }
+  },
+  {
+    slug: "sdui-orchestration",
+    track: "sdui",
+    section: "Server",
+    title: "Orchestration and Payload Size",
+    subtitle: "Parallel service calls, a latency budget that drops a slow section, and inline versus referenced data.",
+    minutes: 8,
+    level: "Advanced",
+    steps: 5,
+    notes: {
+      href: "/docs/sdui/server-driven-ui#14-data-vs-ui-and-server-orchestration",
+      label: "SDUI, 14"
+    }
+  },
+  {
+    slug: "sdui-cache-fallback",
+    track: "sdui",
+    section: "Client",
+    title: "Cache, Refresh and Fallback",
+    subtitle: "Render the cached screen at once, swap in fresh content, and never show a blank screen.",
+    minutes: 8,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdui/server-driven-ui#15-analytics-caching-offline-performance",
+      label: "SDUI, 15"
+    }
+  },
+  {
+    slug: "sdui-design-tokens",
+    track: "sdui",
+    section: "Client",
+    title: "Design Tokens, Not Raw Styles",
+    subtitle: "A token name resolves differently per platform, and raw values turn the backend into a CSS engine.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdui/server-driven-ui#17-design-tokens-over-arbitrary-styling",
+      label: "SDUI, 17"
+    }
+  },
+  {
+    slug: "sdui-should-it",
+    track: "sdui",
+    section: "Strategy",
+    title: "Should This Be Server-Driven?",
+    subtitle: "The notes' three questions as real code, run on six screens.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 5,
+    notes: {
+      href: "/docs/sdui/server-driven-ui#12-what-should-and-should-not-be-server-driven",
+      label: "SDUI, 12"
     }
   }
 ];
