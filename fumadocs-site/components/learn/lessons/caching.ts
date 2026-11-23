@@ -3,10 +3,10 @@ import type { FlowNode, FlowState, Packet } from '../engines/flow';
 
 const node = (over: Record<string, Partial<FlowNode>> = {}): FlowNode[] => {
   const base: FlowNode[] = [
-    { id: 'c', label: 'Client', kind: 'client', x: 0, y: 1.6, size: 'sm' },
-    { id: 'app', label: 'Service', kind: 'service', x: 2, y: 1.6 },
-    { id: 'cache', label: 'Cache', sub: 'Redis', kind: 'cache', x: 4.2, y: 0.5 },
-    { id: 'db', label: 'Database', kind: 'db', x: 4.2, y: 2.8 },
+    { id: 'c', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' },
+    { id: 'app', label: 'Service', kind: 'service', shape: 'server', x: 2, y: 1.6 },
+    { id: 'cache', label: 'Cache', sub: 'Redis', kind: 'cache', shape: 'cache', x: 4.2, y: 0.5 },
+    { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 4.2, y: 2.8 },
   ];
   return base.map((n) => ({ ...n, ...over[n.id] }));
 };

@@ -1,6 +1,7 @@
 'use client';
 
 import { IsoCube, Pill, shade } from '../iso';
+import { Machine, type MachineShape } from '../machines';
 import type { BaseState, Note, SceneProps, Tone } from '../types';
 import { ACCENT, MONO, NoteLayer, Stage, TONE_COLOR, Traveler, pillTone, textW, type PaintTone } from './common';
 
@@ -30,6 +31,8 @@ export type FlowNode = {
   label: string;
   sub?: string;
   kind: FlowKind;
+  /** Optional machine replica drawn instead of the cube. Leave out for abstract things. */
+  shape?: MachineShape;
   x: number;
   y: number;
   /** active = highlighted, hot = overloaded, down = failed, dim = not relevant now. */
@@ -89,6 +92,27 @@ const SIZE = { sm: 15, md: 20, lg: 26 } as const;
 const sx = (x: number) => 70 + x * 83.3;
 const sy = (y: number) => 96 + y * 72;
 
+/** Arrowhead polygon sitting just outside the destination box, pointing along the link. */
+function arrowAt(x1: number, y1: number, x2: number, y2: number, size: number): string | null {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy);
+  if (len < 1) return null;
+  const ux = dx / len;
+  const uy = dy / len;
+  const rx = size * 1.8;
+  const ry = size * 1.25;
+  const edge = 1 / Math.sqrt((ux / rx) ** 2 + (uy / ry) ** 2) + 5;
+  if (len < edge + 12) return null;
+  const tx = x2 - ux * edge;
+  const ty = y2 - uy * edge;
+  const bx = tx - ux * 10;
+  const by = ty - uy * 10;
+  const px = -uy * 2.5;
+  const py = ux * 2.5;
+  return `${tx.toFixed(1)},${ty.toFixed(1)} ${(bx + px).toFixed(1)},${(by + py).toFixed(1)} ${(bx - px).toFixed(1)},${(by - py).toFixed(1)}`;
+}
+
 function NodeView({ n, frameKey }: { n: FlowNode; frameKey: string }) {
   const size = SIZE[n.size ?? 'md'];
   const color = KIND_COLOR[n.kind];
@@ -123,7 +147,11 @@ function NodeView({ n, frameKey }: { n: FlowNode; frameKey: string }) {
             className="lx-hot"
           />
         ) : null}
-        <IsoCube x={0} y={0} color={color} size={size} failing={status === 'down'} />
+        {n.shape ? (
+          <Machine shape={n.shape} x={0} y={0} color={color} size={size} failing={status === 'down'} />
+        ) : (
+          <IsoCube x={0} y={0} color={color} size={size} failing={status === 'down'} />
+        )}
         <text x={0} y={labelY} textAnchor="middle" fontSize="11" fontWeight={600} fill={status === 'down' ? '#f09595' : '#e5e5e5'}>
           {n.label}
         </text>
@@ -205,6 +233,7 @@ export function FlowScene({ state, frameKey }: SceneProps<FlowState>) {
         const color = l.tone ? TONE_COLOR[l.tone] : 'rgba(255,255,255,0.2)';
         const mx = (sx(a.x) + sx(b.x)) / 2;
         const my = (sy(a.y) + sy(b.y)) / 2;
+        const arrow = arrowAt(sx(a.x), sy(a.y), sx(b.x), sy(b.y), SIZE[b.size ?? 'md']);
         return (
           <g key={`${l.from}-${l.to}`}>
             <line
@@ -217,6 +246,7 @@ export function FlowScene({ state, frameKey }: SceneProps<FlowState>) {
               strokeDasharray={l.dashed ? '5 5' : undefined}
               className="lx-key"
             />
+            {arrow ? <polygon points={arrow} fill={color} className="lx-key" /> : null}
             {l.label ? <Pill x={mx} y={my} text={l.label} /> : null}
           </g>
         );
@@ -231,9 +261,9 @@ export function FlowScene({ state, frameKey }: SceneProps<FlowState>) {
         const b = byId.get(p.to);
         if (!a || !b) return null;
         const x1 = sx(a.x);
-        const y1 = sy(a.y) - 16;
+        const y1 = sy(a.y);
         const x2 = sx(b.x);
-        const y2 = sy(b.y) - 16;
+        const y2 = sy(b.y);
         const dist = Math.hypot(x2 - x1, y2 - y1);
         return (
           <Traveler

@@ -12,14 +12,14 @@ const hop = (from: string, to: string, label?: string, delay = 0, tone: Packet['
 
 // Step 1: one shared fleet.
 const SHARED: FlowNode[] = [
-  { id: 'cA', label: 'Customer A', kind: 'client', x: 0, y: 0.4, size: 'sm' },
-  { id: 'cB', label: 'Customer B', kind: 'client', x: 0, y: 1.6, size: 'sm' },
-  { id: 'cC', label: 'Customer C', kind: 'client', x: 0, y: 2.8, size: 'sm' },
-  { id: 'lb', label: 'Load balancer', kind: 'lb', x: 1.9, y: 1.6 },
-  { id: 's1', label: 'Server', kind: 'service', x: 3.7, y: 0.5, size: 'sm' },
-  { id: 's2', label: 'Server', kind: 'service', x: 3.7, y: 1.6, size: 'sm' },
-  { id: 's3', label: 'Server', kind: 'service', x: 3.7, y: 2.7, size: 'sm' },
-  { id: 'db', label: 'Database', sub: 'shared', kind: 'db', x: 5.4, y: 1.6 },
+  { id: 'cA', label: 'Customer A', kind: 'client', shape: 'laptop', x: 0, y: 0.4, size: 'sm' },
+  { id: 'cB', label: 'Customer B', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' },
+  { id: 'cC', label: 'Customer C', kind: 'client', shape: 'laptop', x: 0, y: 2.8, size: 'sm' },
+  { id: 'lb', label: 'Load balancer', kind: 'lb', shape: 'lb', x: 1.9, y: 1.6 },
+  { id: 's1', label: 'Server', kind: 'service', shape: 'server', x: 3.7, y: 0.5, size: 'sm' },
+  { id: 's2', label: 'Server', kind: 'service', shape: 'server', x: 3.7, y: 1.6, size: 'sm' },
+  { id: 's3', label: 'Server', kind: 'service', shape: 'server', x: 3.7, y: 2.7, size: 'sm' },
+  { id: 'db', label: 'Database', sub: 'shared', kind: 'db', shape: 'db', x: 5.4, y: 1.6 },
 ];
 const shared = (broken: boolean): FlowState => ({
   nodes: patch(SHARED, broken ? { s1: { status: 'down' }, s2: { status: 'down' }, s3: { status: 'down' }, lb: { badge: { text: 'bad deploy, everywhere', tone: 'bad' } } } : {}),
@@ -43,11 +43,11 @@ const shared = (broken: boolean): FlowState => ({
 const CELL_ROWS = [0.2, 1.75, 3.3];
 const CELL_NAMES = ['Cell 1', 'Cell 2', 'Cell N'];
 const CELLS: FlowNode[] = [
-  { id: 'cust', label: 'Customers', kind: 'client', x: 0, y: 1.75 },
-  { id: 'rt', label: 'Router', sub: 'customer to cell', kind: 'gateway', x: 1.6, y: 1.75 },
+  { id: 'cust', label: 'Customers', kind: 'client', shape: 'laptop', x: 0, y: 1.75 },
+  { id: 'rt', label: 'Router', sub: 'customer to cell', kind: 'gateway', shape: 'gateway', x: 1.6, y: 1.75 },
   ...CELL_ROWS.flatMap((y, i): FlowNode[] => [
     { id: `app${i}`, label: CELL_NAMES[i], sub: 'full stack', kind: 'service', x: 3.4, y },
-    { id: `db${i}`, label: 'Database', sub: '5% of users', kind: 'db', x: 4.9, y },
+    { id: `db${i}`, label: 'Database', sub: '5% of users', kind: 'db', shape: 'db', x: 4.9, y },
   ]),
 ];
 const CELL_LINKS: FlowLink[] = [{ from: 'cust', to: 'rt' }, ...CELL_ROWS.flatMap((_, i) => [{ from: 'rt', to: `app${i}` }, { from: `app${i}`, to: `db${i}` }])];
@@ -198,10 +198,10 @@ function poisonFrames(): Frame<FlowState>[] {
 // Step 6: static stability. The data plane serves without calling the control plane.
 const PLANES: FlowNode[] = [
   { id: 'cp', label: 'Control plane', sub: 'config, deploys', kind: 'monitor', x: 3.2, y: 0.2 },
-  { id: 'u', label: 'Users', kind: 'client', x: 0, y: 2.2 },
-  { id: 'd1', label: 'Data plane', sub: 'serves requests', kind: 'service', x: 2.3, y: 2.2 },
-  { id: 'd2', label: 'Data plane', sub: 'serves requests', kind: 'service', x: 4.1, y: 2.2 },
-  { id: 'st', label: 'Storage', kind: 'db', x: 5.7, y: 2.2 },
+  { id: 'u', label: 'Users', kind: 'client', shape: 'laptop', x: 0, y: 2.2 },
+  { id: 'd1', label: 'Data plane', sub: 'serves requests', kind: 'service', shape: 'server', x: 2.3, y: 2.2 },
+  { id: 'd2', label: 'Data plane', sub: 'serves requests', kind: 'service', shape: 'server', x: 4.1, y: 2.2 },
+  { id: 'st', label: 'Storage', kind: 'db', shape: 'db', x: 5.7, y: 2.2 },
 ];
 const planes = (cpDown: boolean): FlowState => ({
   nodes: patch(

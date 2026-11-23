@@ -3,10 +3,10 @@ import type { FlowNode, FlowState, Packet } from '../engines/flow';
 
 const nodes = (over: Record<string, Partial<FlowNode>> = {}, outbox = false): FlowNode[] => {
   const base: FlowNode[] = [
-    { id: 'app', label: 'Order service', kind: 'service', x: 0.5, y: 1.6 },
+    { id: 'app', label: 'Order service', kind: 'service', shape: 'server', x: 0.5, y: 1.6 },
     { id: 'db', label: outbox ? 'Orders DB' : 'Database', sub: outbox ? '+ outbox table' : undefined, kind: 'db', x: 2.8, y: 0.4 },
     { id: 'relay', label: 'Relay', sub: 'poll or CDC', kind: 'worker', x: 2.8, y: 2.9, size: 'sm' },
-    { id: 'bus', label: 'Broker', kind: 'queue', x: 4.9, y: 1.6 },
+    { id: 'bus', label: 'Broker', kind: 'queue', shape: 'queue', x: 4.9, y: 1.6 },
     { id: 'ship', label: 'Shipping', kind: 'service', x: 6, y: 0.4, size: 'sm' },
     { id: 'mail', label: 'Email', kind: 'service', x: 6, y: 2.9, size: 'sm' },
   ];
@@ -89,11 +89,11 @@ export default defineLesson('flow', {
         {
           state: {
             nodes: [
-              { id: 'w', label: 'Write model', kind: 'service', x: 0.5, y: 1.6 },
-              { id: 'log', label: 'Event log', sub: 'source of truth', kind: 'queue', x: 2.6, y: 1.6, items: ['e1', 'e2', 'e3'] },
+              { id: 'w', label: 'Write model', kind: 'service', shape: 'server', x: 0.5, y: 1.6 },
+              { id: 'log', label: 'Event log', sub: 'source of truth', kind: 'queue', shape: 'queue', x: 2.6, y: 1.6, items: ['e1', 'e2', 'e3'] },
               { id: 'r1', label: 'Search view', kind: 'search', x: 5, y: 0.4, size: 'sm' },
               { id: 'r2', label: 'Cache view', kind: 'cache', x: 5, y: 1.6, size: 'sm' },
-              { id: 'r3', label: 'Analytics', kind: 'storage', x: 5, y: 2.8, size: 'sm' },
+              { id: 'r3', label: 'Analytics', kind: 'storage', shape: 'disk', x: 5, y: 2.8, size: 'sm' },
             ],
             links: [{ from: 'w', to: 'log' }, { from: 'log', to: 'r1' }, { from: 'log', to: 'r2' }, { from: 'log', to: 'r3' }],
             packets: [{ from: 'w', to: 'log', label: 'event', dur: 0.6 }, ...['r1', 'r2', 'r3'].map((r) => ({ from: 'log', to: r, label: 'event', delay: 0.7, dur: 0.7, tone: 'data' as const }))],

@@ -11,9 +11,9 @@ const hop = (from: string, to: string, label: string, delay: number, tone: Packe
 // Step 1: updating a database and a broker cannot be atomic.
 const dual = (fail: 'broker' | 'db'): FlowState => ({
   nodes: [
-    { id: 's', label: 'Service', kind: 'service', x: 0.4, y: 1.7 },
-    { id: 'd', label: 'Database', sub: fail === 'db' ? 'rolled back' : 'order saved', kind: 'db', x: 3.6, y: 0.6, status: fail === 'db' ? 'down' : 'normal' },
-    { id: 'b', label: 'Broker', sub: fail === 'broker' ? 'unreachable' : 'event sent', kind: 'queue', x: 3.6, y: 2.8, status: fail === 'broker' ? 'down' : 'normal' },
+    { id: 's', label: 'Service', kind: 'service', shape: 'server', x: 0.4, y: 1.7 },
+    { id: 'd', label: 'Database', sub: fail === 'db' ? 'rolled back' : 'order saved', kind: 'db', shape: 'db', x: 3.6, y: 0.6, status: fail === 'db' ? 'down' : 'normal' },
+    { id: 'b', label: 'Broker', sub: fail === 'broker' ? 'unreachable' : 'event sent', kind: 'queue', shape: 'queue', x: 3.6, y: 2.8, status: fail === 'broker' ? 'down' : 'normal' },
   ],
   links: [{ from: 's', to: 'd' }, { from: 's', to: 'b' }],
   packets:
@@ -30,10 +30,10 @@ const dual = (fail: 'broker' | 'db'): FlowState => ({
 
 // Step 2 and 3: the outbox. Business row and event commit in one transaction, a relay publishes.
 const OB: FlowNode[] = [
-  { id: 's', label: 'Service', kind: 'service', x: 0.1, y: 1.7 },
-  { id: 'd', label: 'Database', sub: 'orders + outbox', kind: 'db', x: 1.9, y: 1.7 },
+  { id: 's', label: 'Service', kind: 'service', shape: 'server', x: 0.1, y: 1.7 },
+  { id: 'd', label: 'Database', sub: 'orders + outbox', kind: 'db', shape: 'db', x: 1.9, y: 1.7 },
   { id: 'r', label: 'Relay', sub: 'polls outbox', kind: 'worker', x: 3.7, y: 1.7 },
-  { id: 'b', label: 'Broker', kind: 'queue', x: 5.5, y: 1.7 },
+  { id: 'b', label: 'Broker', kind: 'queue', shape: 'queue', x: 5.5, y: 1.7 },
 ];
 const OB_LINKS = [{ from: 's', to: 'd' }, { from: 'd', to: 'r' }, { from: 'r', to: 'b' }];
 const outbox = (phase: 0 | 1 | 2): FlowState => ({
@@ -83,9 +83,9 @@ const crash = (phase: 0 | 1): FlowState => ({
 // Step 4: an idempotent consumer. Effect and dedupe record commit in the same transaction.
 const consumer = (phase: 0 | 1): FlowState => ({
   nodes: [
-    { id: 'q', label: 'Broker', kind: 'queue', x: 0.2, y: 1.7, items: phase === 0 ? ['msg 7'] : ['msg 7 #2'] },
+    { id: 'q', label: 'Broker', kind: 'queue', shape: 'queue', x: 0.2, y: 1.7, items: phase === 0 ? ['msg 7'] : ['msg 7 #2'] },
     { id: 'w', label: 'Consumer', sub: 'idempotent', kind: 'worker', x: 2.9, y: 1.7, status: 'active' },
-    { id: 'd', label: 'Database', sub: 'balance + inbox', kind: 'db', x: 5.5, y: 1.7, items: phase === 0 ? ['msg 7'] : ['msg 7'] },
+    { id: 'd', label: 'Database', sub: 'balance + inbox', kind: 'db', shape: 'db', x: 5.5, y: 1.7, items: phase === 0 ? ['msg 7'] : ['msg 7'] },
   ],
   links: [{ from: 'q', to: 'w' }, { from: 'w', to: 'd' }],
   packets:
@@ -103,10 +103,10 @@ const consumer = (phase: 0 | 1): FlowState => ({
 // Step 5: retries with backoff and jitter, then the dead-letter queue.
 const retry = (kind: 'attempt1' | 'attempt3' | 'permanent' | 'exhausted'): FlowState => {
   const base: FlowNode[] = [
-    { id: 'q', label: 'Queue', kind: 'queue', x: 0.2, y: 1.2 },
+    { id: 'q', label: 'Queue', kind: 'queue', shape: 'queue', x: 0.2, y: 1.2 },
     { id: 'w', label: 'Worker', kind: 'worker', x: 2.7, y: 1.2, status: 'active' },
-    { id: 'p', label: 'Provider', sub: 'email, payment', kind: 'external', x: 5.4, y: 1.2 },
-    { id: 'x', label: 'Dead letters', sub: 'inspect and replay', kind: 'storage', x: 2.7, y: 3.2 },
+    { id: 'p', label: 'Provider', sub: 'email, payment', kind: 'external', shape: 'cloud', x: 5.4, y: 1.2 },
+    { id: 'x', label: 'Dead letters', sub: 'inspect and replay', kind: 'storage', shape: 'disk', x: 2.7, y: 3.2 },
   ];
   const links = [{ from: 'q', to: 'w' }, { from: 'w', to: 'p' }, { from: 'w', to: 'x', dashed: true }];
   if (kind === 'attempt1')

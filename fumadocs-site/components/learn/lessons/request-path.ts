@@ -8,15 +8,15 @@ import { patch } from '../engines/layouts';
  * The async scene keeps the same ids, so the queue side glides into place.
  */
 
-const CLIENT: FlowNode = { id: 'client', label: 'Client', sub: 'browser or app', kind: 'client', x: 0, y: 0.6 };
+const CLIENT: FlowNode = { id: 'client', label: 'Client', sub: 'browser or app', kind: 'client', shape: 'laptop', x: 0, y: 0.6 };
 const DNS: FlowNode = { id: 'dns', label: 'DNS', sub: 'name -> IP', kind: 'dns', x: 0, y: 2.5 };
-const CDN: FlowNode = { id: 'cdn', label: 'CDN', sub: 'edge', kind: 'cdn', x: 1.2, y: 0.6 };
-const LB: FlowNode = { id: 'lb', label: 'Load balancer', kind: 'lb', x: 2.4, y: 0.6 };
-const GW: FlowNode = { id: 'gw', label: 'API gateway', kind: 'gateway', x: 3.6, y: 0.6 };
-const SVC: FlowNode = { id: 'svc', label: 'Service', sub: 'stateless', kind: 'service', x: 4.8, y: 0.6 };
-const CACHE: FlowNode = { id: 'cache', label: 'Cache', kind: 'cache', x: 6, y: 1.7 };
-const DB: FlowNode = { id: 'db', label: 'Database', kind: 'db', x: 4.8, y: 2.7 };
-const QUEUE: FlowNode = { id: 'queue', label: 'Queue', kind: 'queue', x: 3.6, y: 1.9 };
+const CDN: FlowNode = { id: 'cdn', label: 'CDN', sub: 'edge', kind: 'cdn', shape: 'globe', x: 1.2, y: 0.6 };
+const LB: FlowNode = { id: 'lb', label: 'Load balancer', kind: 'lb', shape: 'lb', x: 2.4, y: 0.6 };
+const GW: FlowNode = { id: 'gw', label: 'API gateway', kind: 'gateway', shape: 'gateway', x: 3.6, y: 0.6 };
+const SVC: FlowNode = { id: 'svc', label: 'Service', sub: 'stateless', kind: 'service', shape: 'server', x: 4.8, y: 0.6 };
+const CACHE: FlowNode = { id: 'cache', label: 'Cache', kind: 'cache', shape: 'cache', x: 6, y: 1.7 };
+const DB: FlowNode = { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 4.8, y: 2.7 };
+const QUEUE: FlowNode = { id: 'queue', label: 'Queue', kind: 'queue', shape: 'queue', x: 3.6, y: 1.9 };
 
 const ALL: FlowNode[] = [CLIENT, DNS, CDN, LB, GW, SVC, CACHE, DB, QUEUE];
 
@@ -182,7 +182,7 @@ const ASYNC_NODES: FlowNode[] = [
   SVC,
   QUEUE,
   { id: 'workers', label: 'Workers', kind: 'worker', x: 2.4, y: 2.9 },
-  { id: 'store', label: 'Object storage', kind: 'storage', x: 1.1, y: 2.9 },
+  { id: 'store', label: 'Object storage', kind: 'storage', shape: 'disk', x: 1.1, y: 2.9 },
   DB,
 ];
 const ASYNC_LINKS: FlowLink[] = [

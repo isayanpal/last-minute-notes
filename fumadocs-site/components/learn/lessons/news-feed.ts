@@ -7,18 +7,18 @@ import { patch } from '../engines/layouts';
  */
 
 const AUTHOR: FlowNode = { id: 'a', label: 'Author', sub: '100 followers', kind: 'client', x: 0, y: 1.6, size: 'sm' };
-const POSTS: FlowNode = { id: 'ps', label: 'Post service', kind: 'service', x: 1.7, y: 1.6, size: 'sm' };
-const BUS: FlowNode = { id: 'q', label: 'Kafka', sub: 'post events', kind: 'queue', x: 3.2, y: 1.6, size: 'sm' };
+const POSTS: FlowNode = { id: 'ps', label: 'Post service', kind: 'service', shape: 'server', x: 1.7, y: 1.6, size: 'sm' };
+const BUS: FlowNode = { id: 'q', label: 'Kafka', sub: 'post events', kind: 'queue', shape: 'queue', x: 3.2, y: 1.6, size: 'sm' };
 const FEEDS = (items: string[][]): FlowNode[] =>
   [0.2, 1.2, 2.2, 3.2].map((y, i) => ({ id: `f${i}`, label: `Feed ${i + 1}`, sub: 'Redis list', kind: 'cache' as const, x: 5.2, y, size: 'sm' as const, items: items[i] ?? [] }));
 
 // Step 1: numbers and the read/write skew.
 const NUMBERS: FlowState = {
   nodes: [
-    { id: 'u', label: '200M DAU', sub: '10 feed opens each', kind: 'client', x: 0.2, y: 1.6, size: 'sm' },
-    { id: 'fs', label: 'Feed service', kind: 'service', x: 2.7, y: 0.5, size: 'sm', meter: { value: 0.95, label: '23k reads / s', tone: 'bad' } },
-    { id: 'ps', label: 'Post service', kind: 'service', x: 2.7, y: 2.8, size: 'sm', meter: { value: 0.1, label: '230 writes / s', tone: 'ok' } },
-    { id: 'db', label: 'Post store', sub: 'sharded', kind: 'db', x: 5.2, y: 1.6, size: 'sm' },
+    { id: 'u', label: '200M DAU', sub: '10 feed opens each', kind: 'client', shape: 'laptop', x: 0.2, y: 1.6, size: 'sm' },
+    { id: 'fs', label: 'Feed service', kind: 'service', shape: 'server', x: 2.7, y: 0.5, size: 'sm', meter: { value: 0.95, label: '23k reads / s', tone: 'bad' } },
+    { id: 'ps', label: 'Post service', kind: 'service', shape: 'server', x: 2.7, y: 2.8, size: 'sm', meter: { value: 0.1, label: '230 writes / s', tone: 'ok' } },
+    { id: 'db', label: 'Post store', sub: 'sharded', kind: 'db', shape: 'db', x: 5.2, y: 1.6, size: 'sm' },
   ],
   links: [
     { from: 'u', to: 'fs' },
@@ -62,8 +62,8 @@ const pushScene = (landed: boolean): FlowState => {
 // Step 3: fan-out on read (pull).
 const PULL: FlowState = {
   nodes: [
-    { id: 'u', label: 'Reader', sub: 'follows 500', kind: 'client', x: 0.2, y: 1.6, size: 'sm' },
-    { id: 'fs', label: 'Feed service', sub: 'merge + sort', kind: 'service', x: 2.4, y: 1.6, size: 'sm', status: 'hot' },
+    { id: 'u', label: 'Reader', sub: 'follows 500', kind: 'client', shape: 'laptop', x: 0.2, y: 1.6, size: 'sm' },
+    { id: 'fs', label: 'Feed service', sub: 'merge + sort', kind: 'service', shape: 'server', x: 2.4, y: 1.6, size: 'sm', status: 'hot' },
     ...[0.2, 1.2, 2.2, 3.2].map((y, i): FlowNode => ({ id: `s${i}`, label: `Author ${i + 1}`, sub: 'recent posts', kind: 'db', x: 5.0, y, size: 'sm' })),
   ],
   links: [{ from: 'u', to: 'fs' }, ...[0, 1, 2, 3].map((i): FlowLink => ({ from: 'fs', to: `s${i}` }))],
@@ -83,11 +83,11 @@ const PULL: FlowState = {
 // Step 4: the celebrity.
 const CELEB = (push: boolean): FlowState => ({
   nodes: [
-    { id: 'a', label: 'Celebrity', sub: '50M followers', kind: 'client', x: 0, y: 1.6, size: 'sm' },
+    { id: 'a', label: 'Celebrity', sub: '50M followers', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' },
     POSTS,
     { ...BUS, status: push ? 'hot' : 'normal', badge: push ? { text: '50M inserts', tone: 'bad' } : { text: 'celebrity: skip push', tone: 'accent' } },
     { id: 'w', label: 'Fan-out workers', kind: 'worker', x: 4.5, y: 0.4, size: 'sm', status: push ? 'hot' : 'dim', meter: push ? { value: 1, label: 'backlog grows', tone: 'bad' } : undefined },
-    { id: 'pc', label: 'Celebrity posts', sub: 'fetched live', kind: 'db', x: 4.5, y: 2.9, size: 'sm', status: push ? 'dim' : 'active' },
+    { id: 'pc', label: 'Celebrity posts', sub: 'fetched live', kind: 'db', shape: 'db', x: 4.5, y: 2.9, size: 'sm', status: push ? 'dim' : 'active' },
   ],
   links: [
     { from: 'a', to: 'ps' },
@@ -114,12 +114,12 @@ const CELEB = (push: boolean): FlowState => ({
 // Step 5: the hybrid read path.
 const READ: FlowState = {
   nodes: [
-    { id: 'u', label: 'Reader', kind: 'client', x: 0, y: 1.6, size: 'sm' },
-    { id: 'fs', label: 'Feed service', kind: 'service', x: 1.6, y: 1.6, size: 'sm' },
-    { id: 'fc', label: 'Feed cache', sub: 'ids, newest 800', kind: 'cache', x: 3.4, y: 0.2, size: 'sm', items: ['p9', 'p7', 'p4'] },
-    { id: 'cp', label: 'Celebrity posts', kind: 'db', x: 3.4, y: 1.6, size: 'sm' },
+    { id: 'u', label: 'Reader', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' },
+    { id: 'fs', label: 'Feed service', kind: 'service', shape: 'server', x: 1.6, y: 1.6, size: 'sm' },
+    { id: 'fc', label: 'Feed cache', sub: 'ids, newest 800', kind: 'cache', shape: 'cache', x: 3.4, y: 0.2, size: 'sm', items: ['p9', 'p7', 'p4'] },
+    { id: 'cp', label: 'Celebrity posts', kind: 'db', shape: 'db', x: 3.4, y: 1.6, size: 'sm' },
     { id: 'rk', label: 'Ranking', sub: 'time budget', kind: 'worker', x: 3.4, y: 3.0, size: 'sm' },
-    { id: 'hy', label: 'Post cache', sub: 'hydrate objects', kind: 'cache', x: 5.4, y: 1.6, size: 'sm' },
+    { id: 'hy', label: 'Post cache', sub: 'hydrate objects', kind: 'cache', shape: 'cache', x: 5.4, y: 1.6, size: 'sm' },
   ],
   links: [
     { from: 'u', to: 'fs' },
@@ -148,10 +148,10 @@ const READ: FlowState = {
 const DETAILS = (stage: 'ids' | 'delete' | 'cursor'): FlowState => ({
   nodes: patch<FlowNode>(
     [
-      { id: 'fc', label: 'Feed cache', sub: 'post ids only', kind: 'cache', x: 0.6, y: 1.6, size: 'sm', items: ['p9', 'p7', 'p4'] },
+      { id: 'fc', label: 'Feed cache', sub: 'post ids only', kind: 'cache', shape: 'cache', x: 0.6, y: 1.6, size: 'sm', items: ['p9', 'p7', 'p4'] },
       { id: 'hy', label: 'Hydrate', sub: 'filter + join', kind: 'service', x: 2.9, y: 1.6, size: 'sm' },
-      { id: 'pc', label: 'Post store', sub: 'author, text, count', kind: 'db', x: 5.3, y: 0.4, size: 'sm', items: ['p7: del'] },
-      { id: 'ct', label: 'Like counters', sub: 'approximate', kind: 'cache', x: 5.3, y: 2.8, size: 'sm' },
+      { id: 'pc', label: 'Post store', sub: 'author, text, count', kind: 'db', shape: 'db', x: 5.3, y: 0.4, size: 'sm', items: ['p7: del'] },
+      { id: 'ct', label: 'Like counters', sub: 'approximate', kind: 'cache', shape: 'cache', x: 5.3, y: 2.8, size: 'sm' },
     ],
     {
       fc: stage === 'cursor' ? { badge: { text: 'cursor = last id', tone: 'accent' } } : {},

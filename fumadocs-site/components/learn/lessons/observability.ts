@@ -13,11 +13,11 @@ const path = (ids: string[], label: string | undefined, delay = 0, tone: Packet[
 
 // Step 1: a failing request with no telemetry.
 const PATH: FlowNode[] = [
-  { id: 'c', label: 'Client', kind: 'client', x: 0, y: 1.5 },
-  { id: 'gw', label: 'Gateway', kind: 'gateway', x: 1.5, y: 1.5 },
-  { id: 'ord', label: 'Orders', kind: 'service', x: 3.0, y: 1.5 },
-  { id: 'pay', label: 'Payments', kind: 'service', x: 4.5, y: 1.5 },
-  { id: 'db', label: 'Database', kind: 'db', x: 5.9, y: 1.5 },
+  { id: 'c', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.5 },
+  { id: 'gw', label: 'Gateway', kind: 'gateway', shape: 'gateway', x: 1.5, y: 1.5 },
+  { id: 'ord', label: 'Orders', kind: 'service', shape: 'server', x: 3.0, y: 1.5 },
+  { id: 'pay', label: 'Payments', kind: 'service', shape: 'server', x: 4.5, y: 1.5 },
+  { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 5.9, y: 1.5 },
 ];
 const PATH_LINKS: FlowLink[] = PATH.slice(1).map((n, i) => ({ from: PATH[i].id, to: n.id }));
 const blind = (failed: boolean): FlowState => ({
@@ -39,9 +39,9 @@ const blind = (failed: boolean): FlowState => ({
 
 // Step 2: the four signals.
 const SVC: FlowNode[] = [
-  { id: 'gw', label: 'Gateway', kind: 'gateway', x: 1.2, y: 0.7 },
-  { id: 'ord', label: 'Orders', kind: 'service', x: 2.9, y: 0.7 },
-  { id: 'pay', label: 'Payments', kind: 'service', x: 4.6, y: 0.7 },
+  { id: 'gw', label: 'Gateway', kind: 'gateway', shape: 'gateway', x: 1.2, y: 0.7 },
+  { id: 'ord', label: 'Orders', kind: 'service', shape: 'server', x: 2.9, y: 0.7 },
+  { id: 'pay', label: 'Payments', kind: 'service', shape: 'server', x: 4.6, y: 0.7 },
 ];
 type Signal = { id: string; label: string; kind: FlowNode['kind']; shape: string; answers: string; tools: string };
 const SIGNALS: Signal[] = [
@@ -89,10 +89,10 @@ const otel = (phase: 0 | 1 | 2): FlowState => ({
 
 // Step 4: one trace id follows the request.
 const TRACE: FlowNode[] = [
-  { id: 'c', label: 'Client', kind: 'client', x: 0, y: 1.0 },
-  { id: 'gw', label: 'Gateway', kind: 'gateway', x: 1.5, y: 1.0 },
-  { id: 'ord', label: 'Orders', kind: 'service', x: 3.0, y: 1.0 },
-  { id: 'pay', label: 'Payments', kind: 'service', x: 4.5, y: 1.0 },
+  { id: 'c', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.0 },
+  { id: 'gw', label: 'Gateway', kind: 'gateway', shape: 'gateway', x: 1.5, y: 1.0 },
+  { id: 'ord', label: 'Orders', kind: 'service', shape: 'server', x: 3.0, y: 1.0 },
+  { id: 'pay', label: 'Payments', kind: 'service', shape: 'server', x: 4.5, y: 1.0 },
   { id: 'trc', label: 'Traces', kind: 'monitor', x: 2.2, y: 3.0 },
   { id: 'log', label: 'Logs', sub: 'JSON lines', kind: 'search', x: 3.9, y: 3.0 },
 ];
@@ -141,9 +141,9 @@ function traceFrames(): Frame<FlowState>[] {
 
 // Step 5: what to measure.
 const MEASURE: FlowNode[] = [
-  { id: 'u', label: 'Users', kind: 'client', x: 0, y: 1.2 },
-  { id: 'svc', label: 'Checkout', kind: 'service', x: 1.9, y: 1.2 },
-  { id: 'db', label: 'Database', kind: 'db', x: 3.8, y: 1.2 },
+  { id: 'u', label: 'Users', kind: 'client', shape: 'laptop', x: 0, y: 1.2 },
+  { id: 'svc', label: 'Checkout', kind: 'service', shape: 'server', x: 1.9, y: 1.2 },
+  { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 3.8, y: 1.2 },
   { id: 'met', label: 'Dashboards', kind: 'monitor', x: 2.85, y: 3.0 },
 ];
 const measure = (phase: 0 | 1 | 2): FlowState => {
@@ -173,7 +173,7 @@ const measure = (phase: 0 | 1 | 2): FlowState => {
 
 // Step 6: head vs tail sampling.
 const SAMPLE: FlowNode[] = [
-  { id: 'svc', label: 'Services', kind: 'service', x: 0.4, y: 1.6 },
+  { id: 'svc', label: 'Services', kind: 'service', shape: 'server', x: 0.4, y: 1.6 },
   { id: 'col', label: 'Collector', kind: 'gateway', x: 2.6, y: 1.6 },
   { id: 'trc', label: 'Trace store', kind: 'monitor', x: 4.8, y: 1.6 },
 ];
@@ -209,7 +209,7 @@ const sampling = (mode: 'head' | 'buffer' | 'tail'): FlowState => ({
 // Step 7: alert on symptoms, page a human with a runbook.
 const RECAP: FlowState = {
   nodes: [
-    { id: 'svc', label: 'Services', sub: 'OTel instrumented', kind: 'service', x: 0.3, y: 1.6 },
+    { id: 'svc', label: 'Services', sub: 'OTel instrumented', kind: 'service', shape: 'server', x: 0.3, y: 1.6 },
     { id: 'met', label: 'Metrics', sub: 'SLO burn rate', kind: 'monitor', x: 2.2, y: 1.6 },
     { id: 'al', label: 'Alert', sub: 'on symptoms', kind: 'queue', x: 4.0, y: 1.6, status: 'hot', badge: { text: 'error rate burning', tone: 'bad' } },
     { id: 'oc', label: 'On-call', sub: 'runbook + owner', kind: 'client', x: 5.7, y: 1.6 },

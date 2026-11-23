@@ -6,14 +6,14 @@ import { patch } from '../engines/layouts';
  * Layout: browser (x 0), edge (x 1.4), stateless services (x 2.9), cache and stores (x 4.6 to 5.6).
  */
 
-const BROWSER: FlowNode = { id: 'b', label: 'Browser', kind: 'client', x: 0, y: 1.6, size: 'sm' };
+const BROWSER: FlowNode = { id: 'b', label: 'Browser', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' };
 const EDGE: FlowNode = { id: 'e', label: 'Edge', sub: 'CDN + LB', kind: 'lb', x: 1.4, y: 1.6, size: 'sm' };
-const CREATE: FlowNode = { id: 'w', label: 'Create svc', sub: 'stateless', kind: 'service', x: 3.0, y: 0.4, size: 'sm' };
-const REDIRECT: FlowNode = { id: 'r', label: 'Redirect svc', sub: 'stateless', kind: 'service', x: 3.0, y: 2.8, size: 'sm' };
-const KV: FlowNode = { id: 'kv', label: 'KV store', sub: 'sharded by code', kind: 'db', x: 5.5, y: 1.2, size: 'sm' };
+const CREATE: FlowNode = { id: 'w', label: 'Create svc', sub: 'stateless', kind: 'service', shape: 'server', x: 3.0, y: 0.4, size: 'sm' };
+const REDIRECT: FlowNode = { id: 'r', label: 'Redirect svc', sub: 'stateless', kind: 'service', shape: 'server', x: 3.0, y: 2.8, size: 'sm' };
+const KV: FlowNode = { id: 'kv', label: 'KV store', sub: 'sharded by code', kind: 'db', shape: 'db', x: 5.5, y: 1.2, size: 'sm' };
 const CACHE: FlowNode = { id: 'ca', label: 'Redis', sub: 'code to URL', kind: 'cache', x: 5.5, y: 2.9, size: 'sm' };
-const KAFKA: FlowNode = { id: 'k', label: 'Kafka', sub: 'click events', kind: 'queue', x: 3.0, y: 1.6, size: 'sm' };
-const ALLOC: FlowNode = { id: 'al', label: 'Key allocator', sub: 'hands out ID ranges', kind: 'service', x: 5.3, y: 0.2, size: 'sm' };
+const KAFKA: FlowNode = { id: 'k', label: 'Kafka', sub: 'click events', kind: 'queue', shape: 'queue', x: 3.0, y: 1.6, size: 'sm' };
+const ALLOC: FlowNode = { id: 'al', label: 'Key allocator', sub: 'hands out ID ranges', kind: 'service', shape: 'server', x: 5.3, y: 0.2, size: 'sm' };
 
 // Step 1: the shape of the problem.
 const OVERVIEW: FlowState = {
@@ -45,9 +45,9 @@ const OVERVIEW: FlowState = {
 const ALLOCATION: FlowState = {
   nodes: [
     ALLOC,
-    { id: 'w1', label: 'Create 1', kind: 'service', x: 2.0, y: 0.5, size: 'sm', items: ['0-99k'], badge: { text: 'range A', tone: 'accent' } },
-    { id: 'w2', label: 'Create 2', kind: 'service', x: 2.0, y: 2.5, size: 'sm', items: ['100k-199k'], badge: { text: 'range B', tone: 'accent' } },
-    { id: 'kv', label: 'KV store', kind: 'db', x: 5.3, y: 2.7, size: 'sm' },
+    { id: 'w1', label: 'Create 1', kind: 'service', shape: 'server', x: 2.0, y: 0.5, size: 'sm', items: ['0-99k'], badge: { text: 'range A', tone: 'accent' } },
+    { id: 'w2', label: 'Create 2', kind: 'service', shape: 'server', x: 2.0, y: 2.5, size: 'sm', items: ['100k-199k'], badge: { text: 'range B', tone: 'accent' } },
+    { id: 'kv', label: 'KV store', kind: 'db', shape: 'db', x: 5.3, y: 2.7, size: 'sm' },
   ],
   links: [
     { from: 'w1', to: 'al', dashed: true },
@@ -72,7 +72,7 @@ const OPTIONS: FlowState = {
   nodes: [
     { id: 'h', label: 'Hash + cut', sub: 'collisions', kind: 'worker', x: 0.4, y: 0.4, size: 'sm', status: 'dim' },
     { id: 'rnd', label: 'Random + check', sub: 'retries as it fills', kind: 'worker', x: 0.4, y: 2.8, size: 'sm', status: 'dim' },
-    { id: 'ctr', label: 'Counter ranges', sub: 'recommended', kind: 'service', x: 2.9, y: 1.6, status: 'active', badge: { text: 'best fit', tone: 'accent' } },
+    { id: 'ctr', label: 'Counter ranges', sub: 'recommended', kind: 'service', shape: 'server', x: 2.9, y: 1.6, status: 'active', badge: { text: 'best fit', tone: 'accent' } },
     { id: 'kg', label: 'Key service', sub: 'pre-made keys', kind: 'worker', x: 5.4, y: 1.6, size: 'sm', status: 'dim' },
   ],
   links: [],
@@ -154,10 +154,10 @@ const redirectCodes = (permanent: boolean): FlowState => ({
 // Step 5: follow-ups.
 const FOLLOW: FlowState = {
   nodes: [
-    { id: 'w', label: 'Create svc', kind: 'service', x: 0.6, y: 1.6, size: 'sm' },
-    { id: 'rl', label: 'Rate limit', sub: 'per user and IP', kind: 'gateway', x: 2.3, y: 0.4, size: 'sm' },
-    { id: 'sc', label: 'URL scanner', sub: 'malware lists', kind: 'external', x: 2.3, y: 2.8, size: 'sm' },
-    { id: 'kv', label: 'KV store', sub: 'unique code', kind: 'db', x: 4.4, y: 1.6, size: 'sm', items: ['ttl'] },
+    { id: 'w', label: 'Create svc', kind: 'service', shape: 'server', x: 0.6, y: 1.6, size: 'sm' },
+    { id: 'rl', label: 'Rate limit', sub: 'per user and IP', kind: 'gateway', shape: 'gateway', x: 2.3, y: 0.4, size: 'sm' },
+    { id: 'sc', label: 'URL scanner', sub: 'malware lists', kind: 'external', shape: 'cloud', x: 2.3, y: 2.8, size: 'sm' },
+    { id: 'kv', label: 'KV store', sub: 'unique code', kind: 'db', shape: 'db', x: 4.4, y: 1.6, size: 'sm', items: ['ttl'] },
     { id: 'sw', label: 'TTL sweeper', sub: 'background', kind: 'worker', x: 5.6, y: 2.9, size: 'sm' },
   ],
   links: [

@@ -7,17 +7,17 @@ import { patch } from '../engines/layouts';
  */
 
 const USERS: FlowNode[] = [
-  { id: 'u1', label: 'User', sub: 'Tokyo', kind: 'client', x: 0, y: 0.4, size: 'sm' },
-  { id: 'u2', label: 'User', sub: 'Berlin', kind: 'client', x: 0, y: 1.75, size: 'sm' },
-  { id: 'u3', label: 'User', sub: 'Lima', kind: 'client', x: 0, y: 3.1, size: 'sm' },
+  { id: 'u1', label: 'User', sub: 'Tokyo', kind: 'client', shape: 'laptop', x: 0, y: 0.4, size: 'sm' },
+  { id: 'u2', label: 'User', sub: 'Berlin', kind: 'client', shape: 'laptop', x: 0, y: 1.75, size: 'sm' },
+  { id: 'u3', label: 'User', sub: 'Lima', kind: 'client', shape: 'laptop', x: 0, y: 3.1, size: 'sm' },
 ];
 const EDGES: FlowNode[] = [
-  { id: 'e1', label: 'Edge', kind: 'cdn', x: 1.6, y: 0.4 },
-  { id: 'e2', label: 'Edge', kind: 'cdn', x: 1.6, y: 1.75 },
-  { id: 'e3', label: 'Edge', kind: 'cdn', x: 1.6, y: 3.1 },
+  { id: 'e1', label: 'Edge', kind: 'cdn', shape: 'globe', x: 1.6, y: 0.4 },
+  { id: 'e2', label: 'Edge', kind: 'cdn', shape: 'globe', x: 1.6, y: 1.75 },
+  { id: 'e3', label: 'Edge', kind: 'cdn', shape: 'globe', x: 1.6, y: 3.1 },
 ];
-const SHIELD: FlowNode = { id: 'shield', label: 'Origin shield', sub: 'mid-tier cache', kind: 'cdn', x: 3.6, y: 1.75 };
-const ORIGIN: FlowNode = { id: 'origin', label: 'Origin', sub: 'your servers', kind: 'service', x: 5.4, y: 1.75 };
+const SHIELD: FlowNode = { id: 'shield', label: 'Origin shield', sub: 'mid-tier cache', kind: 'cdn', shape: 'globe', x: 3.6, y: 1.75 };
+const ORIGIN: FlowNode = { id: 'origin', label: 'Origin', sub: 'your servers', kind: 'service', shape: 'server', x: 5.4, y: 1.75 };
 
 const CDN_LINKS: FlowLink[] = [
   ...USERS.map((u, i) => ({ from: u.id, to: EDGES[i].id })),

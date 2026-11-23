@@ -9,11 +9,11 @@ import type { Stat } from '../types';
  */
 
 const HOP = 0.6;
-const CLIENT: FlowNode = { id: 'c', label: 'Client', kind: 'client', x: 0.3, y: 1.6 };
-const PRIMARY: FlowNode = { id: 'p', label: 'Primary', sub: 'takes writes', kind: 'db', x: 2.6, y: 1.6, size: 'lg' };
+const CLIENT: FlowNode = { id: 'c', label: 'Client', kind: 'client', shape: 'laptop', x: 0.3, y: 1.6 };
+const PRIMARY: FlowNode = { id: 'p', label: 'Primary', sub: 'takes writes', kind: 'db', shape: 'db', x: 2.6, y: 1.6, size: 'lg' };
 const REPLICAS: FlowNode[] = [
-  { id: 'r1', label: 'Replica 1', sub: 'reads', kind: 'db', x: 5, y: 0.5 },
-  { id: 'r2', label: 'Replica 2', sub: 'reads', kind: 'db', x: 5, y: 2.7 },
+  { id: 'r1', label: 'Replica 1', sub: 'reads', kind: 'db', shape: 'db', x: 5, y: 0.5 },
+  { id: 'r2', label: 'Replica 2', sub: 'reads', kind: 'db', shape: 'db', x: 5, y: 2.7 },
 ];
 
 const LINKS: FlowLink[] = [
@@ -33,7 +33,7 @@ const meter = (value: number, label: string) => ({ value, label, tone: value > 0
 
 // ---------- Step 1: one copy ----------
 
-const SOLO: FlowNode = { id: 'db', label: 'Database', sub: 'the only copy', kind: 'db', x: 3.6, y: 1.6, size: 'lg' };
+const SOLO: FlowNode = { id: 'db', label: 'Database', sub: 'the only copy', kind: 'db', shape: 'db', x: 3.6, y: 1.6, size: 'lg' };
 const solo = (down: boolean): FlowState => ({
   nodes: [CLIENT, { ...SOLO, status: down ? 'down' : 'hot', meter: down ? undefined : meter(0.92, 'reads + writes'), badge: down ? { text: 'disk failed', tone: 'bad' } : undefined }],
   links: [{ from: 'c', to: 'db', tone: down ? 'bad' : undefined, dashed: down }],
@@ -199,10 +199,10 @@ const lag = (frame: 0 | 1 | 2 | 3 | 4): FlowState => {
 // ---------- Step 6: multi-leader ----------
 
 const ML_NODES: FlowNode[] = [
-  { id: 'ue', label: 'User', sub: 'Europe', kind: 'client', x: 0.6, y: 0.6, size: 'sm' },
-  { id: 'le', label: 'Leader EU', kind: 'db', x: 3.4, y: 0.6 },
-  { id: 'uu', label: 'User', sub: 'US', kind: 'client', x: 0.6, y: 2.8, size: 'sm' },
-  { id: 'lu', label: 'Leader US', kind: 'db', x: 3.4, y: 2.8 },
+  { id: 'ue', label: 'User', sub: 'Europe', kind: 'client', shape: 'laptop', x: 0.6, y: 0.6, size: 'sm' },
+  { id: 'le', label: 'Leader EU', kind: 'db', shape: 'db', x: 3.4, y: 0.6 },
+  { id: 'uu', label: 'User', sub: 'US', kind: 'client', shape: 'laptop', x: 0.6, y: 2.8, size: 'sm' },
+  { id: 'lu', label: 'Leader US', kind: 'db', shape: 'db', x: 3.4, y: 2.8 },
 ];
 const ML_LINKS: FlowLink[] = [
   { from: 'ue', to: 'le' },
@@ -255,9 +255,9 @@ const W = 2;
 const R = 2;
 const QN: FlowNode[] = [
   { ...CLIENT, sub: 'or coordinator' },
-  { id: 'qa', label: 'Node A', kind: 'db', x: 3.6, y: 0.3, size: 'sm' },
-  { id: 'qb', label: 'Node B', kind: 'db', x: 3.6, y: 1.6, size: 'sm' },
-  { id: 'qc', label: 'Node C', kind: 'db', x: 3.6, y: 2.9, size: 'sm' },
+  { id: 'qa', label: 'Node A', kind: 'db', shape: 'db', x: 3.6, y: 0.3, size: 'sm' },
+  { id: 'qb', label: 'Node B', kind: 'db', shape: 'db', x: 3.6, y: 1.6, size: 'sm' },
+  { id: 'qc', label: 'Node C', kind: 'db', shape: 'db', x: 3.6, y: 2.9, size: 'sm' },
 ];
 const QL: FlowLink[] = [
   { from: 'c', to: 'qa' },

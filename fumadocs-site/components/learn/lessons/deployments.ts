@@ -5,11 +5,11 @@ type Over = Record<string, Partial<FlowNode>>;
 
 const stack = (over: Over = {}): FlowNode[] => {
   const base: FlowNode[] = [
-    { id: 'u', label: 'Users', kind: 'client', x: 0, y: 1.6, size: 'sm' },
-    { id: 'lb', label: 'Load balancer', kind: 'lb', x: 1.8, y: 1.6 },
-    { id: 'v1a', label: 'v1', kind: 'service', x: 4.2, y: 0.3, size: 'sm' },
-    { id: 'v1b', label: 'v1', kind: 'service', x: 4.2, y: 1.3, size: 'sm' },
-    { id: 'v1c', label: 'v1', kind: 'service', x: 4.2, y: 2.3, size: 'sm' },
+    { id: 'u', label: 'Users', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' },
+    { id: 'lb', label: 'Load balancer', kind: 'lb', shape: 'lb', x: 1.8, y: 1.6 },
+    { id: 'v1a', label: 'v1', kind: 'service', shape: 'server', x: 4.2, y: 0.3, size: 'sm' },
+    { id: 'v1b', label: 'v1', kind: 'service', shape: 'server', x: 4.2, y: 1.3, size: 'sm' },
+    { id: 'v1c', label: 'v1', kind: 'service', shape: 'server', x: 4.2, y: 2.3, size: 'sm' },
     { id: 'v2', label: 'v2', kind: 'worker', x: 5.6, y: 1.3, size: 'sm', status: 'dim' },
   ];
   return base.map((n) => ({ ...n, ...over[n.id] }));
@@ -36,9 +36,9 @@ const rolling = (n: number): FlowState => {
 
 const BG = (active: 'blue' | 'green'): FlowState => ({
   nodes: [
-    { id: 'u', label: 'Users', kind: 'client', x: 0, y: 1.6, size: 'sm' },
-    { id: 'lb', label: 'Router', kind: 'lb', x: 1.8, y: 1.6 },
-    { id: 'blue', label: 'Blue (v1)', sub: 'full environment', kind: 'service', x: 4.4, y: 0.5, status: active === 'blue' ? 'active' : 'dim' },
+    { id: 'u', label: 'Users', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' },
+    { id: 'lb', label: 'Router', kind: 'lb', shape: 'lb', x: 1.8, y: 1.6 },
+    { id: 'blue', label: 'Blue (v1)', sub: 'full environment', kind: 'service', shape: 'server', x: 4.4, y: 0.5, status: active === 'blue' ? 'active' : 'dim' },
     { id: 'green', label: 'Green (v2)', sub: 'full environment', kind: 'worker', x: 4.4, y: 2.7, status: active === 'green' ? 'active' : 'dim' },
   ],
   links: [{ from: 'u', to: 'lb' }, { from: 'lb', to: active === 'blue' ? 'blue' : 'green', tone: 'accent' }, { from: 'lb', to: active === 'blue' ? 'green' : 'blue', dashed: true }],
@@ -56,9 +56,9 @@ const canary = (pct: number, healthy: boolean): FlowState => ({
 
 const schema = (stage: 0 | 1 | 2 | 3): FlowState => ({
   nodes: [
-    { id: 'old', label: 'Old code', kind: 'service', x: 0.6, y: 0.5, size: 'sm', status: stage === 3 ? 'dim' : 'normal' },
+    { id: 'old', label: 'Old code', kind: 'service', shape: 'server', x: 0.6, y: 0.5, size: 'sm', status: stage === 3 ? 'dim' : 'normal' },
     { id: 'new', label: 'New code', kind: 'worker', x: 0.6, y: 2.7, size: 'sm', status: stage === 0 ? 'dim' : 'normal' },
-    { id: 'db', label: 'Users table', kind: 'db', x: 3.6, y: 1.6, items: stage === 0 ? ['name'] : stage === 3 ? ['full_name'] : ['name', 'full_name'] },
+    { id: 'db', label: 'Users table', kind: 'db', shape: 'db', x: 3.6, y: 1.6, items: stage === 0 ? ['name'] : stage === 3 ? ['full_name'] : ['name', 'full_name'] },
   ],
   links: [{ from: 'old', to: 'db' }, { from: 'new', to: 'db' }],
   packets: [],

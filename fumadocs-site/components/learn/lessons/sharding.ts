@@ -7,8 +7,8 @@ import type { Stat } from '../types';
  * Placement is computed with a real hash (FNV-1a), so the counts and "moved" numbers on screen are exact.
  */
 
-const APP: FlowNode = { id: 'app', label: 'App', kind: 'service', x: 0.4, y: 0.2, size: 'sm' };
-const ROUTER: FlowNode = { id: 'rt', label: 'Shard router', sub: 'key -> shard', kind: 'gateway', x: 2.8, y: 0.2 };
+const APP: FlowNode = { id: 'app', label: 'App', kind: 'service', shape: 'server', x: 0.4, y: 0.2, size: 'sm' };
+const ROUTER: FlowNode = { id: 'rt', label: 'Shard router', sub: 'key -> shard', kind: 'gateway', shape: 'gateway', x: 2.8, y: 0.2 };
 const SHARD_Y = 2.5;
 const shardX = (i: number, n: number) => (n === 4 ? [0.7, 2.1, 3.5, 4.9] : n === 3 ? [1.4, 2.8, 4.2] : [2.1, 3.5])[i];
 
@@ -71,7 +71,7 @@ const MOVED = KEYS.filter((_, i) => P3[i] !== P4[i]);
 // ---------- Step 1: one primary is full ----------
 
 const ONE: FlowState = {
-  nodes: [APP, { id: 'db', label: 'Primary', sub: 'holds everything', kind: 'db', x: 2.8, y: SHARD_Y, size: 'lg', status: 'hot', meter: meter(0.96, 'size + writes 96%'), items: KEYS }],
+  nodes: [APP, { id: 'db', label: 'Primary', sub: 'holds everything', kind: 'db', shape: 'db', x: 2.8, y: SHARD_Y, size: 'lg', status: 'hot', meter: meter(0.96, 'size + writes 96%'), items: KEYS }],
   links: [{ from: 'app', to: 'db' }],
   packets: [0, 0.2, 0.4, 0.6, 0.8].map((d) => ({ from: 'app', to: 'db', label: 'write', delay: d, dur: 0.8 })),
   stats: [

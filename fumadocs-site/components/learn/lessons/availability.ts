@@ -16,10 +16,10 @@ const hops = (ids: string[], start = 0, dur = 0.55, tone: Packet['tone'] = 'req'
 
 // Step 1: a fault in one component becomes a failure of the whole system.
 const CHAIN: FlowNode[] = [
-  { id: 'client', label: 'Client', kind: 'client', x: 0, y: 1.6 },
-  { id: 'web', label: 'Web', kind: 'service', x: 1.8, y: 1.6 },
-  { id: 'api', label: 'API', kind: 'service', x: 3.6, y: 1.6 },
-  { id: 'db', label: 'Database', sub: 'only one', kind: 'db', x: 5.4, y: 1.6 },
+  { id: 'client', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6 },
+  { id: 'web', label: 'Web', kind: 'service', shape: 'server', x: 1.8, y: 1.6 },
+  { id: 'api', label: 'API', kind: 'service', shape: 'server', x: 3.6, y: 1.6 },
+  { id: 'db', label: 'Database', sub: 'only one', kind: 'db', shape: 'db', x: 5.4, y: 1.6 },
 ];
 const chainLinks = CHAIN.slice(1).map((n, i) => ({ from: CHAIN[i].id, to: n.id }));
 const fault = (down: boolean): FlowState => ({
@@ -72,10 +72,10 @@ const ninesFrame = (shown: number): FlowState => ({
 
 // Step 3: components in series multiply.
 const SER: FlowNode[] = [
-  { id: 'client', label: 'Client', kind: 'client', x: 0, y: 1.6 },
-  { id: 'a', label: 'Service A', sub: '99.9%', kind: 'service', x: 1.6, y: 1.6 },
-  { id: 'b', label: 'Service B', sub: '99.9%', kind: 'service', x: 3.2, y: 1.6 },
-  { id: 'c', label: 'Service C', sub: '99.9%', kind: 'service', x: 4.8, y: 1.6 },
+  { id: 'client', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6 },
+  { id: 'a', label: 'Service A', sub: '99.9%', kind: 'service', shape: 'server', x: 1.6, y: 1.6 },
+  { id: 'b', label: 'Service B', sub: '99.9%', kind: 'service', shape: 'server', x: 3.2, y: 1.6 },
+  { id: 'c', label: 'Service C', sub: '99.9%', kind: 'service', shape: 'server', x: 4.8, y: 1.6 },
 ];
 const serLinks = SER.slice(1).map((n, i) => ({ from: SER[i].id, to: n.id }));
 const seriesFrame = (phase: 0 | 1 | 2): FlowState => ({
@@ -98,10 +98,10 @@ const seriesFrame = (phase: 0 | 1 | 2): FlowState => ({
 });
 
 // Steps 4 and 5: replicas in parallel, then where they live.
-const CLIENT: FlowNode = { id: 'client', label: 'Client', kind: 'client', x: 0, y: 1.6 };
-const LB: FlowNode = { id: 'lb', label: 'Load balancer', kind: 'lb', x: 1.8, y: 1.6 };
-const R1: FlowNode = { id: 'r1', label: 'Replica 1', sub: '99.9%', kind: 'service', x: 3.6, y: 0.8 };
-const R2: FlowNode = { id: 'r2', label: 'Replica 2', sub: '99.9%', kind: 'service', x: 3.6, y: 2.4 };
+const CLIENT: FlowNode = { id: 'client', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6 };
+const LB: FlowNode = { id: 'lb', label: 'Load balancer', kind: 'lb', shape: 'lb', x: 1.8, y: 1.6 };
+const R1: FlowNode = { id: 'r1', label: 'Replica 1', sub: '99.9%', kind: 'service', shape: 'server', x: 3.6, y: 0.8 };
+const R2: FlowNode = { id: 'r2', label: 'Replica 2', sub: '99.9%', kind: 'service', shape: 'server', x: 3.6, y: 2.4 };
 const parLinks = (r1Down: boolean, r2Down = false) => [
   { from: 'client', to: 'lb' },
   { from: 'lb', to: 'r1', dashed: r1Down, tone: r1Down ? ('bad' as const) : undefined },
@@ -156,8 +156,8 @@ const fateFrame = (phase: 'same' | 'same-down' | 'spread' | 'spread-down'): Flow
 
 // Step 6: SLI, SLO, SLA and the error budget.
 const SLO_NODES: FlowNode[] = [
-  { id: 'client', label: 'Users', kind: 'client', x: 0, y: 1.6 },
-  { id: 'svc', label: 'Service', kind: 'service', x: 2.2, y: 1.6 },
+  { id: 'client', label: 'Users', kind: 'client', shape: 'laptop', x: 0, y: 1.6 },
+  { id: 'svc', label: 'Service', kind: 'service', shape: 'server', x: 2.2, y: 1.6 },
   { id: 'mon', label: 'SLO monitor', sub: '99.9% / 30 days', kind: 'monitor', x: 4.6, y: 1.6 },
 ];
 const sloFrame = (phase: 'good' | 'burn'): FlowState => ({

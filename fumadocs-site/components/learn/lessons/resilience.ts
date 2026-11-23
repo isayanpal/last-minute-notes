@@ -17,8 +17,8 @@ function chain(ids: string[], label: string, delay = 0, tone: Packet['tone'] = '
 
 // Step 1: a slow dependency drains the caller's threads.
 const BASIC: FlowNode[] = [
-  { id: 'c', label: 'Client', kind: 'client', x: 0, y: 1.6 },
-  { id: 'svc', label: 'Service', sub: 'calls a dependency', kind: 'service', x: 2.4, y: 1.6 },
+  { id: 'c', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6 },
+  { id: 'svc', label: 'Service', sub: 'calls a dependency', kind: 'service', shape: 'server', x: 2.4, y: 1.6 },
   { id: 'dep', label: 'Dependency', sub: 'slow today', kind: 'db', x: 4.8, y: 1.6, status: 'hot', badge: { text: 'slow', tone: 'bad' } },
 ];
 const BASIC_LINKS = [
@@ -40,10 +40,10 @@ const drain = (busy: number): FlowState => ({
 
 // Step 2: a deadline travels down the chain.
 const DEADLINE_NODES: FlowNode[] = [
-  { id: 'c', label: 'Client', kind: 'client', x: 0, y: 1.6 },
-  { id: 'gw', label: 'Gateway', kind: 'gateway', x: 1.7, y: 1.6 },
-  { id: 'svc', label: 'Service', kind: 'service', x: 3.4, y: 1.6 },
-  { id: 'db', label: 'Database', kind: 'db', x: 5.1, y: 1.6 },
+  { id: 'c', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6 },
+  { id: 'gw', label: 'Gateway', kind: 'gateway', shape: 'gateway', x: 1.7, y: 1.6 },
+  { id: 'svc', label: 'Service', kind: 'service', shape: 'server', x: 3.4, y: 1.6 },
+  { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 5.1, y: 1.6 },
 ];
 const DEADLINE_LINKS = [
   { from: 'c', to: 'gw' },
@@ -131,11 +131,11 @@ function retryFrames(): Frame<FlowState>[] {
 
 // Step 4: retries multiply across layers.
 const LAYERS: FlowNode[] = [
-  { id: 'c', label: 'Client', kind: 'client', x: 0, y: 1.6 },
+  { id: 'c', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6 },
   { id: 'l1', label: 'Layer 1', kind: 'gateway', x: 1.45, y: 1.6 },
-  { id: 'l2', label: 'Layer 2', kind: 'service', x: 2.9, y: 1.6 },
-  { id: 'l3', label: 'Layer 3', kind: 'service', x: 4.35, y: 1.6 },
-  { id: 'db', label: 'Database', kind: 'db', x: 5.8, y: 1.6 },
+  { id: 'l2', label: 'Layer 2', kind: 'service', shape: 'server', x: 2.9, y: 1.6 },
+  { id: 'l3', label: 'Layer 3', kind: 'service', shape: 'server', x: 4.35, y: 1.6 },
+  { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 5.8, y: 1.6 },
 ];
 const LAYER_LINKS = LAYERS.slice(1).map((n, i) => ({ from: LAYERS[i].id, to: n.id }));
 
@@ -170,7 +170,7 @@ function amplify(depth: number, oneLayer = false): FlowState {
 
 // Step 5: the notes' circuit breaker, run call by call.
 const CB_NODES: FlowNode[] = [
-  { id: 'svc', label: 'Service', kind: 'service', x: 0.4, y: 1.6 },
+  { id: 'svc', label: 'Service', kind: 'service', shape: 'server', x: 0.4, y: 1.6 },
   { id: 'cb', label: 'Breaker', sub: 'in the caller', kind: 'gateway', x: 2.6, y: 1.6 },
   { id: 'dep', label: 'Dependency', kind: 'db', x: 4.9, y: 1.6 },
 ];
@@ -256,9 +256,9 @@ const bulkhead = (split: boolean): FlowState => {
   const search = split ? 'sp' : 'pool';
   return {
     nodes: [
-      { id: 'c', label: 'Service', kind: 'service', x: 0.3, y: 1.6 },
+      { id: 'c', label: 'Service', kind: 'service', shape: 'server', x: 0.3, y: 1.6 },
       ...pools,
-      { id: 'pay', label: 'Payments', sub: 'slow', kind: 'external', x: 4.9, y: 0.6, status: 'hot' },
+      { id: 'pay', label: 'Payments', sub: 'slow', kind: 'external', shape: 'cloud', x: 4.9, y: 0.6, status: 'hot' },
       { id: 'srch', label: 'Search', sub: 'healthy', kind: 'search', x: 4.9, y: 2.6 },
     ],
     links: [
@@ -281,9 +281,9 @@ const bulkhead = (split: boolean): FlowState => {
 
 // Step 7: a metastable failure: retries keep the system slow after the trigger is gone.
 const CALLERS: FlowNode[] = [
-  { id: 'c1', label: 'Client', kind: 'client', x: 0, y: 0.5, size: 'sm' },
-  { id: 'c2', label: 'Client', kind: 'client', x: 0, y: 1.6, size: 'sm' },
-  { id: 'c3', label: 'Client', kind: 'client', x: 0, y: 2.7, size: 'sm' },
+  { id: 'c1', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 0.5, size: 'sm' },
+  { id: 'c2', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' },
+  { id: 'c3', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 2.7, size: 'sm' },
 ];
 const meta = (phase: 'trigger' | 'stuck' | 'shed' | 'recovered'): FlowState => {
   const load = { trigger: 0.8, stuck: 1, shed: 0.65, recovered: 0.4 }[phase];
@@ -303,7 +303,7 @@ const meta = (phase: 'trigger' | 'stuck' | 'shed' | 'recovered'): FlowState => {
   return {
     nodes: [
       ...CALLERS,
-      { id: 'svc', label: 'Service', kind: 'service', x: 3.2, y: 1.6, status: load >= 0.8 ? 'hot' : 'normal', badge, meter: meter(load, `load ${Math.round(load * 100)}%`) },
+      { id: 'svc', label: 'Service', kind: 'service', shape: 'server', x: 3.2, y: 1.6, status: load >= 0.8 ? 'hot' : 'normal', badge, meter: meter(load, `load ${Math.round(load * 100)}%`) },
     ],
     links: CALLERS.map((c) => ({ from: c.id, to: 'svc' })),
     packets,
@@ -324,11 +324,11 @@ const meta = (phase: 'trigger' | 'stuck' | 'shed' | 'recovered'): FlowState => {
 // Step 8: the whole call path from the notes' flowchart.
 const RECAP: FlowState = {
   nodes: [
-    { id: 'call', label: 'Caller', sub: 'deadline set', kind: 'client', x: 0, y: 1.1 },
+    { id: 'call', label: 'Caller', sub: 'deadline set', kind: 'client', shape: 'laptop', x: 0, y: 1.1 },
     { id: 'cb', label: 'Breaker', sub: 'open? fail fast', kind: 'gateway', x: 1.6, y: 1.1 },
     { id: 'bh', label: 'Bulkhead', sub: 'limited pool', kind: 'worker', x: 3.2, y: 1.1 },
     { id: 'dep', label: 'Dependency', sub: 'with a timeout', kind: 'db', x: 4.8, y: 1.1 },
-    { id: 'rt', label: 'Retry', sub: 'budget + jitter', kind: 'queue', x: 4.0, y: 2.7 },
+    { id: 'rt', label: 'Retry', sub: 'budget + jitter', kind: 'queue', shape: 'queue', x: 4.0, y: 2.7 },
     { id: 'fb', label: 'Fallback', sub: 'cached or error', kind: 'cache', x: 1.6, y: 2.7 },
   ],
   links: [

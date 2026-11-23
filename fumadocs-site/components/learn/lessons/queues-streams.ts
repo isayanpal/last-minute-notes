@@ -5,7 +5,7 @@ const meter = (value: number, label: string) => ({ value, label, tone: value > 0
 
 const sync = (over: Partial<FlowState> = {}): FlowState => ({
   nodes: [
-    { id: 'p', label: 'Web app', kind: 'service', x: 0.6, y: 1.6 },
+    { id: 'p', label: 'Web app', kind: 'service', shape: 'server', x: 0.6, y: 1.6 },
     { id: 'w', label: 'Email worker', kind: 'worker', x: 4, y: 1.6, status: 'hot', meter: meter(1, 'overloaded') },
   ],
   links: [{ from: 'p', to: 'w', tone: 'bad' }],
@@ -16,8 +16,8 @@ const sync = (over: Partial<FlowState> = {}): FlowState => ({
 
 const queued = (depth: number, packets: Packet[], extra: Partial<FlowState> = {}): FlowState => ({
   nodes: [
-    { id: 'p', label: 'Web app', sub: 'returns at once', kind: 'service', x: 0.6, y: 1.6 },
-    { id: 'q', label: 'Queue', kind: 'queue', x: 2.6, y: 1.6, items: Array.from({ length: Math.min(depth, 4) }, (_, i) => `m${i + 1}`), meter: meter(Math.min(1, depth / 12), `${depth} waiting`) },
+    { id: 'p', label: 'Web app', sub: 'returns at once', kind: 'service', shape: 'server', x: 0.6, y: 1.6 },
+    { id: 'q', label: 'Queue', kind: 'queue', shape: 'queue', x: 2.6, y: 1.6, items: Array.from({ length: Math.min(depth, 4) }, (_, i) => `m${i + 1}`), meter: meter(Math.min(1, depth / 12), `${depth} waiting`) },
     { id: 'w', label: 'Worker', sub: 'steady pace', kind: 'worker', x: 4.8, y: 1.6, meter: meter(0.6, 'steady') },
   ],
   links: [{ from: 'p', to: 'q' }, { from: 'q', to: 'w' }],
@@ -26,10 +26,10 @@ const queued = (depth: number, packets: Packet[], extra: Partial<FlowState> = {}
 });
 
 const PARTS = (hl?: number): FlowNode[] => [
-  { id: 'p', label: 'Producer', kind: 'service', x: 0.4, y: 1.6, size: 'sm' },
-  { id: 't0', label: 'Partition 0', kind: 'queue', x: 2.8, y: 0.4, size: 'sm', status: hl === 0 ? 'active' : 'normal', items: ['u1', 'u1', 'u4'] },
-  { id: 't1', label: 'Partition 1', kind: 'queue', x: 2.8, y: 1.6, size: 'sm', status: hl === 1 ? 'active' : 'normal', items: ['u2', 'u2'] },
-  { id: 't2', label: 'Partition 2', kind: 'queue', x: 2.8, y: 2.8, size: 'sm', status: hl === 2 ? 'active' : 'normal', items: ['u3', 'u5'] },
+  { id: 'p', label: 'Producer', kind: 'service', shape: 'server', x: 0.4, y: 1.6, size: 'sm' },
+  { id: 't0', label: 'Partition 0', kind: 'queue', shape: 'queue', x: 2.8, y: 0.4, size: 'sm', status: hl === 0 ? 'active' : 'normal', items: ['u1', 'u1', 'u4'] },
+  { id: 't1', label: 'Partition 1', kind: 'queue', shape: 'queue', x: 2.8, y: 1.6, size: 'sm', status: hl === 1 ? 'active' : 'normal', items: ['u2', 'u2'] },
+  { id: 't2', label: 'Partition 2', kind: 'queue', shape: 'queue', x: 2.8, y: 2.8, size: 'sm', status: hl === 2 ? 'active' : 'normal', items: ['u3', 'u5'] },
   { id: 'a', label: 'Consumer A', kind: 'worker', x: 5.2, y: 0.4, size: 'sm' },
   { id: 'b', label: 'Consumer B', kind: 'worker', x: 5.2, y: 1.6, size: 'sm' },
   { id: 'c', label: 'Consumer C', kind: 'worker', x: 5.2, y: 2.8, size: 'sm' },
@@ -41,9 +41,9 @@ const PL = [
 
 const redeliver = (stage: 0 | 1 | 2): FlowState => ({
   nodes: [
-    { id: 'q', label: 'Queue', kind: 'queue', x: 1.2, y: 1.6, items: stage === 2 ? ['m1 (again)'] : ['m1'] },
+    { id: 'q', label: 'Queue', kind: 'queue', shape: 'queue', x: 1.2, y: 1.6, items: stage === 2 ? ['m1 (again)'] : ['m1'] },
     { id: 'w', label: 'Consumer', kind: 'worker', x: 3.8, y: 1.6, status: stage === 1 ? 'down' : 'normal', badge: stage === 1 ? { text: 'crash before ack', tone: 'bad' } : stage === 2 ? { text: 'dedupe by id: skip', tone: 'accent' } : undefined },
-    { id: 'db', label: 'Database', kind: 'db', x: 5.5, y: 1.6, items: stage === 0 ? [] : ['m1 done'] },
+    { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 5.5, y: 1.6, items: stage === 0 ? [] : ['m1 done'] },
   ],
   links: [{ from: 'q', to: 'w' }, { from: 'w', to: 'db' }],
   packets: stage === 0 ? [{ from: 'q', to: 'w', label: 'm1', dur: 0.6 }, { from: 'w', to: 'db', label: 'write', delay: 0.6, dur: 0.6 }] : stage === 2 ? [{ from: 'q', to: 'w', label: 'm1 again', tone: 'data', dur: 0.6 }] : [],
@@ -109,9 +109,9 @@ export default defineLesson('flow', {
         {
           state: {
             nodes: [
-              { id: 'q', label: 'Queue', kind: 'queue', x: 0.8, y: 1.6, items: ['bad msg'] },
+              { id: 'q', label: 'Queue', kind: 'queue', shape: 'queue', x: 0.8, y: 1.6, items: ['bad msg'] },
               { id: 'w', label: 'Consumer', kind: 'worker', x: 3, y: 1.6, status: 'hot', badge: { text: 'fails 3 times', tone: 'bad' } },
-              { id: 'dlq', label: 'Dead-letter', sub: 'inspect later', kind: 'queue', x: 5.2, y: 1.6, items: ['bad msg'] },
+              { id: 'dlq', label: 'Dead-letter', sub: 'inspect later', kind: 'queue', shape: 'queue', x: 5.2, y: 1.6, items: ['bad msg'] },
             ],
             links: [{ from: 'q', to: 'w' }, { from: 'w', to: 'dlq', tone: 'bad', dashed: true }],
             packets: [{ from: 'q', to: 'w', label: 'retry', tone: 'bad', dur: 0.5 }, { from: 'w', to: 'dlq', label: 'park', tone: 'bad', delay: 0.9, dur: 0.7 }],

@@ -6,11 +6,11 @@ import { patch } from '../engines/layouts';
  * Layout: one client (x 0), three replicas stacked at x 3.3, an optional stand-in node at x 5.5.
  */
 
-const CLIENT: FlowNode = { id: 'c', label: 'Client', kind: 'client', x: 0, y: 1.6, size: 'sm' };
+const CLIENT: FlowNode = { id: 'c', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' };
 const REPLICAS = (v: [string, string, string]): FlowNode[] => [
-  { id: 'r1', label: 'Replica 1', kind: 'db', x: 3.3, y: 0.2, size: 'sm', items: [v[0]] },
-  { id: 'r2', label: 'Replica 2', kind: 'db', x: 3.3, y: 1.6, size: 'sm', items: [v[1]] },
-  { id: 'r3', label: 'Replica 3', kind: 'db', x: 3.3, y: 3.0, size: 'sm', items: [v[2]] },
+  { id: 'r1', label: 'Replica 1', kind: 'db', shape: 'db', x: 3.3, y: 0.2, size: 'sm', items: [v[0]] },
+  { id: 'r2', label: 'Replica 2', kind: 'db', shape: 'db', x: 3.3, y: 1.6, size: 'sm', items: [v[1]] },
+  { id: 'r3', label: 'Replica 3', kind: 'db', shape: 'db', x: 3.3, y: 3.0, size: 'sm', items: [v[2]] },
 ];
 const LINKS: FlowLink[] = ['r1', 'r2', 'r3'].map((r) => ({ from: 'c', to: r }));
 
@@ -76,7 +76,7 @@ const down = scene(['v2', 'v2', 'v1'], {
   stats: [{ label: 'Down', value: '1 replica' }, { label: 'Writes', value: 'still work', tone: 'ok' }, { label: 'Reads', value: 'still work', tone: 'ok' }],
   note: { text: 'N=3, W=2, R=2 tolerates one failure', tone: 'accent' },
 });
-const STAND_IN: FlowNode = { id: 'h', label: 'Stand-in node', kind: 'db', x: 5.5, y: 3.0, size: 'sm' };
+const STAND_IN: FlowNode = { id: 'h', label: 'Stand-in node', kind: 'db', shape: 'db', x: 5.5, y: 3.0, size: 'sm' };
 const hinted = (phase: 'hint' | 'back'): FlowState => ({
   nodes: [
     CLIENT,
@@ -122,10 +122,10 @@ const repair = (fixed: boolean): FlowState => {
 
 // Step 6: conflicting writes.
 const CONFLICT_NODES = (items: [string[], string[]], badge?: string): FlowNode[] => [
-  { id: 'c1', label: 'Phone', kind: 'client', x: 0, y: 0.4, size: 'sm' },
-  { id: 'c2', label: 'Laptop', kind: 'client', x: 0, y: 2.8, size: 'sm' },
-  { id: 'r1', label: 'Replica A', sub: 'cart', kind: 'db', x: 3.2, y: 0.4, size: 'sm', items: items[0] },
-  { id: 'r2', label: 'Replica B', sub: 'cart', kind: 'db', x: 3.2, y: 2.8, size: 'sm', items: items[1], badge: badge ? { text: badge, tone: 'bad' } : undefined },
+  { id: 'c1', label: 'Phone', kind: 'client', shape: 'phone', x: 0, y: 0.4, size: 'sm' },
+  { id: 'c2', label: 'Laptop', kind: 'client', shape: 'laptop', x: 0, y: 2.8, size: 'sm' },
+  { id: 'r1', label: 'Replica A', sub: 'cart', kind: 'db', shape: 'db', x: 3.2, y: 0.4, size: 'sm', items: items[0] },
+  { id: 'r2', label: 'Replica B', sub: 'cart', kind: 'db', shape: 'db', x: 3.2, y: 2.8, size: 'sm', items: items[1], badge: badge ? { text: badge, tone: 'bad' } : undefined },
 ];
 const CONFLICT_LINKS: FlowLink[] = [
   { from: 'c1', to: 'r1' },

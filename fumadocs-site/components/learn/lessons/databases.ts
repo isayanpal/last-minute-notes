@@ -8,12 +8,12 @@ import type { Stat } from '../types';
  * Every step reuses a small node set and patches statuses, badges and packets per frame.
  */
 
-const APP: FlowNode = { id: 'app', label: 'App server', kind: 'service', x: 0.5, y: 1.6 };
+const APP: FlowNode = { id: 'app', label: 'App server', kind: 'service', shape: 'server', x: 0.5, y: 1.6 };
 
 const meter = (value: number, label: string) => ({ value, label, tone: value > 0.85 ? ('bad' as const) : value > 0.6 ? ('accent' as const) : ('ok' as const) });
 
 // Step 1: one relational database does everything, until it cannot.
-const PG: FlowNode = { id: 'pg', label: 'PostgreSQL', sub: 'one primary', kind: 'db', x: 3.6, y: 1.6, size: 'lg', items: ['users', 'orders', 'payments'] };
+const PG: FlowNode = { id: 'pg', label: 'PostgreSQL', sub: 'one primary', kind: 'db', shape: 'db', x: 3.6, y: 1.6, size: 'lg', items: ['users', 'orders', 'payments'] };
 const SQL_STATS: Stat[] = [
   { label: 'Schema', value: 'fixed' },
   { label: 'Joins', value: 'native', tone: 'ok' },
@@ -31,9 +31,9 @@ const relational = (over: Partial<FlowNode>, packets: Packet[], extra: Partial<F
 const SQL_SCALE: FlowState = {
   nodes: [
     APP,
-    { id: 'pri', label: 'Primary', sub: 'all writes', kind: 'db', x: 2.8, y: 1.6, size: 'lg', meter: meter(0.7, 'bigger box') },
-    { id: 'r1', label: 'Replica', sub: 'reads', kind: 'db', x: 5, y: 0.6, size: 'sm' },
-    { id: 'r2', label: 'Replica', sub: 'reads', kind: 'db', x: 5, y: 2.6, size: 'sm' },
+    { id: 'pri', label: 'Primary', sub: 'all writes', kind: 'db', shape: 'db', x: 2.8, y: 1.6, size: 'lg', meter: meter(0.7, 'bigger box') },
+    { id: 'r1', label: 'Replica', sub: 'reads', kind: 'db', shape: 'db', x: 5, y: 0.6, size: 'sm' },
+    { id: 'r2', label: 'Replica', sub: 'reads', kind: 'db', shape: 'db', x: 5, y: 2.6, size: 'sm' },
   ],
   links: [
     { from: 'app', to: 'pri' },
@@ -112,9 +112,9 @@ const families = (pick: number): FlowState => {
 
 // Step 4: distributed SQL keeps transactions but pays for coordination.
 const RANGES: FlowNode[] = [
-  { id: 'ra', label: 'Range A', sub: 'Raft group', kind: 'db', x: 2.9, y: 0.6, size: 'sm' },
-  { id: 'rb', label: 'Range B', sub: 'Raft group', kind: 'db', x: 2.9, y: 2.6, size: 'sm' },
-  { id: 'rc', label: 'Range C', sub: 'Raft group', kind: 'db', x: 5.2, y: 1.6, size: 'sm' },
+  { id: 'ra', label: 'Range A', sub: 'Raft group', kind: 'db', shape: 'db', x: 2.9, y: 0.6, size: 'sm' },
+  { id: 'rb', label: 'Range B', sub: 'Raft group', kind: 'db', shape: 'db', x: 2.9, y: 2.6, size: 'sm' },
+  { id: 'rc', label: 'Range C', sub: 'Raft group', kind: 'db', shape: 'db', x: 5.2, y: 1.6, size: 'sm' },
 ];
 const distSql = (mode: 'local' | 'cross'): FlowState => ({
   nodes: [
@@ -162,11 +162,11 @@ const distSql = (mode: 'local' | 'cross'): FlowState => ({
 // Step 5: polyglot persistence, one source of truth and derived stores.
 const POLY_NODES: FlowNode[] = [
   { ...APP, x: 0.3 },
-  { id: 'pg', label: 'PostgreSQL', sub: 'source of truth', kind: 'db', x: 2.1, y: 1.6, size: 'lg' },
-  { id: 'cdc', label: 'CDC stream', sub: 'change log', kind: 'queue', x: 3.7, y: 1.6, size: 'sm' },
+  { id: 'pg', label: 'PostgreSQL', sub: 'source of truth', kind: 'db', shape: 'db', x: 2.1, y: 1.6, size: 'lg' },
+  { id: 'cdc', label: 'CDC stream', sub: 'change log', kind: 'queue', shape: 'queue', x: 3.7, y: 1.6, size: 'sm' },
   { id: 'redis', label: 'Redis', sub: 'hot reads', kind: 'cache', x: 5.4, y: 0.4, size: 'sm' },
   { id: 'idx', label: 'Search index', sub: 'derived', kind: 'search', x: 5.4, y: 1.6, size: 'sm' },
-  { id: 'olap', label: 'Analytics', sub: 'derived', kind: 'storage', x: 5.4, y: 2.8, size: 'sm' },
+  { id: 'olap', label: 'Analytics', sub: 'derived', kind: 'storage', shape: 'disk', x: 5.4, y: 2.8, size: 'sm' },
 ];
 const POLY_LINKS = [
   { from: 'app', to: 'pg' },
@@ -190,9 +190,9 @@ const poly = (packets: Packet[], changes: Record<string, Partial<FlowNode>>, not
 
 // Step 6: how rows get their ids.
 const ID_NODES: FlowNode[] = [
-  { id: 'a1', label: 'App 1', kind: 'service', x: 0.6, y: 0.7, size: 'sm' },
-  { id: 'a2', label: 'App 2', kind: 'service', x: 0.6, y: 2.5, size: 'sm' },
-  { id: 'tbl', label: 'orders table', sub: 'B-tree on id', kind: 'db', x: 3.9, y: 1.6, size: 'lg' },
+  { id: 'a1', label: 'App 1', kind: 'service', shape: 'server', x: 0.6, y: 0.7, size: 'sm' },
+  { id: 'a2', label: 'App 2', kind: 'service', shape: 'server', x: 0.6, y: 2.5, size: 'sm' },
+  { id: 'tbl', label: 'orders table', sub: 'B-tree on id', kind: 'db', shape: 'db', x: 3.9, y: 1.6, size: 'lg' },
 ];
 type IdScheme = { name: string; ids: [string, string, string]; badge: FlowState['note']; ordered: string; coord: string; size: string; note: string; gen: 'db' | 'app' };
 const SCHEMES: IdScheme[] = [

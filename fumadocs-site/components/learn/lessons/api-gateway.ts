@@ -7,13 +7,13 @@ import { patch } from '../engines/layouts';
  * The mesh step zooms in on service-to-service traffic with its own 2 x 2 layout.
  */
 
-const WEB: FlowNode = { id: 'web', label: 'Web app', kind: 'client', x: 0, y: 0.8 };
-const MOBILE: FlowNode = { id: 'mobile', label: 'Mobile app', kind: 'client', x: 0, y: 2.4 };
+const WEB: FlowNode = { id: 'web', label: 'Web app', kind: 'client', shape: 'laptop', x: 0, y: 0.8 };
+const MOBILE: FlowNode = { id: 'mobile', label: 'Mobile app', kind: 'client', shape: 'phone', x: 0, y: 2.4 };
 const CLIENTS = [WEB, MOBILE];
 const SERVICES: FlowNode[] = [
-  { id: 'orders', label: 'Orders', kind: 'service', x: 4.4, y: 0.3 },
-  { id: 'users', label: 'Users', kind: 'service', x: 4.4, y: 1.6 },
-  { id: 'pay', label: 'Payments', kind: 'service', x: 4.4, y: 2.9 },
+  { id: 'orders', label: 'Orders', kind: 'service', shape: 'server', x: 4.4, y: 0.3 },
+  { id: 'users', label: 'Users', kind: 'service', shape: 'server', x: 4.4, y: 1.6 },
+  { id: 'pay', label: 'Payments', kind: 'service', shape: 'server', x: 4.4, y: 2.9 },
 ];
 
 const hop = (from: string, to: string, delay = 0, tone: Packet['tone'] = 'req', label?: string): Packet => ({ from, to, delay, dur: 0.6, tone, label });
@@ -33,7 +33,7 @@ const direct = (): FlowState => ({
 });
 
 // Step 2: reverse proxy.
-const PROXY: FlowNode = { id: 'proxy', label: 'Reverse proxy', sub: 'NGINX, Envoy', kind: 'lb', x: 2.1, y: 1.6 };
+const PROXY: FlowNode = { id: 'proxy', label: 'Reverse proxy', sub: 'NGINX, Envoy', kind: 'lb', shape: 'lb', x: 2.1, y: 1.6 };
 const proxyLinks: FlowLink[] = [...CLIENTS.map((c) => ({ from: c.id, to: 'proxy' })), ...SERVICES.map((s) => ({ from: 'proxy', to: s.id }))];
 const proxy = (cached: boolean): FlowState => ({
   nodes: [...CLIENTS, { ...PROXY, items: cached ? ['/home'] : undefined, badge: cached ? { text: 'cache hit', tone: 'ok' } : { text: 'TLS ends here', tone: 'accent' } }, ...SERVICES],
@@ -50,7 +50,7 @@ const proxy = (cached: boolean): FlowState => ({
 });
 
 // Step 3: API gateway.
-const GW: FlowNode = { id: 'gw', label: 'API gateway', sub: 'platform edge', kind: 'gateway', x: 2.1, y: 1.6, items: ['auth', 'limits', 'keys'] };
+const GW: FlowNode = { id: 'gw', label: 'API gateway', sub: 'platform edge', kind: 'gateway', shape: 'gateway', x: 2.1, y: 1.6, items: ['auth', 'limits', 'keys'] };
 const gwLinks: FlowLink[] = [...CLIENTS.map((c) => ({ from: c.id, to: 'gw' })), ...SERVICES.map((s) => ({ from: 'gw', to: s.id }))];
 const gateway = (phase: 'no-key' | 'limited' | 'ok'): FlowState => ({
   nodes: [
@@ -83,8 +83,8 @@ const gateway = (phase: 'no-key' | 'limited' | 'ok'): FlowState => ({
 
 // Step 4: backend for frontend.
 const BFFS: FlowNode[] = [
-  { id: 'wbff', label: 'Web BFF', sub: 'for browsers', kind: 'gateway', x: 2.1, y: 0.8 },
-  { id: 'mbff', label: 'Mobile BFF', sub: 'for phones', kind: 'gateway', x: 2.1, y: 2.4 },
+  { id: 'wbff', label: 'Web BFF', sub: 'for browsers', kind: 'gateway', shape: 'gateway', x: 2.1, y: 0.8 },
+  { id: 'mbff', label: 'Mobile BFF', sub: 'for phones', kind: 'gateway', shape: 'gateway', x: 2.1, y: 2.4 },
 ];
 const bff = (phase: 'fan' | 'reply'): FlowState => ({
   nodes: [...CLIENTS, ...patch(BFFS, { mbff: { status: 'active', badge: phase === 'reply' ? { text: '1 tailored reply', tone: 'ok' } : undefined }, wbff: { status: 'dim' } }), ...SERVICES],
@@ -110,10 +110,10 @@ const bff = (phase: 'fan' | 'reply'): FlowState => ({
 
 // Step 5: service mesh between services.
 const MESH: FlowNode[] = [
-  { id: 'orders', label: 'Orders', kind: 'service', x: 1.2, y: 0.8, items: ['sidecar'] },
-  { id: 'pay', label: 'Payments', kind: 'service', x: 4.4, y: 0.8, items: ['sidecar'] },
-  { id: 'users', label: 'Users', kind: 'service', x: 1.2, y: 2.7, items: ['sidecar'] },
-  { id: 'stock', label: 'Inventory', kind: 'service', x: 4.4, y: 2.7, items: ['sidecar'] },
+  { id: 'orders', label: 'Orders', kind: 'service', shape: 'server', x: 1.2, y: 0.8, items: ['sidecar'] },
+  { id: 'pay', label: 'Payments', kind: 'service', shape: 'server', x: 4.4, y: 0.8, items: ['sidecar'] },
+  { id: 'users', label: 'Users', kind: 'service', shape: 'server', x: 1.2, y: 2.7, items: ['sidecar'] },
+  { id: 'stock', label: 'Inventory', kind: 'service', shape: 'server', x: 4.4, y: 2.7, items: ['sidecar'] },
 ];
 const meshLinks = (failed = false): FlowLink[] => [
   { from: 'orders', to: 'pay', label: 'mTLS', tone: failed ? 'bad' : undefined },

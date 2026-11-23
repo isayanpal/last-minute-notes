@@ -6,16 +6,16 @@ import type { FlowLink, FlowNode, FlowState, Packet } from '../engines/flow';
  * Layout: users at the left (x 0), the edge at x 1.3, app tier at x 2.7, data tier from x 4.1 to the right.
  */
 
-const USER: FlowNode = { id: 'user', label: 'Users', kind: 'client', x: 0, y: 1.6 };
-const LB: FlowNode = { id: 'lb', label: 'Load balancer', kind: 'lb', x: 1.3, y: 1.6 };
-const CDN: FlowNode = { id: 'cdn', label: 'CDN', sub: 'static assets', kind: 'cdn', x: 1.3, y: 0.2 };
-const APP1: FlowNode = { id: 'app1', label: 'App 1', sub: 'stateless', kind: 'service', x: 2.7, y: 0.9 };
-const APP2: FlowNode = { id: 'app2', label: 'App 2', sub: 'stateless', kind: 'service', x: 2.7, y: 2.3 };
-const DB: FlowNode = { id: 'db', label: 'Database', sub: 'primary', kind: 'db', x: 4.3, y: 1.6 };
-const CACHE: FlowNode = { id: 'cache', label: 'Cache', sub: 'Redis', kind: 'cache', x: 4.1, y: 0.3 };
-const SESSIONS: FlowNode = { id: 'sessions', label: 'Session store', sub: 'shared', kind: 'cache', x: 4.1, y: 2.9 };
-const REPLICA: FlowNode = { id: 'replica', label: 'Read replica', sub: 'lags a little', kind: 'db', x: 5.7, y: 1.6 };
-const QUEUE: FlowNode = { id: 'queue', label: 'Queue', kind: 'queue', x: 4.1, y: 3 };
+const USER: FlowNode = { id: 'user', label: 'Users', kind: 'client', shape: 'laptop', x: 0, y: 1.6 };
+const LB: FlowNode = { id: 'lb', label: 'Load balancer', kind: 'lb', shape: 'lb', x: 1.3, y: 1.6 };
+const CDN: FlowNode = { id: 'cdn', label: 'CDN', sub: 'static assets', kind: 'cdn', shape: 'globe', x: 1.3, y: 0.2 };
+const APP1: FlowNode = { id: 'app1', label: 'App 1', sub: 'stateless', kind: 'service', shape: 'server', x: 2.7, y: 0.9 };
+const APP2: FlowNode = { id: 'app2', label: 'App 2', sub: 'stateless', kind: 'service', shape: 'server', x: 2.7, y: 2.3 };
+const DB: FlowNode = { id: 'db', label: 'Database', sub: 'primary', kind: 'db', shape: 'db', x: 4.3, y: 1.6 };
+const CACHE: FlowNode = { id: 'cache', label: 'Cache', sub: 'Redis', kind: 'cache', shape: 'cache', x: 4.1, y: 0.3 };
+const SESSIONS: FlowNode = { id: 'sessions', label: 'Session store', sub: 'shared', kind: 'cache', shape: 'cache', x: 4.1, y: 2.9 };
+const REPLICA: FlowNode = { id: 'replica', label: 'Read replica', sub: 'lags a little', kind: 'db', shape: 'db', x: 5.7, y: 1.6 };
+const QUEUE: FlowNode = { id: 'queue', label: 'Queue', kind: 'queue', shape: 'queue', x: 4.1, y: 3 };
 const WORKER: FlowNode = { id: 'worker', label: 'Workers', sub: 'email, video', kind: 'worker', x: 5.5, y: 3 };
 
 const hops = (ids: string[], start = 0, dur = 0.55, tone: Packet['tone'] = 'req'): Packet[] =>
@@ -176,9 +176,9 @@ const stage7 = (): FlowState => ({
 
 // Stage 8: multi-region.
 const region = (r: 'a' | 'b', y: number, down = false): FlowNode[] => [
-  { id: `lb${r}`, label: 'LB', kind: 'lb', x: 2.6, y, size: 'sm', status: down ? 'down' : 'normal' },
-  { id: `app${r}`, label: 'App servers', kind: 'service', x: 4, y, size: 'sm', status: down ? 'down' : 'normal' },
-  { id: `db${r}`, label: 'Data', kind: 'db', x: 5.4, y, size: 'sm', status: down ? 'down' : 'normal' },
+  { id: `lb${r}`, label: 'LB', kind: 'lb', shape: 'lb', x: 2.6, y, size: 'sm', status: down ? 'down' : 'normal' },
+  { id: `app${r}`, label: 'App servers', kind: 'service', shape: 'server', x: 4, y, size: 'sm', status: down ? 'down' : 'normal' },
+  { id: `db${r}`, label: 'Data', kind: 'db', shape: 'db', x: 5.4, y, size: 'sm', status: down ? 'down' : 'normal' },
 ];
 const stage8 = (outage: boolean): FlowState => ({
   nodes: [USER, { id: 'geo', label: 'Geo routing', sub: 'DNS', kind: 'dns', x: 1.2, y: 1.6 }, ...region('a', 0.6, outage), ...region('b', 2.7)],

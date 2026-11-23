@@ -1,7 +1,7 @@
 import { defineLesson } from '../define';
 import type { FlowLink, FlowNode, FlowState, Packet } from '../engines/flow';
 
-const CLIENT: FlowNode = { id: 'c', label: 'Clients', kind: 'client', x: 0, y: 1.6, size: 'sm' };
+const CLIENT: FlowNode = { id: 'c', label: 'Clients', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' };
 
 const mod = (id: string, label: string, x: number, y: number, over: Partial<FlowNode> = {}): FlowNode => ({ id, label, kind: 'service', x, y, size: 'sm', ...over });
 
@@ -9,8 +9,8 @@ const mod = (id: string, label: string, x: number, y: number, over: Partial<Flow
 const MONOLITH: FlowState = {
   nodes: [
     CLIENT,
-    { id: 'm', label: 'Monolith', sub: 'one deploy', kind: 'service', x: 2.6, y: 1.6, size: 'lg', items: ['users', 'orders', 'search', 'billing'], status: 'hot' },
-    { id: 'db', label: 'Database', kind: 'db', x: 5.2, y: 1.6 },
+    { id: 'm', label: 'Monolith', sub: 'one deploy', kind: 'service', shape: 'server', x: 2.6, y: 1.6, size: 'lg', items: ['users', 'orders', 'search', 'billing'], status: 'hot' },
+    { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 5.2, y: 1.6 },
   ],
   links: [
     { from: 'c', to: 'm' },
@@ -35,7 +35,7 @@ const MODULAR_NODES: FlowNode[] = [
   mod('orders', 'Orders', 3.5, 0.3),
   mod('billing', 'Billing', 2.0, 2.7),
   mod('search', 'Search', 3.5, 2.7),
-  { id: 'db', label: 'Database', kind: 'db', x: 5.4, y: 1.6, size: 'sm' },
+  { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 5.4, y: 1.6, size: 'sm' },
 ];
 const MODULAR: FlowState = {
   nodes: MODULAR_NODES,
@@ -67,9 +67,9 @@ const SPLIT: FlowState = {
     mod('users', 'Users', 1.9, 0.3),
     mod('orders', 'Orders', 3.4, 0.3),
     mod('billing', 'Billing', 2.6, 1.5),
-    { id: 'db', label: 'Database', kind: 'db', x: 5.3, y: 0.3, size: 'sm' },
+    { id: 'db', label: 'Database', kind: 'db', shape: 'db', x: 5.3, y: 0.3, size: 'sm' },
     { id: 'search', label: 'Search svc', sub: 'own deploy', kind: 'search', x: 3.0, y: 2.9, badge: { text: 'scales to 20 pods', tone: 'accent' } },
-    { id: 'idx', label: 'Index', kind: 'storage', x: 5.3, y: 2.9, size: 'sm' },
+    { id: 'idx', label: 'Index', kind: 'storage', shape: 'disk', x: 5.3, y: 2.9, size: 'sm' },
   ],
   links: [
     { from: 'c', to: 'users' },
@@ -97,7 +97,7 @@ const SHARED: FlowState = {
   nodes: [
     mod('orders', 'Orders svc', 1.0, 0.6, { size: 'md' }),
     mod('billing', 'Billing svc', 1.0, 2.7, { size: 'md' }),
-    { id: 'db', label: 'Shared DB', sub: 'same tables', kind: 'db', x: 4.4, y: 1.65, status: 'hot', badge: { text: 'distributed monolith', tone: 'bad' } },
+    { id: 'db', label: 'Shared DB', sub: 'same tables', kind: 'db', shape: 'db', x: 4.4, y: 1.65, status: 'hot', badge: { text: 'distributed monolith', tone: 'bad' } },
   ],
   links: [
     { from: 'orders', to: 'db', tone: 'bad' },
@@ -118,8 +118,8 @@ const OWNED: FlowState = {
   nodes: [
     mod('orders', 'Orders svc', 1.0, 0.6, { size: 'md' }),
     mod('billing', 'Billing svc', 1.0, 2.7, { size: 'md' }),
-    { id: 'odb', label: 'Orders DB', kind: 'db', x: 4.6, y: 0.6, size: 'md' },
-    { id: 'bdb', label: 'Billing DB', kind: 'db', x: 4.6, y: 2.7, size: 'md' },
+    { id: 'odb', label: 'Orders DB', kind: 'db', shape: 'db', x: 4.6, y: 0.6, size: 'md' },
+    { id: 'bdb', label: 'Billing DB', kind: 'db', shape: 'db', x: 4.6, y: 2.7, size: 'md' },
   ],
   links: [
     { from: 'orders', to: 'odb' },
@@ -168,7 +168,7 @@ const EVENTS: FlowState = {
   nodes: [
     CLIENT,
     mod('o', 'Orders', 1.5, 1.6),
-    { id: 'q', label: 'Event bus', sub: 'OrderPlaced', kind: 'queue', x: 3.1, y: 1.6, size: 'sm' },
+    { id: 'q', label: 'Event bus', sub: 'OrderPlaced', kind: 'queue', shape: 'queue', x: 3.1, y: 1.6, size: 'sm' },
     mod('p', 'Pricing', 4.9, 0.4),
     mod('i', 'Inventory', 4.9, 1.6),
     mod('n', 'Email', 4.9, 2.8),

@@ -9,16 +9,16 @@ import type { Stat } from '../types';
  */
 
 const USERS: FlowNode[] = [
-  { id: 'u1', label: 'User', sub: 'in Asia', kind: 'client', x: 0, y: 0.6, size: 'sm' },
-  { id: 'u2', label: 'User', sub: 'in the US', kind: 'client', x: 0, y: 2.6, size: 'sm' },
+  { id: 'u1', label: 'User', sub: 'in Asia', kind: 'client', shape: 'laptop', x: 0, y: 0.6, size: 'sm' },
+  { id: 'u2', label: 'User', sub: 'in the US', kind: 'client', shape: 'laptop', x: 0, y: 2.6, size: 'sm' },
 ];
 const REGION_A: FlowNode[] = [
-  { id: 'appA', label: 'App', kind: 'service', x: 2.6, y: 0.6 },
-  { id: 'dbA', label: 'Database', kind: 'db', x: 4.2, y: 0.6 },
+  { id: 'appA', label: 'App', kind: 'service', shape: 'server', x: 2.6, y: 0.6 },
+  { id: 'dbA', label: 'Database', kind: 'db', shape: 'db', x: 4.2, y: 0.6 },
 ];
 const REGION_B: FlowNode[] = [
-  { id: 'appB', label: 'App', kind: 'service', x: 2.6, y: 2.6 },
-  { id: 'dbB', label: 'Database', kind: 'db', x: 4.2, y: 2.6 },
+  { id: 'appB', label: 'App', kind: 'service', shape: 'server', x: 2.6, y: 2.6 },
+  { id: 'dbB', label: 'Database', kind: 'db', shape: 'db', x: 4.2, y: 2.6 },
 ];
 const groups = (aTone?: FlowGroup['tone'], bTone?: FlowGroup['tone']): FlowGroup[] => [
   { label: 'ap-south', nodes: ['appA', 'dbA'], tone: aTone },
@@ -53,13 +53,13 @@ const single = (down: boolean): FlowState => ({
 
 // Step 2: multi-AZ in one region, plus backups elsewhere.
 const AZ: FlowNode[] = [
-  { id: 'u', label: 'Users', kind: 'client', x: 0, y: 1.6 },
-  { id: 'lb', label: 'Load balancer', kind: 'lb', x: 1.5, y: 1.6 },
-  { id: 'a1', label: 'App', kind: 'service', x: 3.0, y: 0.6 },
-  { id: 'd1', label: 'Primary DB', kind: 'db', x: 4.4, y: 0.6 },
-  { id: 'a2', label: 'App', kind: 'service', x: 3.0, y: 2.6 },
-  { id: 'd2', label: 'Standby DB', kind: 'db', x: 4.4, y: 2.6 },
-  { id: 'bk', label: 'Backups', sub: 'other region', kind: 'storage', x: 5.8, y: 1.6 },
+  { id: 'u', label: 'Users', kind: 'client', shape: 'laptop', x: 0, y: 1.6 },
+  { id: 'lb', label: 'Load balancer', kind: 'lb', shape: 'lb', x: 1.5, y: 1.6 },
+  { id: 'a1', label: 'App', kind: 'service', shape: 'server', x: 3.0, y: 0.6 },
+  { id: 'd1', label: 'Primary DB', kind: 'db', shape: 'db', x: 4.4, y: 0.6 },
+  { id: 'a2', label: 'App', kind: 'service', shape: 'server', x: 3.0, y: 2.6 },
+  { id: 'd2', label: 'Standby DB', kind: 'db', shape: 'db', x: 4.4, y: 2.6 },
+  { id: 'bk', label: 'Backups', sub: 'other region', kind: 'storage', shape: 'disk', x: 5.8, y: 1.6 },
 ];
 const multiAz = (zoneDown: boolean): FlowState => ({
   nodes: patch(

@@ -7,15 +7,15 @@ import { patch } from '../engines/layouts';
  */
 
 const CLIENTS: FlowNode[] = [
-  { id: 'c1', label: 'Client', kind: 'client', x: 0, y: 0.4, size: 'sm' },
-  { id: 'c2', label: 'Client', kind: 'client', x: 0, y: 1.6, size: 'sm' },
-  { id: 'c3', label: 'Client', kind: 'client', x: 0, y: 2.8, size: 'sm' },
+  { id: 'c1', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 0.4, size: 'sm' },
+  { id: 'c2', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' },
+  { id: 'c3', label: 'Client', kind: 'client', shape: 'laptop', x: 0, y: 2.8, size: 'sm' },
 ];
-const LB: FlowNode = { id: 'lb', label: 'Load balancer', sub: 'one stable address', kind: 'lb', x: 2.3, y: 1.6 };
+const LB: FlowNode = { id: 'lb', label: 'Load balancer', sub: 'one stable address', kind: 'lb', shape: 'lb', x: 2.3, y: 1.6 };
 const SERVERS: FlowNode[] = [
-  { id: 's1', label: 'Server 1', kind: 'service', x: 4.8, y: 0.3 },
-  { id: 's2', label: 'Server 2', kind: 'service', x: 4.8, y: 1.6 },
-  { id: 's3', label: 'Server 3', kind: 'service', x: 4.8, y: 2.9 },
+  { id: 's1', label: 'Server 1', kind: 'service', shape: 'server', x: 4.8, y: 0.3 },
+  { id: 's2', label: 'Server 2', kind: 'service', shape: 'server', x: 4.8, y: 1.6 },
+  { id: 's3', label: 'Server 3', kind: 'service', shape: 'server', x: 4.8, y: 2.9 },
 ];
 
 const links = (servers: FlowNode[], lb = 'lb'): FlowLink[] => [
@@ -33,7 +33,7 @@ const meter = (value: number, label: string) => ({ value, label, tone: value > 0
 
 // Step 1: everyone hits one box.
 const single: FlowState = {
-  nodes: [...CLIENTS, { id: 'solo', label: 'Server', sub: 'the only one', kind: 'service', x: 4.2, y: 1.6, status: 'hot', meter: meter(0.97, 'CPU 97%') }],
+  nodes: [...CLIENTS, { id: 'solo', label: 'Server', sub: 'the only one', kind: 'service', shape: 'server', x: 4.2, y: 1.6, status: 'hot', meter: meter(0.97, 'CPU 97%') }],
   links: CLIENTS.map((c) => ({ from: c.id, to: 'solo' })),
   packets: CLIENTS.map((c, i) => ({ from: c.id, to: 'solo', delay: i * 0.25 })),
   stats: [
@@ -93,10 +93,10 @@ const health = (s3: 'normal' | 'down', extra: Partial<FlowState> = {}): FlowStat
 const L7_NODES: FlowNode[] = [
   ...CLIENTS,
   { ...LB, label: 'L7 balancer', sub: 'reads the HTTP path' },
-  { id: 'a1', label: 'API', sub: '/api/*', kind: 'service', x: 4.6, y: 0.3, size: 'sm' },
-  { id: 'a2', label: 'API', sub: '/api/*', kind: 'service', x: 5.7, y: 0.9, size: 'sm' },
-  { id: 'i1', label: 'Images', sub: '/img/*', kind: 'storage', x: 4.6, y: 2.5, size: 'sm' },
-  { id: 'i2', label: 'Images', sub: '/img/*', kind: 'storage', x: 5.7, y: 3.1, size: 'sm' },
+  { id: 'a1', label: 'API', sub: '/api/*', kind: 'service', shape: 'server', x: 4.6, y: 0.3, size: 'sm' },
+  { id: 'a2', label: 'API', sub: '/api/*', kind: 'service', shape: 'server', x: 5.7, y: 0.9, size: 'sm' },
+  { id: 'i1', label: 'Images', sub: '/img/*', kind: 'storage', shape: 'disk', x: 4.6, y: 2.5, size: 'sm' },
+  { id: 'i2', label: 'Images', sub: '/img/*', kind: 'storage', shape: 'disk', x: 5.7, y: 3.1, size: 'sm' },
 ];
 const l7 = (packets: Packet[], note?: FlowState['note']): FlowState => ({
   nodes: L7_NODES,
@@ -118,7 +118,7 @@ const l7 = (packets: Packet[], note?: FlowState['note']): FlowState => ({
 const pair = (activeDown: boolean): FlowState => ({
   nodes: [
     ...CLIENTS,
-    { id: 'lbA', label: 'LB active', kind: 'lb', x: 2.3, y: 0.9, status: activeDown ? 'down' : 'active', badge: activeDown ? undefined : { text: 'owns VIP 10.0.0.5', tone: 'accent' } },
+    { id: 'lbA', label: 'LB active', kind: 'lb', shape: 'lb', x: 2.3, y: 0.9, status: activeDown ? 'down' : 'active', badge: activeDown ? undefined : { text: 'owns VIP 10.0.0.5', tone: 'accent' } },
     { id: 'lbB', label: activeDown ? 'LB (now active)' : 'LB standby', kind: 'lb', x: 2.3, y: 2.4, status: activeDown ? 'active' : 'dim', badge: activeDown ? { text: 'took over VIP', tone: 'accent' } : undefined },
     ...SERVERS,
   ],
@@ -148,14 +148,14 @@ const pair = (activeDown: boolean): FlowState => ({
 // Global: DNS or anycast picks a region, a regional LB picks a server.
 const GLOBAL: FlowState = {
   nodes: [
-    { id: 'u', label: 'User', sub: 'in Mumbai', kind: 'client', x: 0, y: 1.6 },
+    { id: 'u', label: 'User', sub: 'in Mumbai', kind: 'client', shape: 'laptop', x: 0, y: 1.6 },
     { id: 'dns', label: 'GeoDNS', sub: 'or anycast', kind: 'dns', x: 1.8, y: 1.6 },
-    { id: 'lbE', label: 'LB', kind: 'lb', x: 3.6, y: 0.5, size: 'sm' },
-    { id: 'sE1', label: 'Server', kind: 'service', x: 5.2, y: 0.2, size: 'sm' },
-    { id: 'sE2', label: 'Server', kind: 'service', x: 5.2, y: 0.95, size: 'sm' },
-    { id: 'lbW', label: 'LB', kind: 'lb', x: 3.6, y: 2.75, size: 'sm', status: 'dim' },
-    { id: 'sW1', label: 'Server', kind: 'service', x: 5.2, y: 2.45, size: 'sm', status: 'dim' },
-    { id: 'sW2', label: 'Server', kind: 'service', x: 5.2, y: 3.2, size: 'sm', status: 'dim' },
+    { id: 'lbE', label: 'LB', kind: 'lb', shape: 'lb', x: 3.6, y: 0.5, size: 'sm' },
+    { id: 'sE1', label: 'Server', kind: 'service', shape: 'server', x: 5.2, y: 0.2, size: 'sm' },
+    { id: 'sE2', label: 'Server', kind: 'service', shape: 'server', x: 5.2, y: 0.95, size: 'sm' },
+    { id: 'lbW', label: 'LB', kind: 'lb', shape: 'lb', x: 3.6, y: 2.75, size: 'sm', status: 'dim' },
+    { id: 'sW1', label: 'Server', kind: 'service', shape: 'server', x: 5.2, y: 2.45, size: 'sm', status: 'dim' },
+    { id: 'sW2', label: 'Server', kind: 'service', shape: 'server', x: 5.2, y: 3.2, size: 'sm', status: 'dim' },
   ],
   links: [
     { from: 'u', to: 'dns' },

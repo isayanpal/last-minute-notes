@@ -9,10 +9,10 @@ import type { Stat } from '../types';
  */
 
 const BASE: FlowNode[] = [
-  { id: 'w', label: 'Writer', kind: 'client', x: 0, y: 1.6, size: 'sm' },
-  { id: 'r1', label: 'Replica 1', kind: 'db', x: 1.9, y: 1.6 },
-  { id: 'r2', label: 'Replica 2', kind: 'db', x: 4.1, y: 1.6 },
-  { id: 'rd', label: 'Reader', kind: 'client', x: 6, y: 1.6, size: 'sm' },
+  { id: 'w', label: 'Writer', kind: 'client', shape: 'laptop', x: 0, y: 1.6, size: 'sm' },
+  { id: 'r1', label: 'Replica 1', kind: 'db', shape: 'db', x: 1.9, y: 1.6 },
+  { id: 'r2', label: 'Replica 2', kind: 'db', shape: 'db', x: 4.1, y: 1.6 },
+  { id: 'rd', label: 'Reader', kind: 'client', shape: 'laptop', x: 6, y: 1.6, size: 'sm' },
 ];
 
 type Opts = {
@@ -76,10 +76,10 @@ const DOMAINS: FlowNode[] = [
   { id: 'cart', label: 'Shopping cart', kind: 'client', x: 0.3, y: 3.0, size: 'sm' },
 ];
 const STORES: FlowNode[] = [
-  { id: 'etcd', label: 'etcd', sub: 'ZooKeeper', kind: 'db', x: 3.7, y: 0.5, size: 'sm' },
-  { id: 'span', label: 'Spanner', sub: 'HBase', kind: 'db', x: 5.1, y: 0.5, size: 'sm' },
-  { id: 'cass', label: 'Cassandra', sub: 'Riak', kind: 'db', x: 3.7, y: 2.7, size: 'sm' },
-  { id: 'dyn', label: 'DynamoDB', sub: 'default reads', kind: 'db', x: 5.1, y: 2.7, size: 'sm' },
+  { id: 'etcd', label: 'etcd', sub: 'ZooKeeper', kind: 'db', shape: 'db', x: 3.7, y: 0.5, size: 'sm' },
+  { id: 'span', label: 'Spanner', sub: 'HBase', kind: 'db', shape: 'db', x: 5.1, y: 0.5, size: 'sm' },
+  { id: 'cass', label: 'Cassandra', sub: 'Riak', kind: 'db', shape: 'db', x: 3.7, y: 2.7, size: 'sm' },
+  { id: 'dyn', label: 'DynamoDB', sub: 'default reads', kind: 'db', shape: 'db', x: 5.1, y: 2.7, size: 'sm' },
 ];
 
 const domain = (id: string, to: string, lean: 'C' | 'A', why: string): FlowState => ({
@@ -104,10 +104,10 @@ const domain = (id: string, to: string, lean: 'C' | 'A', why: string): FlowState
 
 const RECAP: FlowState = {
   nodes: [
-    { id: 'pa', label: 'Cassandra', sub: 'PA / EL', kind: 'db', x: 1.4, y: 0.7, badge: { text: 'DynamoDB, Riak' } },
-    { id: 'pc', label: 'Spanner', sub: 'PC / EC', kind: 'db', x: 4.6, y: 0.7, badge: { text: 'CockroachDB, etcd' } },
-    { id: 'mg', label: 'MongoDB', sub: 'PA-ish / EC', kind: 'db', x: 1.4, y: 2.7, badge: { text: 'default settings' } },
-    { id: 'pn', label: 'PNUTS', sub: 'PC / EL', kind: 'db', x: 4.6, y: 2.7 },
+    { id: 'pa', label: 'Cassandra', sub: 'PA / EL', kind: 'db', shape: 'db', x: 1.4, y: 0.7, badge: { text: 'DynamoDB, Riak' } },
+    { id: 'pc', label: 'Spanner', sub: 'PC / EC', kind: 'db', shape: 'db', x: 4.6, y: 0.7, badge: { text: 'CockroachDB, etcd' } },
+    { id: 'mg', label: 'MongoDB', sub: 'PA-ish / EC', kind: 'db', shape: 'db', x: 1.4, y: 2.7, badge: { text: 'default settings' } },
+    { id: 'pn', label: 'PNUTS', sub: 'PC / EL', kind: 'db', shape: 'db', x: 4.6, y: 2.7 },
   ],
   stats: [
     { label: 'If partition', value: 'A or C' },

@@ -6,10 +6,10 @@ import type { FlowNode, FlowState, Packet } from '../engines/flow';
  * Status codes, error table and probe split come from the Backend Fundamentals notes.
  */
 
-const BROWSER: FlowNode = { id: 'b', label: 'Browser', kind: 'client', x: 0.2, y: 1.7 };
+const BROWSER: FlowNode = { id: 'b', label: 'Browser', kind: 'client', shape: 'laptop', x: 0.2, y: 1.7 };
 const EDGE: FlowNode = { id: 'e', label: 'Edge', sub: 'CDN, LB, gateway', kind: 'lb', x: 1.9, y: 1.7 };
-const SERVER: FlowNode = { id: 's', label: 'Server', sub: 'your app', kind: 'service', x: 3.7, y: 1.7 };
-const DB: FlowNode = { id: 'd', label: 'Database', kind: 'db', x: 5.5, y: 1.7 };
+const SERVER: FlowNode = { id: 's', label: 'Server', sub: 'your app', kind: 'service', shape: 'server', x: 3.7, y: 1.7 };
+const DB: FlowNode = { id: 'd', label: 'Database', kind: 'db', shape: 'db', x: 5.5, y: 1.7 };
 const LINKS = [
   { from: 'b', to: 'e' },
   { from: 'e', to: 's' },
@@ -96,10 +96,10 @@ const failure = (f: Failure): FlowState => ({
 // Step 6: liveness is shallow, readiness is per instance. The LB routes only to ready ones.
 const probes = (ready: boolean): FlowState => ({
   nodes: [
-    { id: 'lb', label: 'Load balancer', kind: 'lb', x: 0.4, y: 1.7 },
-    { id: 'a', label: 'Instance A', sub: '/readyz ok', kind: 'service', x: 3.4, y: 0.7, badge: { text: 'ready', tone: 'ok' } },
-    { id: 'c', label: 'Instance B', sub: ready ? '/readyz ok' : '/readyz fails', kind: 'service', x: 3.4, y: 2.8, status: ready ? 'normal' : 'hot', badge: { text: ready ? 'ready' : 'not ready', tone: ready ? 'ok' : 'bad' } },
-    { id: 'd', label: 'Database', kind: 'db', x: 5.7, y: 1.7 },
+    { id: 'lb', label: 'Load balancer', kind: 'lb', shape: 'lb', x: 0.4, y: 1.7 },
+    { id: 'a', label: 'Instance A', sub: '/readyz ok', kind: 'service', shape: 'server', x: 3.4, y: 0.7, badge: { text: 'ready', tone: 'ok' } },
+    { id: 'c', label: 'Instance B', sub: ready ? '/readyz ok' : '/readyz fails', kind: 'service', shape: 'server', x: 3.4, y: 2.8, status: ready ? 'normal' : 'hot', badge: { text: ready ? 'ready' : 'not ready', tone: ready ? 'ok' : 'bad' } },
+    { id: 'd', label: 'Database', kind: 'db', shape: 'db', x: 5.7, y: 1.7 },
   ],
   links: [{ from: 'lb', to: 'a' }, { from: 'lb', to: 'c', dashed: !ready }, { from: 'a', to: 'd' }, { from: 'c', to: 'd' }],
   packets: ready
