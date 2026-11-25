@@ -93,7 +93,7 @@ Do it in one sitting with a timer and no notes.
 
 ### Day 1: Arrays & Hashing
 
-Notes: none yet, see [Patterns With No Notes Page Yet](#patterns-with-no-notes-page-yet)
+Notes: [Collision Handling](/docs/dsa/hashing-deep-dive#1-collision-handling), [Resizing and Rehashing](/docs/dsa/hashing-deep-dive#2-resizing-and-rehashing), [Prefix Sum and Hash Map](/docs/dsa/pattern-playbook#61-prefix-sum-and-hash-map)
 
 | # | Problem | Difficulty |
 | --- | --- | --- |
@@ -153,7 +153,7 @@ Notes: [Modified Binary Search](/docs/dsa/trees-graphs-and-search#6-modified-bin
 
 ### Day 6: Linked List
 
-Notes: [In-Place Reversal](/docs/dsa/arrays-and-linked-lists#7-in-place-reversal-of-a-linked-list)
+Notes: [In-Place Reversal](/docs/dsa/arrays-and-linked-lists#7-in-place-reversal-of-a-linked-list), [Doubly Linked Lists](/docs/dsa/memory-and-linear-structures#2-doubly-linked-lists)
 
 | # | Problem | Difficulty |
 | --- | --- | --- |
@@ -225,7 +225,7 @@ Notes: [Merge Intervals](/docs/dsa/arrays-and-linked-lists#5-merge-intervals)
 
 ### Day 12: Greedy
 
-Notes: [Greedy](/docs/dsa/pattern-playbook#67-greedy)
+Notes: [Greedy](/docs/dsa/pattern-playbook#67-greedy), [Maximum Subarray (Kadane)](/docs/dsa/subarrays-and-string-matching#1-maximum-subarray-kadane)
 
 | # | Problem | Difficulty |
 | --- | --- | --- |
@@ -261,7 +261,7 @@ Notes: [Tree Breadth-First Search](/docs/dsa/trees-graphs-and-search#2-tree-brea
 
 ### Day 15: Binary Search Trees
 
-Notes: [Tree Depth-First Search](/docs/dsa/trees-graphs-and-search#3-tree-depth-first-search)
+Notes: [Tree Depth-First Search](/docs/dsa/trees-graphs-and-search#3-tree-depth-first-search), [BST Deletion](/docs/dsa/advanced-trees#1-bst-deletion), [Balanced Trees](/docs/dsa/advanced-trees#2-balanced-trees-avl-and-red-black)
 
 | # | Problem | Difficulty |
 | --- | --- | --- |
@@ -273,7 +273,7 @@ Notes: [Tree Depth-First Search](/docs/dsa/trees-graphs-and-search#3-tree-depth-
 
 ### Day 16: Backtracking
 
-Notes: [Subsets and Backtracking](/docs/dsa/trees-graphs-and-search#5-subsets-and-backtracking)
+Notes: [Subsets and Backtracking](/docs/dsa/trees-graphs-and-search#5-subsets-and-backtracking), [Solving a Maze](/docs/dsa/graphs-search-and-complexity#3-solving-a-maze-backtracking)
 
 | # | Problem | Difficulty |
 | --- | --- | --- |
@@ -381,7 +381,7 @@ Notes: [Trie](/docs/dsa/pattern-playbook#65-trie)
 
 ### Day 25: Bit Manipulation
 
-Notes: [Bit Manipulation](/docs/dsa/pattern-playbook#68-bit-manipulation)
+Notes: [Bit Manipulation](/docs/dsa/pattern-playbook#68-bit-manipulation), [Bitsets](/docs/dsa/memory-and-linear-structures#4-bitsets)
 
 | # | Problem | Difficulty |
 | --- | --- | --- |
@@ -393,7 +393,7 @@ Notes: [Bit Manipulation](/docs/dsa/pattern-playbook#68-bit-manipulation)
 
 ### Day 26: Advanced Graphs
 
-Notes: [Dijkstra](/docs/dsa/pattern-playbook#66-dijkstra-weighted-shortest-path)
+Notes: [Dijkstra](/docs/dsa/pattern-playbook#66-dijkstra-weighted-shortest-path), [Prim's Algorithm](/docs/dsa/graphs-search-and-complexity#2-prims-algorithm), [Strongly Connected Components](/docs/dsa/graphs-search-and-complexity#1-strongly-connected-components)
 
 | # | Problem | Difficulty |
 | --- | --- | --- |
@@ -405,7 +405,7 @@ Notes: [Dijkstra](/docs/dsa/pattern-playbook#66-dijkstra-weighted-shortest-path)
 
 ### Day 27: Advanced Strings
 
-Notes: none yet, see [Patterns With No Notes Page Yet](#patterns-with-no-notes-page-yet)
+Notes: [Pattern Matching](/docs/dsa/subarrays-and-string-matching#2-pattern-matching), [KMP Search](/docs/dsa/subarrays-and-string-matching#3-kmp-search), [Dynamic Programming Recipe](/docs/dsa/pattern-playbook#64-dynamic-programming-recipe)
 
 | # | Problem | Difficulty |
 | --- | --- | --- |
@@ -417,7 +417,7 @@ Notes: none yet, see [Patterns With No Notes Page Yet](#patterns-with-no-notes-p
 
 ### Day 28: Advanced Data Structures
 
-Notes: none yet, see [Patterns With No Notes Page Yet](#patterns-with-no-notes-page-yet)
+Notes: [Doubly Linked Lists](/docs/dsa/memory-and-linear-structures#2-doubly-linked-lists) (includes an LRU Cache), [Circular Buffer](/docs/dsa/memory-and-linear-structures#3-circular-buffer), [Hash Collisions](/docs/dsa/hashing-deep-dive#1-collision-handling)
 
 | # | Problem | Difficulty |
 | --- | --- | --- |
@@ -477,15 +477,27 @@ That is intentional revision, not a typo in the list.
 
 ## Patterns With No Notes Page Yet
 
-The 14 pattern pages and the Playbook cover most days.
-These days have no matching note here yet:
+The 14 pattern pages, the Playbook, and the newer deep-dive pages cover most days.
+These days still have a gap, and each one points at the closest note:
 
-- **Day 1, Arrays and Hashing:** hash map and hash set lookups.
-  The Playbook's [complexity cheat sheet](/docs/dsa/pattern-playbook#5-complexity-cheat-sheet) has the costs.
+- **Day 1, Arrays and Hashing:** the hash map and hash set lookup pattern itself (Two Sum, Group Anagrams).
+  [Collision Handling](/docs/dsa/hashing-deep-dive#1-collision-handling) explains how the table works inside, and the Playbook's [complexity cheat sheet](/docs/dsa/pattern-playbook#5-complexity-cheat-sheet) has the costs.
 - **Day 8, Stack:** matching and evaluation with a plain stack.
   [Monotonic Stack](/docs/dsa/pattern-playbook#62-monotonic-stack) is the closest note.
 - **Day 27, Advanced Strings:** expand-around-center palindromes and string encoding.
-  The [Dynamic Programming Recipe](/docs/dsa/pattern-playbook#64-dynamic-programming-recipe) covers the Word Break and Longest Common Subsequence style of DP.
-- **Day 28, Advanced Data Structures:** LRU, LFU, and other design problems that combine a hash map with a linked list or heap.
+  [Pattern Matching](/docs/dsa/subarrays-and-string-matching#2-pattern-matching) and [KMP Search](/docs/dsa/subarrays-and-string-matching#3-kmp-search) now cover substring search, and the [Dynamic Programming Recipe](/docs/dsa/pattern-playbook#64-dynamic-programming-recipe) covers the Word Break and Longest Common Subsequence style of DP.
+- **Day 28, Advanced Data Structures:** LFU and the design problems built on a heap.
+  The [Doubly Linked Lists](/docs/dsa/memory-and-linear-structures#2-doubly-linked-lists) section now has the hash map plus linked list design behind LRU Cache.
 - **Day 30, Final Interview Simulation:** mixed problems.
   Use the Playbook's [decision flow](/docs/dsa/pattern-playbook#2-a-decision-flow-for-unknown-problems) to pick the pattern.
+
+### Newer Notes That Are Not Tied to One Day
+
+These pages cover topics that no single day teaches.
+Use them when a problem or an interviewer goes deeper than the day's pattern.
+
+- **[Memory, Linked Lists, Buffers and Bitsets](/docs/dsa/memory-and-linear-structures):** [Memory and Pointers](/docs/dsa/memory-and-linear-structures#1-memory-and-pointers), [Doubly Linked Lists](/docs/dsa/memory-and-linear-structures#2-doubly-linked-lists), [Circular Buffer](/docs/dsa/memory-and-linear-structures#3-circular-buffer), and [Bitsets](/docs/dsa/memory-and-linear-structures#4-bitsets).
+- **[Subarrays and String Matching](/docs/dsa/subarrays-and-string-matching):** [Maximum Subarray (Kadane)](/docs/dsa/subarrays-and-string-matching#1-maximum-subarray-kadane), [Pattern Matching](/docs/dsa/subarrays-and-string-matching#2-pattern-matching), and [KMP Search](/docs/dsa/subarrays-and-string-matching#3-kmp-search).
+- **[Hashing Deep Dive](/docs/dsa/hashing-deep-dive):** [Collision Handling](/docs/dsa/hashing-deep-dive#1-collision-handling), [Resizing and Rehashing](/docs/dsa/hashing-deep-dive#2-resizing-and-rehashing), and [Bloom Filters](/docs/dsa/hashing-deep-dive#3-bloom-filters).
+- **[Advanced Trees](/docs/dsa/advanced-trees):** [BST Deletion](/docs/dsa/advanced-trees#1-bst-deletion), [Balanced Trees (AVL and Red-Black)](/docs/dsa/advanced-trees#2-balanced-trees-avl-and-red-black), and [Segment Trees](/docs/dsa/advanced-trees#3-segment-trees).
+- **[Graphs, Search and Complexity](/docs/dsa/graphs-search-and-complexity):** [Strongly Connected Components](/docs/dsa/graphs-search-and-complexity#1-strongly-connected-components), [Prim's Algorithm](/docs/dsa/graphs-search-and-complexity#2-prims-algorithm), [Solving a Maze](/docs/dsa/graphs-search-and-complexity#3-solving-a-maze-backtracking), and [P vs NP](/docs/dsa/graphs-search-and-complexity#4-p-vs-np).

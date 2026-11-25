@@ -4,6 +4,11 @@
     "pattern-playbook",
     "arrays-and-linked-lists",
     "trees-graphs-and-search",
+    "memory-and-linear-structures",
+    "subarrays-and-string-matching",
+    "hashing-deep-dive",
+    "advanced-trees",
+    "graphs-search-and-complexity",
     "leetcode-30-day-plan"
   ]
 }
