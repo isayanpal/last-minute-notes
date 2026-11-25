@@ -274,8 +274,21 @@ const RECAP: GraphState = scene({
   ],
 });
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'fast-slow-pointers',
+  pseudocode: [
+    'slow = head, fast = head',
+    'while fast and fast.next:',
+    '    slow = slow.next',
+    '    fast = fast.next.next',
+    '    if slow == fast: break',
+    '',
+    'ptr = head',
+    'while ptr != slow:',
+    '    ptr = ptr.next',
+    '    slow = slow.next',
+    'return ptr',
+  ],
   objectives: [
     { text: 'Detect a cycle in O(1) space with two speeds', step: 3 },
     { text: 'Explain why the pointers must meet', step: 4 },
@@ -288,6 +301,7 @@ export default defineLesson('graph', {
       label: 'The problem',
       title: 'A list that never ends',
       tag: 'problem',
+      code: [1],
       body: [
         'Walk this list one node at a time and you never reach `null`: node 6 points back to 3.',
         'A hash set of visited nodes would catch it, but costs O(n) space. The problem asks for **O(1)**.',
@@ -299,6 +313,7 @@ export default defineLesson('graph', {
       label: 'Two speeds',
       title: 'Tortoise and hare',
       tag: 'concept',
+      code: [3, 4],
       body: [
         'Start `slow` and `fast` at the head. Each move, `slow` steps 1 and `fast` steps 2.',
         'With a cycle, fast laps slow and they meet inside the loop. Without one, fast reaches the end.',
@@ -310,6 +325,7 @@ export default defineLesson('graph', {
       label: 'Detect',
       title: 'Run until they meet',
       tag: 'technique',
+      code: [2, 3, 4, 5],
       body: [
         'Loop while `fast` and `fast.next` exist: `fast.next.next` would throw on a null `fast.next`.',
         'Compare **after** moving. Both started at head, so comparing first would fire at once.',
@@ -321,6 +337,7 @@ export default defineLesson('graph', {
       label: 'Why meet',
       title: 'The gap shrinks by one',
       tag: 'concept',
+      code: [5],
       body: [
         'Once both are inside the cycle, fast gains exactly one node per move.',
         'The gap goes through every value down to 0 and cannot jump over it.',
@@ -332,6 +349,7 @@ export default defineLesson('graph', {
       label: 'Cycle start',
       title: 'Phase 2: find the entry',
       tag: 'technique',
+      code: [7, 8, 9, 10],
       body: [
         'Meeting somewhere in the loop is not the answer: returning `slow` is a classic bug.',
         'Put a `probe` at the head and keep `slow` at the meeting point. Move both one step at a time. They meet at the cycle start.',
@@ -343,6 +361,7 @@ export default defineLesson('graph', {
       label: 'The math',
       title: 'Why phase 2 works',
       tag: 'concept',
+      code: [7, 8, 9, 10],
       body: [
         'Let `F` be head to cycle start, `C` the cycle length, `a` cycle start to meeting point.',
         'Slow walked `F + a`, fast walked `2(F + a)`, which is also `F + a + n·C`. So `F = n·C - a`.',
@@ -354,6 +373,7 @@ export default defineLesson('graph', {
       label: 'Middle',
       title: 'Which middle?',
       tag: 'trade-off',
+      code: [2, 3, 4],
       body: [
         'No cycle: when fast reaches the end, slow is at the middle. For `[1..6]` that is the **second** middle, 4.',
         'To split a list into halves you want the first middle. Loop on `fast.next && fast.next.next` instead.',

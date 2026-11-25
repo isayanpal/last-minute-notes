@@ -279,8 +279,19 @@ const ROOMS: TimelineState = {
   note: { text: 'variant: minimum meeting rooms, sort starts and ends' },
 };
 
-export default defineLesson('timeline', {
+export default defineLesson('isoTimeline', {
   slug: 'merge-intervals',
+  pseudocode: [
+    'sort intervals by start',
+    'merged = [intervals[0]]',
+    'for each cur in intervals[1..]:',
+    '    last = last of merged',
+    '    if cur.start <= last.end:',
+    '        last.end = max(last.end, cur.end)',
+    '    else:',
+    '        add cur to merged',
+    'return merged',
+  ],
   objectives: [
     { text: 'Name the six ways two intervals relate', step: 2 },
     { text: 'Reduce every case to one comparison after sorting by start', step: 3 },
@@ -293,6 +304,7 @@ export default defineLesson('timeline', {
       label: 'The problem',
       title: 'Overlapping intervals',
       tag: 'problem',
+      code: [1],
       body: [
         'Merge `[[1, 3], [2, 6], [8, 10], [15, 18]]` so that no two intervals overlap.',
         'Keywords like overlap, merge, schedule, meeting rooms or conflicts all point at this pattern.',
@@ -304,6 +316,7 @@ export default defineLesson('timeline', {
       label: 'Six cases',
       title: 'Six ways two intervals relate',
       tag: 'concept',
+      code: [5],
       body: [
         'Take `a = [a1, a2]` and `b = [b1, b2]` with `a1 <= b1`. They can be disjoint, touching, partially overlapping, nested, share a start, or be identical.',
         'Touching, like `[1, 3]` and `[3, 5]`, depends on the problem. Ask.',
@@ -315,6 +328,7 @@ export default defineLesson('timeline', {
       label: 'One test',
       title: 'Sort, then ask one question',
       tag: 'concept',
+      code: [1, 5],
       body: [
         'Once sorted by start, everything reduces to: **does `b1 <= a2`?**',
         'Yes: they overlap and the merged interval is `[a1, max(a2, b2)]`. No: `a` is finished.',
@@ -326,6 +340,7 @@ export default defineLesson('timeline', {
       label: 'Merge run',
       title: 'One sweep after the sort',
       tag: 'technique',
+      code: [3, 4, 5, 6, 7, 8],
       body: [
         'Walk the sorted list. Compare each interval with the **last** merged one: extend its end or push a new block.',
         'The answer is `[[1, 6], [8, 10], [15, 18]]`.',
@@ -337,6 +352,7 @@ export default defineLesson('timeline', {
       label: 'Keep max',
       title: 'Nested intervals need max',
       tag: 'technique',
+      code: [6],
       body: [
         'Merge `[[1, 10], [2, 3]]`. Setting `last.end = cur.end` would shrink `[1, 10]` to `[1, 3]`.',
         '`Math.max(last.end, cur.end)` handles the "b inside a" case.',
@@ -348,6 +364,7 @@ export default defineLesson('timeline', {
       label: 'Insert',
       title: 'Insert into a sorted list',
       tag: 'technique',
+      code: [5, 6, 8],
       body: [
         'Insert `[2, 5]` into `[[1, 3], [6, 9]]`. The list is already sorted and non-overlapping, so skip the sort.',
         'Copy intervals that end before it, grow `[s, e]` over the ones that overlap, then copy the rest.',
@@ -359,6 +376,7 @@ export default defineLesson('timeline', {
       label: 'Why sort',
       title: 'The sort is not optional',
       tag: 'trade-off',
+      code: [1],
       body: [
         'Without sorting, `[[1, 4], [8, 9], [2, 3]]` never merges `[2, 3]` into `[1, 4]`: it is only compared with the last block.',
         'The O(n log n) sort is what makes the single comparison valid. Also note it mutates the caller\'s array: copy first if they reuse it.',

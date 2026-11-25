@@ -41,6 +41,29 @@ export const TRACKS: { id: LessonTrack; title: string; blurb: string }[] = [
   { id: 'java', title: 'Java', blurb: 'The JVM, HashMap, streams, threads and GC, with hashes and schedules computed for real.' },
 ];
 
+/**
+ * Ordered modules for tracks that follow a fixed course outline. A module with no lessons yet stays hidden.
+ * Tracks without an entry use the order in which their sections first appear in LESSONS.
+ */
+export const TRACK_SECTIONS: Partial<Record<LessonTrack, string[]>> = {
+  dsa: [
+    'Foundations',
+    'Arrays & Strings',
+    'Linked Lists',
+    'Stacks & Queues',
+    'Hashing',
+    'Trees',
+    'Heaps',
+    'Graphs',
+    'Sorting & Searching',
+    'Greedy Algorithms',
+    'Backtracking',
+    'Dynamic Programming',
+    'Bit Manipulation',
+    'Hard Problems',
+  ],
+};
+
 export const LESSONS: LessonMeta[] = [
   {
     slug: "request-path",
@@ -925,20 +948,6 @@ export const LESSONS: LessonMeta[] = [
     }
   },
   {
-    slug: "prefix-sum",
-    track: "dsa",
-    section: "Arrays & Strings",
-    title: "Prefix Sum & Hash Map",
-    subtitle: "Count subarrays that sum to k, even with negative numbers.",
-    minutes: 7,
-    level: "Intermediate",
-    steps: 8,
-    notes: {
-      href: "/docs/dsa/pattern-playbook#61-prefix-sum-and-hash-map",
-      label: "DSA Pattern Playbook, 6.1"
-    }
-  },
-  {
     slug: "cyclic-sort",
     track: "dsa",
     section: "Arrays & Strings",
@@ -964,20 +973,6 @@ export const LESSONS: LessonMeta[] = [
     notes: {
       href: "/docs/dsa/arrays-and-linked-lists#5-merge-intervals",
       label: "Arrays and Linked Lists, 5"
-    }
-  },
-  {
-    slug: "monotonic-stack",
-    track: "dsa",
-    section: "Arrays & Strings",
-    title: "Monotonic Stack",
-    subtitle: "Find the next greater element for every item in O(n).",
-    minutes: 7,
-    level: "Intermediate",
-    steps: 8,
-    notes: {
-      href: "/docs/dsa/pattern-playbook#62-monotonic-stack",
-      label: "DSA Pattern Playbook, 6.2"
     }
   },
   {
@@ -1009,9 +1004,37 @@ export const LESSONS: LessonMeta[] = [
     }
   },
   {
+    slug: "monotonic-stack",
+    track: "dsa",
+    section: "Stacks & Queues",
+    title: "Monotonic Stack",
+    subtitle: "Find the next greater element for every item in O(n).",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 8,
+    notes: {
+      href: "/docs/dsa/pattern-playbook#62-monotonic-stack",
+      label: "DSA Pattern Playbook, 6.2"
+    }
+  },
+  {
+    slug: "prefix-sum",
+    track: "dsa",
+    section: "Hashing",
+    title: "Prefix Sum & Hash Map",
+    subtitle: "Count subarrays that sum to k, even with negative numbers.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 8,
+    notes: {
+      href: "/docs/dsa/pattern-playbook#61-prefix-sum-and-hash-map",
+      label: "DSA Pattern Playbook, 6.1"
+    }
+  },
+  {
     slug: "tree-bfs",
     track: "dsa",
-    section: "Trees & Heaps",
+    section: "Trees",
     title: "Tree BFS",
     subtitle: "Visit a tree level by level with a queue.",
     minutes: 7,
@@ -1025,7 +1048,7 @@ export const LESSONS: LessonMeta[] = [
   {
     slug: "tree-dfs",
     track: "dsa",
-    section: "Trees & Heaps",
+    section: "Trees",
     title: "Tree DFS",
     subtitle: "Recurse down paths and carry state back up.",
     minutes: 7,
@@ -1037,14 +1060,28 @@ export const LESSONS: LessonMeta[] = [
     }
   },
   {
+    slug: "trie",
+    track: "dsa",
+    section: "Trees",
+    title: "Trie",
+    subtitle: "Share prefixes to search words and autocomplete fast.",
+    minutes: 7,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/dsa/pattern-playbook#65-trie",
+      label: "DSA Pattern Playbook, 6.5"
+    }
+  },
+  {
     slug: "two-heaps",
     track: "dsa",
-    section: "Trees & Heaps",
+    section: "Heaps",
     title: "Two Heaps",
     subtitle: "Keep a running median with a max-heap and a min-heap.",
     minutes: 8,
     level: "Advanced",
-    steps: 9,
+    steps: 8,
     notes: {
       href: "/docs/dsa/trees-graphs-and-search#4-two-heaps",
       label: "Trees, Graphs and Search, 4"
@@ -1053,7 +1090,7 @@ export const LESSONS: LessonMeta[] = [
   {
     slug: "top-k",
     track: "dsa",
-    section: "Trees & Heaps",
+    section: "Heaps",
     title: "Top K Elements",
     subtitle: "A size-k heap beats sorting everything.",
     minutes: 7,
@@ -1067,7 +1104,7 @@ export const LESSONS: LessonMeta[] = [
   {
     slug: "k-way-merge",
     track: "dsa",
-    section: "Trees & Heaps",
+    section: "Heaps",
     title: "K-way Merge",
     subtitle: "Merge k sorted lists with a min-heap of heads.",
     minutes: 7,
@@ -1076,48 +1113,6 @@ export const LESSONS: LessonMeta[] = [
     notes: {
       href: "/docs/dsa/trees-graphs-and-search#8-k-way-merge",
       label: "Trees, Graphs and Search, 8"
-    }
-  },
-  {
-    slug: "trie",
-    track: "dsa",
-    section: "Trees & Heaps",
-    title: "Trie",
-    subtitle: "Share prefixes to search words and autocomplete fast.",
-    minutes: 7,
-    level: "Intermediate",
-    steps: 8,
-    notes: {
-      href: "/docs/dsa/pattern-playbook#65-trie",
-      label: "DSA Pattern Playbook, 6.5"
-    }
-  },
-  {
-    slug: "binary-search",
-    track: "dsa",
-    section: "Search & Backtracking",
-    title: "Modified Binary Search",
-    subtitle: "One template for sorted, rotated and answer-space searches.",
-    minutes: 9,
-    level: "Intermediate",
-    steps: 7,
-    notes: {
-      href: "/docs/dsa/trees-graphs-and-search#6-modified-binary-search",
-      label: "Trees, Graphs and Search, 6"
-    }
-  },
-  {
-    slug: "backtracking",
-    track: "dsa",
-    section: "Search & Backtracking",
-    title: "Subsets & Backtracking",
-    subtitle: "Choose, explore, undo, and watch the decision tree get walked.",
-    minutes: 9,
-    level: "Intermediate",
-    steps: 7,
-    notes: {
-      href: "/docs/dsa/trees-graphs-and-search#5-subsets-and-backtracking",
-      label: "Trees, Graphs and Search, 5"
     }
   },
   {
@@ -1163,23 +1158,23 @@ export const LESSONS: LessonMeta[] = [
     }
   },
   {
-    slug: "dynamic-programming",
+    slug: "binary-search",
     track: "dsa",
-    section: "DP, Greedy & Bits",
-    title: "Dynamic Programming",
-    subtitle: "The five-question recipe on house robber, coin change and LCS.",
-    minutes: 10,
-    level: "Advanced",
-    steps: 6,
+    section: "Sorting & Searching",
+    title: "Modified Binary Search",
+    subtitle: "One template for sorted, rotated and answer-space searches.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
     notes: {
-      href: "/docs/dsa/pattern-playbook#64-dynamic-programming-recipe",
-      label: "Pattern Playbook, 6.4"
+      href: "/docs/dsa/trees-graphs-and-search#6-modified-binary-search",
+      label: "Trees, Graphs and Search, 6"
     }
   },
   {
     slug: "greedy",
     track: "dsa",
-    section: "DP, Greedy & Bits",
+    section: "Greedy Algorithms",
     title: "Greedy",
     subtitle: "Take the best choice now, and know when that is provably safe.",
     minutes: 7,
@@ -1191,9 +1186,37 @@ export const LESSONS: LessonMeta[] = [
     }
   },
   {
+    slug: "backtracking",
+    track: "dsa",
+    section: "Backtracking",
+    title: "Subsets & Backtracking",
+    subtitle: "Choose, explore, undo, and watch the decision tree get walked.",
+    minutes: 9,
+    level: "Intermediate",
+    steps: 7,
+    notes: {
+      href: "/docs/dsa/trees-graphs-and-search#5-subsets-and-backtracking",
+      label: "Trees, Graphs and Search, 5"
+    }
+  },
+  {
+    slug: "dynamic-programming",
+    track: "dsa",
+    section: "Dynamic Programming",
+    title: "Dynamic Programming",
+    subtitle: "The five-question recipe on house robber, coin change and LCS.",
+    minutes: 10,
+    level: "Advanced",
+    steps: 6,
+    notes: {
+      href: "/docs/dsa/pattern-playbook#64-dynamic-programming-recipe",
+      label: "Pattern Playbook, 6.4"
+    }
+  },
+  {
     slug: "bit-manipulation",
     track: "dsa",
-    section: "DP, Greedy & Bits",
+    section: "Bit Manipulation",
     title: "Bit Manipulation",
     subtitle: "XOR, n & (n - 1) and the 32-bit traps, bit by bit.",
     minutes: 7,
@@ -3233,8 +3256,15 @@ export const LESSONS: LessonMeta[] = [
       href: "/docs/sdui/server-driven-ui#12-what-should-and-should-not-be-server-driven",
       label: "SDUI, 12"
     }
-  }
+  },
 ];
+
+/** Sections of a track in course order. Modules with no lessons yet are left out until they get one. */
+export function sectionsOf(track: LessonTrack): string[] {
+  const declared = TRACK_SECTIONS[track] ?? [];
+  const seen = LESSONS.filter((l) => l.track === track).map((l) => l.section);
+  return [...new Set([...declared, ...seen])].filter((name) => seen.includes(name));
+}
 
 export function getLessonMeta(slug: string): LessonMeta | undefined {
   return LESSONS.find((l) => l.slug === slug);

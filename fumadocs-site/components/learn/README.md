@@ -42,6 +42,7 @@ All engines draw into a 640 x 420 stage. Types live in `engines/*.tsx`.
 | `graph` | Trees, linked lists, graphs, tries | `nodes` (x 0..10, y 0..6), `edges`, `pointers`, `panels` |
 | `grid` | DP tables, matrices, bitmasks, inverted indexes | `cells`, `states` keyed `"r,c"`, `arrows`, `pointers` |
 | `timeline` | Intervals, latency, deploy phases, budgets | `from`, `to`, `lanes`, `markers` |
+| `isoArray`, `isoGraph`, `isoGrid`, `isoTimeline` | The DSA track. Same state as `array`, `graph`, `grid`, `timeline`, drawn as isometric blocks | same as the 2D engine |
 
 Shared visual states for cells and nodes: `normal`, `active`, `visited`, `done`, `found`, `bad`, `dim`, `swap`, `path`.
 Paint tones for packets, pointers and bars: `req`, `res`, `data`, `ok`, `bad`, `accent`, `info`, `neutral`, `violet`, `pink`.
@@ -58,3 +59,16 @@ Helpers in `engines/layouts.ts`: `treeLayout`, `listLayout`, `circleLayout`, `pa
 - `graph`: up to about 15 nodes. Keep 1.2 units apart. Panels take the right 170 px, so lay nodes out in x 0..10 anyway, the engine squeezes.
 - `grid`: up to about 10 x 10. Headers are optional.
 - `timeline`: up to 8 lanes. Bar labels under 18 chars.
+
+## DSA course layout
+
+The `isoArray`, `isoGraph`, `isoGrid` and `isoTimeline` engines take exactly the state of their 2D twins, so a lesson switches by changing the engine name.
+A lesson on an iso engine, or any lesson that passes `pseudocode`, gets the course layout in `LessonPlayer`:
+the step card with a "Notice" box, a pseudocode panel, a "Live values" panel (the frame's `stats`) and a labelled step strip.
+
+- `pseudocode` is a list of lines passed to `defineLesson`. Indent with spaces, keep each line under about 48 characters.
+- Highlight lines with `code: 3` or `code: [3, 4]` (1-based) on a step. A frame can override it with `state.code`.
+- Shared geometry lives in `engines/iso-core.tsx` (`Prism`, `Cylinder`, `Slab`, `Pad`, `World`, `Pin`). One grid unit is 30 px across.
+- Array engine: blocks run along the slab, rows stack toward the viewer. Keep cell text to 5 characters or fewer, and 13 cells per row.
+- Graph engine: nodes keep the 0..10 x 0..6 layout and stand on the floor, circles as pillars and `shape: 'box'` as blocks.
+- Course modules are listed in `TRACK_SECTIONS` in `lib/learn/catalog.ts`. A module with no lessons stays hidden until it gets one.

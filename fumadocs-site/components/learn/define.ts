@@ -6,6 +6,10 @@ import { GraphScene, type GraphState } from './engines/graph';
 import { GridScene, type GridState } from './engines/grid';
 import { SequenceScene, type SeqState } from './engines/sequence';
 import { TimelineScene, type TimelineState } from './engines/timeline';
+import { IsoArrayScene } from './engines/iso-array';
+import { IsoGraphScene } from './engines/iso-graph';
+import { IsoGridScene } from './engines/iso-grid';
+import { IsoTimelineScene } from './engines/iso-timeline';
 import type { LegendItem, Lesson, Step } from './types';
 
 type EngineStates = {
@@ -15,6 +19,10 @@ type EngineStates = {
   graph: GraphState;
   grid: GridState;
   timeline: TimelineState;
+  isoArray: ArrayState;
+  isoGraph: GraphState;
+  isoGrid: GridState;
+  isoTimeline: TimelineState;
 };
 
 export type Engine = keyof EngineStates;
@@ -26,6 +34,10 @@ const SCENES = {
   graph: GraphScene,
   grid: GridScene,
   timeline: TimelineScene,
+  isoArray: IsoArrayScene,
+  isoGraph: IsoGraphScene,
+  isoGrid: IsoGridScene,
+  isoTimeline: IsoTimelineScene,
 } as const;
 
 const DEFAULT_LEGEND: Record<Engine, LegendItem[]> = {
@@ -59,7 +71,15 @@ const DEFAULT_LEGEND: Record<Engine, LegendItem[]> = {
     { label: 'slow / failed', color: TONE_COLOR.bad, shape: 'bar' },
     { label: 'marker', color: TONE_COLOR.accent, shape: 'bar' },
   ],
+  isoArray: [],
+  isoGraph: [],
+  isoGrid: [],
+  isoTimeline: [],
 };
+DEFAULT_LEGEND.isoArray = DEFAULT_LEGEND.array;
+DEFAULT_LEGEND.isoGraph = DEFAULT_LEGEND.graph;
+DEFAULT_LEGEND.isoGrid = DEFAULT_LEGEND.grid;
+DEFAULT_LEGEND.isoTimeline = DEFAULT_LEGEND.timeline;
 
 /**
  * Build a lesson for one of the shared engines.
@@ -72,6 +92,8 @@ export function defineLesson<E extends Engine>(
     objectives: { text: string; step: number }[];
     steps: Step<EngineStates[E]>[];
     legend?: LegendItem[];
+    /** Pseudocode lines shown beside the stage. Use `code` on steps or frames to highlight lines. */
+    pseudocode?: string[];
   },
 ): Lesson<unknown> {
   const meta = getLessonMeta(def.slug);
@@ -83,6 +105,8 @@ export function defineLesson<E extends Engine>(
     Scene: SCENES[engine] as Lesson<EngineStates[E]>['Scene'],
     stats: statsOf,
     legend: def.legend ?? DEFAULT_LEGEND[engine],
+    pseudocode: def.pseudocode,
+    iso: engine.startsWith('iso'),
   };
   return lesson as unknown as Lesson<unknown>;
 }

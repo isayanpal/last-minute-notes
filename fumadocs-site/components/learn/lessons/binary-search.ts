@@ -209,8 +209,18 @@ const answerFrames = () =>
     answerNote: 'smallest speed that finishes in 8 hours is 4',
   });
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'binary-search',
+  pseudocode: [
+    'lo = 0, hi = n',
+    'while lo < hi:',
+    '    mid = lo + (hi - lo) / 2',
+    '    if condition(mid):',
+    '        hi = mid',
+    '    else:',
+    '        lo = mid + 1',
+    'return lo   (first index where true)',
+  ],
   objectives: [
     { text: 'One template: the first index where a predicate turns true', step: 2 },
     { text: 'Lower bound, upper bound, first and last position', step: 3 },
@@ -241,6 +251,7 @@ export default defineLesson('array', {
       label: 'Template',
       title: 'First index where it becomes true',
       tag: 'technique',
+      code: [1, 2, 3, 4, 5, 6, 7, 8],
       body: [
         'Search the half-open range `[lo, hi)`. If `isTrue(mid)`, then `hi = mid`, because mid could be the answer. Otherwise `lo = mid + 1`, because mid is too small.',
         'The predicate shape is `false, false, ..., true, true`. The loop stops with `lo` on the first true.',
@@ -252,6 +263,7 @@ export default defineLesson('array', {
       label: 'Bounds',
       title: 'Lower bound and upper bound',
       tag: 'technique',
+      code: [4, 5, 7],
       body: [
         '`lowerBound` uses the predicate `x >= target`. `upperBound` uses `x > target`.',
         'First and last position of a target are `lowerBound` and `upperBound - 1`. An insert position is `lowerBound`.',
@@ -263,6 +275,7 @@ export default defineLesson('array', {
       label: 'Rotated',
       title: 'One half is always sorted',
       tag: 'technique',
+      code: [4],
       body: [
         'In `[4, 5, 6, 7, 0, 1, 2]` one half around `mid` is always sorted. Find it, then check whether the target lies inside that half.',
         'If it does, search there. If not, search the other half.',
@@ -274,6 +287,7 @@ export default defineLesson('array', {
       label: 'Rotated min',
       title: 'Compare mid with the right end',
       tag: 'technique',
+      code: [3, 4],
       body: [
         'To find the minimum, compare `nums[mid]` with `nums[hi]`. If mid is bigger, the drop is to its right. Otherwise mid could be the minimum, so keep it.',
         'Comparing with `lo` is ambiguous for an array that is not rotated. Comparing with `hi` never is.',
@@ -285,6 +299,7 @@ export default defineLesson('array', {
       label: 'On the answer',
       title: 'Search an answer space',
       tag: 'in practice',
+      code: [4],
       body: [
         'Koko eats bananas from piles `[3, 6, 7, 11]` and must finish in 8 hours. More speed never takes more hours, so feasibility is monotonic in speed.',
         'Binary search the speed with `hoursAt(k) <= 8`. No array is built, the predicate does the work.',

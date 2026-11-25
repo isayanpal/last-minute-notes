@@ -347,7 +347,7 @@ const TRADE: Frame<GraphState>[] = [
       stats: [
         { label: 'Skewed tree', value: 'h = n', tone: 'bad' },
         { label: 'Recursive DFS', value: 'O(n) stack', tone: 'bad' },
-        { label: 'Prefer', value: 'BFS / iterative' },
+        { label: 'Prefer', value: 'BFS / loop' },
       ],
       note: { text: 'a 10^5 node chain can overflow the recursion stack', tone: 'bad' },
     },
@@ -378,8 +378,21 @@ const TRADE: Frame<GraphState>[] = [
 
 const RECAP_ST: Record<string, ItemState> = { t0: 'done', t1: 'done', t2: 'found', t5: 'found', t6: 'found' };
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'tree-dfs',
+  pseudocode: [
+    'dfs(node):',
+    '    if node is null: return base value',
+    '    left = dfs(node.left)',
+    '    right = dfs(node.right)',
+    '    use left, right, node.val',
+    '    return the best one-sided answer',
+    '',
+    'inorder with a stack:',
+    '    while node or stack:',
+    '        go left, pushing each node',
+    '        pop, visit it, move to its right',
+  ],
   objectives: [
     { text: 'Pick preorder, inorder or postorder from what each node needs', step: 2 },
     { text: 'Pass state down as parameters and backtrack', step: 4 },
@@ -392,6 +405,7 @@ export default defineLesson('graph', {
       label: 'The problem',
       title: 'Answers that live on paths',
       tag: 'problem',
+      code: [1],
       body: [
         'Find every root-to-leaf path in this tree that sums to **22**.',
         'Levels do not help here. You need to follow one path all the way down, remember it, then back up and try the next.',
@@ -403,6 +417,7 @@ export default defineLesson('graph', {
       label: 'Three orders',
       title: 'When do you touch the node?',
       tag: 'concept',
+      code: [3, 4, 5],
       body: [
         '**Preorder** (node, left, right) passes information down. **Inorder** (left, node, right) gives sorted order in a BST. **Postorder** (left, right, node) needs the children first.',
         'Tags show the visit order on the BST `[4, 2, 6, 1, 3, 5, 7]`.',
@@ -414,6 +429,7 @@ export default defineLesson('graph', {
       label: 'Stack',
       title: 'Inorder with an explicit stack',
       tag: 'technique',
+      code: [8, 9, 10, 11],
       body: [
         'Push the whole left chain, pop one node, output it, then move to its right child and repeat.',
         'Recursion depth can overflow on a 10^5 node skewed tree. The explicit stack does the same walk without it.',
@@ -425,6 +441,7 @@ export default defineLesson('graph', {
       label: 'Pass down',
       title: 'Carry the remaining sum down',
       tag: 'technique',
+      code: [3, 4],
       body: [
         'Pass `remaining` as a parameter. Push the node onto `path` before recursing and pop it after. That is backtracking on a tree.',
         'At a **leaf**, check `remaining === node.val` and save `[...path]`, a copy.',
@@ -436,6 +453,7 @@ export default defineLesson('graph', {
       label: 'Return up',
       title: 'Children answer first',
       tag: 'technique',
+      code: [4, 5, 6],
       body: [
         'Max depth is the smallest postorder example: `1 + max(left, right)`.',
         'Each node waits for both children, then returns one number to its parent. Null returns the neutral value, 0.',
@@ -447,6 +465,7 @@ export default defineLesson('graph', {
       label: 'Global best',
       title: 'Max path sum: return one side, record both',
       tag: 'technique',
+      code: [5, 6],
       body: [
         'Gains from children are clamped at 0. The best path **through** a node is `val + left + right`, recorded in a global.',
         'The parent only gets `val + max(left, right)`, because a path going up can continue into one child only.',

@@ -3,7 +3,7 @@
 import { IsoCube, Pill, shade } from '../iso';
 import { Machine, type MachineShape } from '../machines';
 import type { BaseState, Note, SceneProps, Tone } from '../types';
-import { ACCENT, MONO, NoteLayer, Stage, TONE_COLOR, Traveler, pillTone, textW, type PaintTone } from './common';
+import { ACCENT, MONO, NoteLayer, Stage, TEXT_HALO, TONE_COLOR, Traveler, pillTone, textW, type PaintTone } from './common';
 
 /**
  * Architecture engine: isometric boxes on a floor, links between them, and packets that travel.
@@ -132,15 +132,15 @@ function NodeView({ n, frameKey }: { n: FlowNode; frameKey: string }) {
     <g className="lx-slide" style={{ transform: `translate(${sx(n.x)}px, ${sy(n.y)}px)`, opacity: status === 'dim' ? 0.32 : 1 }}>
       <g className="lx-pop" style={{ transformBox: 'fill-box', transformOrigin: '50% 100%' }}>
         {status === 'active' ? (
-          <ellipse cx={0} cy={size * 0.3} rx={size * 1.7} ry={size} fill="none" stroke={ACCENT} strokeWidth="2" className="lx-glow-ring" />
+          <ellipse cx={0} cy={size * 0.35} rx={size * 1.6} ry={size * 0.6} fill={`${ACCENT}14`} stroke={ACCENT} strokeWidth="2" className="lx-glow-ring" />
         ) : null}
         {status === 'hot' ? (
           <ellipse
             key={`${frameKey}-hot`}
             cx={0}
-            cy={size * 0.3}
-            rx={size * 1.7}
-            ry={size}
+            cy={size * 0.35}
+            rx={size * 1.6}
+            ry={size * 0.6}
             fill="rgba(226,75,74,0.18)"
             stroke="#e24b4a"
             strokeWidth="2"
@@ -152,11 +152,11 @@ function NodeView({ n, frameKey }: { n: FlowNode; frameKey: string }) {
         ) : (
           <IsoCube x={0} y={0} color={color} size={size} failing={status === 'down'} />
         )}
-        <text x={0} y={labelY} textAnchor="middle" fontSize="11" fontWeight={600} fill={status === 'down' ? '#f09595' : '#e5e5e5'}>
+        <text x={0} y={labelY} textAnchor="middle" fontSize="11" fontWeight={600} fill={status === 'down' ? '#f09595' : '#e5e5e5'} style={TEXT_HALO}>
           {n.label}
         </text>
         {n.sub ? (
-          <text x={0} y={labelY + 13} textAnchor="middle" fontSize="9.5" fill="#8a8a8a" style={MONO}>
+          <text x={0} y={labelY + 13} textAnchor="middle" fontSize="9.5" fill="#8a8a8a" style={{ ...MONO, ...TEXT_HALO, strokeWidth: 3 }}>
             {n.sub}
           </text>
         ) : null}
@@ -244,6 +244,7 @@ export function FlowScene({ state, frameKey }: SceneProps<FlowState>) {
               stroke={color}
               strokeWidth={l.tone ? 2 : 1.5}
               strokeDasharray={l.dashed ? '5 5' : undefined}
+              strokeLinecap="round"
               className="lx-key"
             />
             {arrow ? <polygon points={arrow} fill={color} className="lx-key" /> : null}

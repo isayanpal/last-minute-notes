@@ -83,7 +83,7 @@ export function IsoCube({ x, y, color, label, size = 26, failing, className }: C
           fontSize={Math.max(9, size * 0.5)}
           fontWeight={700}
           fill={failing ? '#f09595' : shade(color, -0.75)}
-          style={{ fontFamily: 'var(--font-mono, ui-monospace, monospace)' }}
+          style={{ fontFamily: 'var(--lx-font, var(--font-mono, ui-monospace, monospace))' }}
         >
           {label}
         </text>
@@ -127,7 +127,7 @@ export function Pill({
         dominantBaseline="middle"
         fontSize="11"
         fill={color}
-        style={{ fontFamily: 'var(--font-mono, ui-monospace, monospace)' }}
+        style={{ fontFamily: 'var(--lx-font, var(--font-mono, ui-monospace, monospace))' }}
       >
         {text}
       </text>

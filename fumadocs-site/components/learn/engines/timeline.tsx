@@ -1,7 +1,7 @@
 'use client';
 
 import type { BaseState, SceneProps } from '../types';
-import { H, MONO, NoteLayer, Stage, TONE_COLOR, W, textW, type PaintTone } from './common';
+import { H, MONO, NoteLayer, halo, Stage, TONE_COLOR, W, textW, type PaintTone } from './common';
 
 /**
  * Timeline engine: horizontal lanes with bars over a shared axis.
@@ -70,7 +70,7 @@ export function TimelineScene({ state, frameKey }: SceneProps<TimelineState>) {
               return (
                 <g key={b.id ?? `${li}-${bi}`} style={{ opacity: b.state === 'dim' ? 0.3 : 1 }} className="lx-key">
                   <rect
-                    className="lx-geom lx-grow"
+                    className="lx-geom lx-grow lx-halo"
                     x={bx}
                     y={y - barH / 2}
                     width={bw}
@@ -79,7 +79,7 @@ export function TimelineScene({ state, frameKey }: SceneProps<TimelineState>) {
                     fill={`${color}33`}
                     stroke={color}
                     strokeWidth={b.state === 'active' ? 2.2 : 1.4}
-                    style={b.state === 'active' ? { filter: `drop-shadow(0 0 6px ${color})` } : undefined}
+                    style={halo(b.state === 'active', color, 6)}
                   />
                   {b.label ? (
                     <text

@@ -8,9 +8,18 @@ import type { Note, Tone } from '../types';
 export const W = 640;
 export const H = 420;
 export const ACCENT = '#f5d547';
-export const MONO: CSSProperties = { fontFamily: 'var(--font-mono, ui-monospace, monospace)' };
+/** Scene text. A stage can swap the face by setting --lx-font, the DSA course does. */
+export const MONO: CSSProperties = { fontFamily: 'var(--lx-font, var(--font-mono, ui-monospace, monospace))' };
 
 export const vars = (v: Record<string, string | number>) => v as CSSProperties;
+
+/** Glow around a shape. Always returns a drop-shadow so the browser tweens it in and out (pair with the lx-halo class). */
+export const halo = (on: boolean, color: string, blur = 8): CSSProperties => ({
+  filter: on ? `drop-shadow(0 0 ${blur}px ${color}aa)` : `drop-shadow(0 0 0 ${color}00)`,
+});
+
+/** Dark outline behind text so links and lattice lines passing underneath do not cut through the letters. */
+export const TEXT_HALO: CSSProperties = { paintOrder: 'stroke', stroke: '#131313', strokeWidth: 3.5, strokeLinejoin: 'round' };
 
 /** Colours for packets, arrows, bars and highlights. */
 export const TONE_COLOR = {
@@ -62,10 +71,23 @@ export function Stage({ label, children }: { label: string; children: ReactNode 
     <svg viewBox={`0 0 ${W} ${H}`} className="block h-auto w-full" role="img" aria-label={label}>
       <defs>
         <pattern id="lx-dots" width="22" height="22" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r="1" fill="rgba(255,255,255,0.07)" />
+          <circle cx="1" cy="1" r="1" fill="rgba(255,255,255,0.085)" />
         </pattern>
+        <radialGradient id="lx-dots-fade" cx="50%" cy="48%" r="62%">
+          <stop offset="0%" stopColor="#fff" stopOpacity="1" />
+          <stop offset="70%" stopColor="#fff" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+        </radialGradient>
+        <mask id="lx-dots-mask">
+          <rect width={W} height={H} fill="url(#lx-dots-fade)" />
+        </mask>
+        <radialGradient id="lx-2d-glow" cx="50%" cy="46%" r="55%">
+          <stop offset="0%" stopColor={ACCENT} stopOpacity="0.06" />
+          <stop offset="100%" stopColor={ACCENT} stopOpacity="0" />
+        </radialGradient>
       </defs>
-      <rect width={W} height={H} fill="url(#lx-dots)" />
+      <rect width={W} height={H} fill="url(#lx-2d-glow)" />
+      <rect width={W} height={H} fill="url(#lx-dots)" mask="url(#lx-dots-mask)" />
       {children}
     </svg>
   );
@@ -117,7 +139,8 @@ export function Traveler({
         />
       )}
       <animateMotion ref={motion} dur={`${dur}s`} begin="indefinite" fill="freeze" path={path} />
-      <circle r={r} fill={color} style={{ filter: `drop-shadow(0 0 5px ${color})` }} />
+      <circle r={r * 2.4} fill={color} opacity={0.18} />
+      <circle r={r} fill={color} stroke="#fff" strokeOpacity={0.55} strokeWidth={1} style={{ filter: `drop-shadow(0 0 5px ${color})` }} />
       {label ? (
         <g transform="translate(0,-15)">
           <rect x={-w / 2} y={-8} width={w} height={16} rx={8} fill="#0b0b0b" stroke={color} strokeWidth="1" />
@@ -139,56 +162,71 @@ export type Panel = {
   highlight?: number;
 };
 
-/** Side panels for auxiliary structures: stacks, queues, hash maps, result lists. */
+/**
+ * Side panels for auxiliary structures: stacks, queues, hash maps, result lists.
+ * Each card is as tall as its content (at least 3 rows, so it does not jump on tiny lists) and stacks from the top.
+ * When the cards cannot all fit they share the height equally.
+ */
 export function Panels({ panels, x, y, w, h }: { panels: Panel[]; x: number; y: number; w: number; h: number }) {
   if (!panels.length) return null;
   const gap = 12;
-  const ph = (h - gap * (panels.length - 1)) / panels.length;
+  const rowH = 22;
+  const rowStep = rowH + 4;
+  const head = 34;
+  const wanted = panels.map((p) => head + Math.max(3, p.items.length) * rowStep + 6);
+  const fits = wanted.reduce((a, b) => a + b, 0) + gap * (panels.length - 1) <= h;
+  const equal = (h - gap * (panels.length - 1)) / panels.length;
+  let cursor = y;
   return (
     <g>
       {panels.map((p, pi) => {
-        const top = y + pi * (ph + gap);
+        const ph = fits ? wanted[pi] : equal;
+        const top = cursor;
+        cursor += ph + gap;
         const kind = p.kind ?? 'list';
-        const rowH = 22;
-        const max = Math.max(1, Math.floor((ph - 34) / (rowH + 4)));
+        const max = Math.max(1, Math.floor((ph - head) / rowStep));
         const items = kind === 'stack' ? [...p.items].reverse() : p.items;
         const shown = items.slice(0, max);
         const hidden = items.length - shown.length;
         return (
-          <g key={p.title}>
-            <rect x={x} y={top} width={w} height={ph} rx={10} fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.12)" />
-            <text x={x + 10} y={top + 17} fontSize="9.5" fill="#8a8a8a" style={{ ...MONO, letterSpacing: '0.08em' }}>
+          <g key={p.title} className="lx-slide" style={{ transform: `translate(${x}px, ${top}px)` }}>
+            <rect className="lx-panel" width={w} height={ph} rx={10} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.12)" />
+            <line x1={10} y1={25} x2={w - 10} y2={25} stroke="rgba(255,255,255,0.07)" />
+            <text x={10} y={17} fontSize="9.5" fill="#8a8a8a" style={{ ...MONO, letterSpacing: '0.08em' }}>
               {p.title.toUpperCase()}
               {kind === 'stack' ? ' ↓ top' : kind === 'queue' ? ' → front' : ''}
             </text>
             {shown.length === 0 ? (
-              <text x={x + 10} y={top + 42} fontSize="10.5" fill="#5c5c5c" style={MONO}>
+              <text x={10} y={46} fontSize="10.5" fill="#5c5c5c" style={MONO}>
                 empty
               </text>
             ) : null}
             {shown.map((it, i) => {
               const realIdx = kind === 'stack' ? p.items.length - 1 - i : i;
               const hl = p.highlight === realIdx;
-              const iy = top + 28 + i * (rowH + 4);
+              const iy = 31 + i * rowStep;
               return (
                 <g key={`${it}-${realIdx}`} className="lx-fade">
                   <rect
-                    x={x + 8}
+                    x={8}
                     y={iy}
                     width={w - 16}
                     height={rowH}
                     rx={6}
                     fill={hl ? '#2a2610' : '#161616'}
                     stroke={hl ? ACCENT : 'rgba(255,255,255,0.14)'}
+                    className="lx-key lx-halo"
+                    style={halo(hl, ACCENT, 6)}
                   />
-                  <text x={x + 16} y={iy + rowH / 2 + 0.5} dominantBaseline="middle" fontSize="10.5" fill={hl ? '#fff4b0' : '#d4d4d4'} style={MONO}>
+                  {hl ? <rect x={8} y={iy + 5} width={2.5} height={rowH - 10} rx={1.25} fill={ACCENT} /> : null}
+                  <text x={16} y={iy + rowH / 2 + 0.5} dominantBaseline="middle" fontSize="10.5" fill={hl ? '#fff4b0' : '#d4d4d4'} style={MONO}>
                     {it}
                   </text>
                 </g>
               );
             })}
             {hidden > 0 ? (
-              <text x={x + w - 10} y={top + 17} textAnchor="end" fontSize="9.5" fill="#8a8a8a" style={MONO}>
+              <text x={w - 10} y={17} textAnchor="end" fontSize="9.5" fill="#8a8a8a" style={MONO}>
                 +{hidden} more
               </text>
             ) : null}
@@ -206,8 +244,9 @@ export function Tag({ x, y, text, color = ACCENT, up = false }: { x: number; y: 
   return (
     <g>
       <path d={tip} fill={color} />
-      <rect x={x - w / 2} y={y - 8} width={w} height={16} rx={8} fill="#0b0b0b" stroke={color} />
-      <text x={x} y={y + 0.5} textAnchor="middle" dominantBaseline="middle" fontSize="10" fill={color} style={MONO}>
+      <rect x={x - w / 2} y={y - 8} width={w} height={16} rx={8} fill="#0b0b0b" />
+      <rect x={x - w / 2} y={y - 8} width={w} height={16} rx={8} fill={`${color}1f`} stroke={color} />
+      <text x={x} y={y + 0.5} textAnchor="middle" dominantBaseline="middle" fontSize="10" fontWeight={600} fill={color} style={MONO}>
         {text}
       </text>
     </g>

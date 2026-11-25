@@ -2,7 +2,7 @@
 
 import { Pill } from '../iso';
 import type { BaseState, SceneProps, Tone } from '../types';
-import { ACCENT, ITEM_STYLE, MONO, NoteLayer, Panels, Stage, Tag, TONE_COLOR, W, H, type ItemState, type Panel, type PaintTone } from './common';
+import { ACCENT, ITEM_STYLE, MONO, NoteLayer, halo, Panels, Stage, Tag, TONE_COLOR, W, H, type ItemState, type Panel, type PaintTone } from './common';
 
 /**
  * Array engine: one to three rows of cells with pointers, a highlighted window, and side panels.
@@ -111,7 +111,7 @@ export function ArrayScene({ state, frameKey }: SceneProps<ArrayState>) {
                 const h = Math.max(4, (Math.abs(Number(v) || 0) / maxVal) * barArea);
                 return (
                   <g key={cellKey(c, i)} className="lx-slide" style={{ transform: `translate(${x}px, ${cy}px)` }}>
-                    <rect x={0} y={-h} width={size} height={h} rx={4} fill={st.fill} stroke={st.stroke} strokeWidth="1.5" className="lx-key" />
+                    <rect x={0} y={-h} width={size} height={h} rx={4} fill={st.fill} stroke={st.stroke} strokeWidth="1.5" className="lx-key lx-bar lx-halo" style={halo(Boolean(st.glow), st.stroke, 6)} />
                     <text x={size / 2} y={14} textAnchor="middle" fontSize={font} fill={st.text} style={MONO}>
                       {v}
                     </text>
@@ -127,8 +127,8 @@ export function ArrayScene({ state, frameKey }: SceneProps<ArrayState>) {
                     fill={st.fill}
                     stroke={st.stroke}
                     strokeWidth="1.5"
-                    className="lx-key"
-                    style={st.glow ? { filter: `drop-shadow(0 0 6px ${st.stroke}88)` } : undefined}
+                    className="lx-key lx-halo"
+                    style={halo(Boolean(st.glow), st.stroke, 6)}
                   />
                   <text x={size / 2} y={size / 2 + 0.5} textAnchor="middle" dominantBaseline="middle" fontSize={font} fontWeight={600} fill={st.text} style={MONO}>
                     {v}

@@ -196,8 +196,16 @@ function doublingFrames(): Frame<GraphState>[] {
 const COMBO = comboRun([2, 3, 6, 7], 7);
 const DUP = subsetsRun([1, 2, 2], true, false);
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'backtracking',
+  pseudocode: [
+    'backtrack(start, path):',
+    '    record a copy of path',
+    '    for i in start..n-1:',
+    '        choose a[i]: push onto path',
+    '        backtrack(i + 1, path)',
+    '        undo: pop from path',
+  ],
   objectives: [
     { text: 'Why the output is exponential and n must be small', step: 1 },
     { text: 'The choose, explore, undo template', step: 3 },
@@ -231,6 +239,7 @@ export default defineLesson('graph', {
       label: 'Template',
       title: 'Choose, explore, undo',
       tag: 'technique',
+      code: [1, 2, 3, 4, 5, 6],
       body: [
         'Backtracking: record a **copy** of the state when it is complete, otherwise for each valid choice apply it, recurse, and **undo** it.',
         'The undo step is what lets one shared `path` array serve every branch. Watch the stack pop as the walk returns.',
@@ -242,6 +251,7 @@ export default defineLesson('graph', {
       label: 'Combination sum',
       title: 'Reuse numbers, prune early',
       tag: 'technique',
+      code: [3, 4, 5, 6],
       body: [
         'For `[2, 3, 6, 7]` and target 7, pass `i` (not `i + 1`) so a number can be reused, and pass `start` forward so `[2, 3]` and `[3, 2]` do not both appear.',
         'Skip any candidate bigger than the remaining amount. Dead ends return immediately, which is the point of backtracking over brute force.',
@@ -253,6 +263,7 @@ export default defineLesson('graph', {
       label: 'Duplicates',
       title: 'Sort, then skip repeats',
       tag: 'trade-off',
+      code: [3],
       body: [
         'For `[1, 2, 2]` the subset `[2]` must appear once. Sort first, then inside the loop skip with `if (i > start && nums[i] === nums[i - 1]) continue`.',
         'It means: never pick the same value twice at the same level, but allow it at different depths, so `[2, 2]` is still produced.',

@@ -14,6 +14,8 @@ export type Step<S> = {
   /** Paragraphs. Supports **bold** and `code`. If every paragraph starts with "- " they render as bullets. */
   body: string[];
   keyIdea: string;
+  /** Pseudocode line(s) to highlight while this step plays. A frame can override with `state.code`. */
+  code?: number | number[];
   frames: Frame<S>[];
 };
 
@@ -34,6 +36,8 @@ export type BaseState = {
   note?: Note;
   /** Up to 3 chips above the stage. */
   stats?: Stat[];
+  /** 1-based pseudocode line(s) running in this frame. */
+  code?: number | number[];
 };
 
 export type LegendItem = { label: string; color: string; shape: 'dot' | 'ring' | 'bar' };
@@ -51,4 +55,8 @@ export type Lesson<S> = {
   Scene: ComponentType<SceneProps<S>>;
   stats: (state: S) => Stat[];
   legend: LegendItem[];
+  /** Pseudocode shown beside the stage. Setting it switches the lesson to the course layout. */
+  pseudocode?: string[];
+  /** Lesson is drawn by an isometric engine, so the player uses the course layout. */
+  iso?: boolean;
 };

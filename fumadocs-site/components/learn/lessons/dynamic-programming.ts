@@ -165,8 +165,16 @@ const ROBBER = robberFrames();
 const COIN = coinFrames();
 const LCS = lcsFrames();
 
-export default defineLesson('grid', {
+export default defineLesson('isoGrid', {
   slug: 'dynamic-programming',
+  pseudocode: [
+    'state: what few values describe a subproblem?',
+    'meaning: what does dp[state] store?',
+    'base cases: the smallest answers you know',
+    'transition: dp[state] from smaller states',
+    'order: fill so every dependency is ready',
+    'answer: the cell that holds the whole problem',
+  ],
   objectives: [
     { text: 'The five questions to ask for every DP problem', step: 1 },
     { text: 'A 1D table that only needs the previous two states', step: 2 },
@@ -178,6 +186,7 @@ export default defineLesson('grid', {
       label: 'The recipe',
       title: 'Recursion plus a cache',
       tag: 'problem',
+      code: [1, 2],
       body: [
         'DP is recursion where subproblems **overlap**, so each answer is computed once and reused.',
         'Ask five questions: the **state**, what `dp[state]` **means**, the **transition**, the **base cases**, and the **fill order and answer**.',
@@ -189,6 +198,7 @@ export default defineLesson('grid', {
       label: 'House robber',
       title: 'Only the last two states matter',
       tag: 'technique',
+      code: [4],
       body: [
         'Rob a house and you must skip the next. Track `take` (best if we rob this house) and `skip` (best if we do not).',
         'Each house updates both from the previous pair, so the whole table collapses to two variables: O(1) space.',
@@ -200,6 +210,7 @@ export default defineLesson('grid', {
       label: 'Coin change',
       title: 'Try every coin for every amount',
       tag: 'technique',
+      code: [3, 4],
       body: [
         '`dp[a]` is the fewest coins for amount `a`. For each coin `c <= a`, `dp[a] = min(dp[a], dp[a - c] + 1)`.',
         'The answer for 11 is 3 (5 + 5 + 1). Use a sentinel that cannot overflow, not `Integer.MAX_VALUE`, in Java.',
@@ -211,6 +222,7 @@ export default defineLesson('grid', {
       label: 'LCS',
       title: 'A 2D table over two strings',
       tag: 'technique',
+      code: [4, 5],
       body: [
         '`dp[i][j]` is the LCS of the first `i` characters of `a` and the first `j` of `b`. A match extends the diagonal. A mismatch takes the better of up or left.',
         'Fill row by row. The answer sits in the bottom-right cell.',
@@ -222,6 +234,7 @@ export default defineLesson('grid', {
       label: 'Families',
       title: 'Spot the family',
       tag: 'in practice',
+      code: [1],
       body: [
         'Common families: **1D** (climb stairs, house robber), **knapsack** (subset sum, coin change), **strings** (LCS, edit distance), **grids** (unique paths), **intervals** (burst balloons).',
         'Grid paths use the same recipe: each cell is the sum of the cell above and the cell to its left.',

@@ -1,7 +1,7 @@
 'use client';
 
 import type { BaseState, SceneProps } from '../types';
-import { ArrowHead, H, ITEM_STYLE, MONO, NoteLayer, Panels, Stage, TONE_COLOR, Tag, W, type ItemState, type Panel, type PaintTone } from './common';
+import { ArrowHead, H, ITEM_STYLE, MONO, TEXT_HALO, halo, NoteLayer, Panels, Stage, TONE_COLOR, Tag, W, type ItemState, type Panel, type PaintTone } from './common';
 
 /**
  * Graph engine for trees, linked lists, graphs, tries and decision trees.
@@ -82,8 +82,8 @@ export function GraphScene({ state, frameKey }: SceneProps<GraphState>) {
         const tipFromX = bend ? mx : sx1;
         const tipFromY = bend ? my : sy1;
         return (
-          <g key={`${e.from}-${e.to}`} style={{ opacity: st === 'dim' ? 0.35 : 1 }}>
-            <path d={d} fill="none" stroke={color} strokeWidth={st === 'normal' ? 1.6 : 2.4} className="lx-key" />
+          <g key={`${e.from}-${e.to}`} className="lx-key" style={{ opacity: st === 'dim' ? 0.35 : 1 }}>
+            <path d={d} fill="none" stroke={color} strokeWidth={st === 'normal' ? 1.6 : 2.4} strokeLinecap="round" className="lx-key" />
             {e.directed ? <ArrowHead x1={tipFromX} y1={tipFromY} x2={sx2} y2={sy2} color={color} /> : null}
             {e.label ? (
               <g>
@@ -105,16 +105,16 @@ export function GraphScene({ state, frameKey }: SceneProps<GraphState>) {
           <g key={n.id} className="lx-slide" style={{ transform: `translate(${px(n.x)}px, ${py(n.y)}px)` }}>
             <g className="lx-pop" style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
               {n.shape === 'box' ? (
-                <rect x={-22} y={-15} width={44} height={30} rx={7} fill={st.fill} stroke={st.stroke} strokeWidth="1.6" className="lx-key" style={st.glow ? { filter: `drop-shadow(0 0 6px ${st.stroke}88)` } : undefined} />
+                <rect x={-22} y={-15} width={44} height={30} rx={7} fill={st.fill} stroke={st.stroke} strokeWidth="1.6" className="lx-key lx-halo" style={halo(Boolean(st.glow), st.stroke, 6)} />
               ) : (
-                <circle r={R} fill={st.fill} stroke={st.stroke} strokeWidth="1.6" className="lx-key" style={st.glow ? { filter: `drop-shadow(0 0 6px ${st.stroke}88)` } : undefined} />
+                <circle r={R} fill={st.fill} stroke={st.stroke} strokeWidth="1.6" className="lx-key lx-halo" style={halo(Boolean(st.glow), st.stroke, 6)} />
               )}
               <text y={0.5} textAnchor="middle" dominantBaseline="middle" fontSize={font} fontWeight={600} fill={st.text} style={MONO}>
                 {label}
               </text>
             </g>
             {n.tag ? (
-              <text y={n.shape === 'box' ? 27 : 30} textAnchor="middle" fontSize="9.5" fill="#a3a3a3" style={MONO} className="lx-fade" key={`${frameKey}-t-${n.tag}`}>
+              <text y={n.shape === 'box' ? 27 : 30} textAnchor="middle" fontSize="9.5" fill="#a3a3a3" style={{ ...MONO, ...TEXT_HALO }} className="lx-fade" key={`${frameKey}-t-${n.tag}`}>
                 {n.tag}
               </text>
             ) : null}

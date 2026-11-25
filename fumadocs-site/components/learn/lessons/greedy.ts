@@ -90,8 +90,18 @@ const JUMP_OK = jumpFrames([2, 3, 1, 1, 4]);
 const JUMP_NO = jumpFrames([3, 2, 1, 0, 4]);
 const SCHEDULE = scheduleFrames();
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'greedy',
+  pseudocode: [
+    'farthest = 0',
+    'for i in 0..n-1:',
+    '    if i > farthest: return false',
+    '    farthest = max(farthest, i + a[i])',
+    'return true',
+    '',
+    'sort intervals by end time',
+    'keep each one that starts after the last kept end',
+  ],
   objectives: [
     { text: 'What makes a choice greedy and why it needs a proof', step: 1 },
     { text: 'Track the farthest reach in jump game', step: 2 },
@@ -114,6 +124,7 @@ export default defineLesson('array', {
       label: 'Jump game',
       title: 'Track the farthest reach',
       tag: 'technique',
+      code: [1, 2, 4],
       body: [
         'Each `nums[i]` is the longest jump from `i`. Walk left to right and keep `farthest = max(farthest, i + nums[i])`.',
         'You never need the actual path, only how far you could get.',
@@ -125,6 +136,7 @@ export default defineLesson('array', {
       label: 'Stuck',
       title: 'Detect when you cannot continue',
       tag: 'technique',
+      code: [3],
       body: [
         'For `[3, 2, 1, 0, 4]` the reach stops at index 3, where the jump is 0. Index 4 is then out of reach.',
         'The check `if (i > farthest) return false` catches it the moment an index is unreachable.',
@@ -136,6 +148,7 @@ export default defineLesson('array', {
       label: 'Scheduling',
       title: 'Sort by end time',
       tag: 'technique',
+      code: [7, 8],
       body: [
         'To fit the most non-overlapping intervals, sort by **end time** and take every interval that starts at or after the last chosen end.',
         'Finishing earliest leaves the most room for the rest. That is the exchange argument in action.',

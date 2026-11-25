@@ -180,11 +180,20 @@ RECAP.note = undefined;
 RECAP.stats = [
   { label: 'Time', value: 'O(n)', tone: 'ok' },
   { label: 'Space', value: 'O(n)', hint: 'the stack' },
-  { label: 'Each index', value: 'in once, out once' },
+  { label: 'Each index', value: '1 in, 1 out' },
 ];
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'monotonic-stack',
+  pseudocode: [
+    'stack = []   (indices still waiting)',
+    'for i in 0..n-1:',
+    '    while stack and t[i] > t[top]:',
+    '        j = pop stack',
+    '        answer[j] = i - j',
+    '    push i onto stack',
+    'leftover indices keep answer 0',
+  ],
   objectives: [
     { text: 'See why scanning right from every day is O(n²)', step: 1 },
     { text: 'Keep unresolved indices on a decreasing stack', step: 2 },
@@ -197,6 +206,7 @@ export default defineLesson('array', {
       label: 'The problem',
       title: 'How long until a warmer day?',
       tag: 'problem',
+      code: [1],
       body: [
         'For each day in `[73, 74, 75, 71, 69, 72, 76, 73]`, how many days until a warmer one?',
         'Scanning right from every day works, but day 2 alone checks four days before finding 76. In the worst case that is O(n²).',
@@ -208,6 +218,7 @@ export default defineLesson('array', {
       label: 'The stack',
       title: 'Park the unresolved days',
       tag: 'concept',
+      code: [1, 6],
       body: [
         'Keep a stack of **indices whose answer is still unknown**. Their temperatures are always decreasing from bottom to top.',
         'Day 0 waits. Day 1 is warmer, so it resolves day 0 and takes its place.',
@@ -219,6 +230,7 @@ export default defineLesson('array', {
       label: 'Pop',
       title: 'One warm day resolves many',
       tag: 'technique',
+      code: [3, 4, 5],
       body: [
         'When `temps[i]` is greater than the top, the top has found its next warmer day: pop it and set `answer[j] = i - j`. Repeat while it keeps winning.',
         'Day 6 (76) pops both 72 and 75 at once.',
@@ -230,6 +242,7 @@ export default defineLesson('array', {
       label: 'Full run',
       title: 'Daily temperatures, every day',
       tag: 'technique',
+      code: [2, 3, 4, 5, 6],
       body: ['Each day: pop everything colder than today and record the distance, then push today.', 'The answers fill in out of order, whenever a warmer day shows up.'],
       keyIdea: 'Pop while the new element beats the top, then push it.',
       frames: perDay.map((s) => ({ state: stateOf(s), hold: 1100 })),
@@ -238,6 +251,7 @@ export default defineLesson('array', {
       label: 'Why O(n)',
       title: 'In once, out once',
       tag: 'concept',
+      code: [4, 6],
       body: [
         'The `while` inside the `for` looks like O(n²). But every index is **pushed once** and **popped at most once**.',
         'Here: 8 pushes and 6 pops, no matter how they are spread across days.',
@@ -249,6 +263,7 @@ export default defineLesson('array', {
       label: 'Leftovers',
       title: 'Never resolved means 0',
       tag: 'technique',
+      code: [7],
       body: ['When the scan ends, whatever is still on the stack never saw a warmer day.', 'The answer array starts filled with `0`, so those slots are already correct: `[1, 1, 4, 2, 1, 1, 0, 0]`.'],
       keyIdea: 'Initialise the answer with the "not found" value and leftovers take care of themselves.',
       frames: leftoverFrames,
@@ -257,6 +272,7 @@ export default defineLesson('array', {
       label: 'Flip it',
       title: 'Increasing or decreasing',
       tag: 'trade-off',
+      code: [3],
       body: [
         'For the next **smaller** element, flip the comparison. The stack now keeps increasing values.',
         'Which order to keep is the only decision: it follows from what the popped element is waiting for.',

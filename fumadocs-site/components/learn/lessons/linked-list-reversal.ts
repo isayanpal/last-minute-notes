@@ -224,8 +224,18 @@ function sublistFrames(): Frame<GraphState>[] {
 
 const LAST = SNAPS[SNAPS.length - 1];
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'linked-list-reversal',
+  pseudocode: [
+    'prev = null',
+    'curr = head',
+    'while curr:',
+    '    next = curr.next',
+    '    curr.next = prev',
+    '    prev = curr',
+    '    curr = next',
+    'return prev',
+  ],
   objectives: [
     { text: 'Reverse a list in place with prev, curr and next', step: 3 },
     { text: 'Return prev as the new head', step: 4 },
@@ -237,6 +247,7 @@ export default defineLesson('graph', {
       label: 'The problem',
       title: 'Reverse without copying',
       tag: 'problem',
+      code: [1, 2],
       body: [
         'Reverse `1 → 2 → 3 → 4 → 5` using O(1) extra space, so copying into an array is out.',
         'The nodes stay where they are. Only the `next` pointers change direction.',
@@ -248,6 +259,7 @@ export default defineLesson('graph', {
       label: 'Three refs',
       title: 'prev, curr and a saved next',
       tag: 'concept',
+      code: [1, 2, 4],
       body: [
         'Start with `prev = null` and `curr = head`.',
         'Each iteration flips `curr.next` to point back at `prev`, then both slide one node right. A third reference, `next`, keeps the rest of the list reachable.',
@@ -262,6 +274,7 @@ export default defineLesson('graph', {
       label: 'One step',
       title: 'Four statements, in order',
       tag: 'technique',
+      code: [4, 5, 6, 7],
       body: [
         'Watch the second iteration slowly: **save** `next = curr.next`, **flip** `curr.next = prev`, then `prev = curr` and `curr = next`.',
         'The order matters: save before you overwrite.',
@@ -273,6 +286,7 @@ export default defineLesson('graph', {
       label: 'Full run',
       title: 'Reverse the whole list',
       tag: 'technique',
+      code: [3, 4, 5, 6, 7],
       body: ['Repeat until `curr` is null. Every node is visited once: O(n) time, O(1) space.', 'Return `prev`, not `head`. The old head is now the tail.'],
       keyIdea: 'When curr falls off the end, prev is the new head.',
       frames: ends.map((s) => ({ state: snapState(s), hold: 1200 })),
@@ -281,6 +295,7 @@ export default defineLesson('graph', {
       label: 'Save first',
       title: 'Flip before saving and you lose it',
       tag: 'trade-off',
+      code: [4, 5],
       body: [
         'Overwrite `curr.next` before saving it and nothing references the rest of the list any more.',
         'The recursive version is shorter but uses O(n) stack, and must set `head.next = null` or it leaves a cycle.',
@@ -292,6 +307,7 @@ export default defineLesson('graph', {
       label: 'Sublist',
       title: 'Reverse positions 2 to 4',
       tag: 'in practice',
+      code: [3, 4, 5, 6, 7],
       body: [
         'Walk to the node **before** the segment. Then repeatedly take the node after `start` and move it to the front of the segment.',
         'A dummy node in front makes `left = 1` work without a special case.',

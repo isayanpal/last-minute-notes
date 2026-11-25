@@ -417,8 +417,18 @@ const RECAP: GraphState = {
   ],
 };
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'tree-bfs',
+  pseudocode: [
+    'queue = [root]',
+    'while queue is not empty:',
+    '    size = length of queue',
+    '    repeat size times:',
+    '        node = dequeue',
+    '        visit node',
+    '        enqueue node.left and node.right',
+    '    the level is finished',
+  ],
   objectives: [
     { text: 'Recognise "by level" problems that want BFS', step: 1 },
     { text: 'Run the level-array template without shift()', step: 3 },
@@ -430,6 +440,7 @@ export default defineLesson('graph', {
       label: 'The problem',
       title: 'Answer the tree row by row',
       tag: 'problem',
+      code: [1],
       body: [
         'Return the values of `[3, 9, 20, null, null, 15, 7]` grouped **by level**: `[[3], [9, 20], [15, 7]]`.',
         'Nodes only point to their children. Nothing tells you which row a node sits on, so the traversal has to keep the rows apart.',
@@ -441,6 +452,7 @@ export default defineLesson('graph', {
       label: 'Levels',
       title: 'Process one full level at a time',
       tag: 'concept',
+      code: [3, 4],
       body: [
         'Keep the current level as an array. Read all its values as one row.',
         'Then build `next` from the left and right children of every node in the level, and replace `level` with `next`.',
@@ -452,6 +464,7 @@ export default defineLesson('graph', {
       label: 'Full run',
       title: 'Level order, start to finish',
       tag: 'technique',
+      code: [2, 3, 4, 5, 6, 7, 8],
       body: [
         'Each pass of the loop pushes one row and builds the next level. When `next` is empty, the tree is done.',
         'Every node is read once and pushed once, so the run is **O(n)**.',
@@ -463,6 +476,7 @@ export default defineLesson('graph', {
       label: 'Right view',
       title: 'Right side view: the last of each level',
       tag: 'technique',
+      code: [6],
       body: [
         'Standing on the right of `[1, 2, 3, null, 5, null, 4]`, you see the **last node of every level**.',
         'Same loop, but each level contributes `level[level.length - 1]` instead of the whole row. The left view takes the first node.',
@@ -474,6 +488,7 @@ export default defineLesson('graph', {
       label: 'Min depth',
       title: 'Minimum depth stops at the first leaf',
       tag: 'technique',
+      code: [6, 7],
       body: [
         'BFS visits nodes in order of depth, so the **first leaf** it meets is the shallowest one.',
         'Return right there. On the example, 9 is a leaf at depth 2 and the nodes below 20 are never visited.',
@@ -485,6 +500,7 @@ export default defineLesson('graph', {
       label: 'Memory',
       title: 'BFS holds a whole level',
       tag: 'trade-off',
+      code: [3],
       body: [
         'Time is O(n). Space is **O(w)**, the widest level, which is up to n / 2 for a complete tree.',
         'With `queue.shift()` each pop is O(n) on large arrays, so a 10^5 node tree can go quadratic. The two-array style avoids it.',
@@ -496,6 +512,7 @@ export default defineLesson('graph', {
       label: 'Multi-source',
       title: 'Many starts at once: rotting oranges',
       tag: 'in practice',
+      code: [1],
       body: [
         'Every minute, each rotten orange (2) rots its fresh (1) neighbours. Start the queue with **all** rotten oranges at once.',
         'Each BFS layer is one minute. Mark a cell when it is pushed, not when it is popped, so it never enters twice.',

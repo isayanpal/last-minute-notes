@@ -280,8 +280,15 @@ const RECAP: ArrayState = {
   ],
 };
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'k-way-merge',
+  pseudocode: [
+    'heap = the first element of each list',
+    'while heap is not empty:',
+    '    pop the smallest',
+    '    append it to the output',
+    '    push its successor from that list',
+  ],
   objectives: [
     { text: 'See why only the K heads can be next', step: 1 },
     { text: 'Run the heap-of-heads merge: pop, output, push next', step: 3 },
@@ -304,6 +311,7 @@ export default defineLesson('array', {
       label: 'Heap of heads',
       title: 'Put one head per list in a min-heap',
       tag: 'concept',
+      code: [1],
       body: [
         'Push the head of every list into a min-heap. Pop the smallest and output it.',
         'Then push the **next** element from the same list, so every list always has exactly one candidate in the heap.',
@@ -315,6 +323,7 @@ export default defineLesson('array', {
       label: 'Pop, push',
       title: 'Pop the smallest, push its successor',
       tag: 'technique',
+      code: [3, 4, 5],
       body: [
         'Store `[value, listIndex, elementIndex]` so you always know where the popped value came from.',
         'When a list runs out, push nothing. The heap just shrinks.',
@@ -326,6 +335,7 @@ export default defineLesson('array', {
       label: 'Full merge',
       title: 'Run to the end',
       tag: 'technique',
+      code: [2, 3, 4, 5],
       body: ['The heap empties after N = 8 pops. Output: `[1, 1, 2, 3, 4, 4, 5, 6]`.', 'For N total elements: **O(N log K)** time and **O(K)** heap space.'],
       keyIdea: 'Never push the whole input into the heap. One head per list is the whole point.',
       frames: MERGE.slice(4),
@@ -334,6 +344,7 @@ export default defineLesson('array', {
       label: 'Matrix',
       title: 'Kth smallest in a sorted matrix',
       tag: 'in practice',
+      code: [1, 3, 5],
       body: [
         'Every row is sorted, so treat each row as one list and run K-way merge. Stop after `k` pops.',
         'Only the first `min(n, k)` rows can matter. For k = 8 the answer is **13**, in O(k log min(n, k)).',

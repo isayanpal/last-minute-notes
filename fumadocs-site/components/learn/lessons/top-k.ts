@@ -400,8 +400,16 @@ const RECAP: GraphState = {
   ],
 };
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'top-k',
+  pseudocode: [
+    'heap = empty min-heap',
+    'for x in nums:',
+    '    push x onto heap',
+    '    if heap size > k:',
+    '        pop the smallest',
+    'return top of heap (the kth largest)',
+  ],
   objectives: [
     { text: 'Use a heap of the opposite kind, capped at size K', step: 2 },
     { text: 'Read the kth largest from the top of the heap', step: 4 },
@@ -424,6 +432,7 @@ export default defineLesson('graph', {
       label: 'Min-heap',
       title: 'Keep the K largest in a min-heap',
       tag: 'concept',
+      code: [1],
       body: [
         'To keep the **K largest**, use a **min-heap** of size K. Its top is the smallest of the K largest, so it is the one to evict when something bigger arrives.',
         'Here 4 arrives, becomes the min, and is popped straight back out.',
@@ -435,6 +444,7 @@ export default defineLesson('graph', {
       label: 'Push, pop',
       title: 'Push every element, pop when over K',
       tag: 'technique',
+      code: [2, 3, 4, 5],
       body: ['For each number: push it. If the heap now holds more than K, pop the top.', 'The heap never grows past K + 1, so each step is O(log k).'],
       keyIdea: 'Push, then evict when size exceeds K. Nothing else to decide.',
       frames: KTH.slice(0, 4),
@@ -443,6 +453,7 @@ export default defineLesson('graph', {
       label: 'The answer',
       title: 'The top is the kth largest',
       tag: 'technique',
+      code: [6],
       body: ['After the last number the heap holds `{5, 6}`, the two largest. Its top, **5**, is the answer.', 'O(n log k) time, O(k) space, and it works on a stream.'],
       keyIdea: 'Kth largest: a min-heap of size K, and the top is the answer.',
       frames: KTH.slice(4),
@@ -451,6 +462,7 @@ export default defineLesson('graph', {
       label: 'Frequent',
       title: 'Top K frequent: heap ordered by count',
       tag: 'technique',
+      code: [3, 4, 5],
       body: ['For `[1, 1, 1, 2, 2, 3]` and k = 2: count with a map, then push `[num, count]` entries into a min-heap ordered by **count**.', 'Pop when over K. At the end, pop everything and reverse.'],
       keyIdea: 'Same pattern, different key. A heap is not sorted, so return the order the problem asks for.',
       frames: freqFrames(),

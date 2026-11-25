@@ -273,8 +273,19 @@ function ipoFrames(): Frame<GraphState>[] {
   return frames;
 }
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'two-heaps',
+  pseudocode: [
+    'small = max-heap, large = min-heap',
+    'add(x):',
+    '    push x onto small',
+    '    move small top to large',
+    '    if large has more than small:',
+    '        move large top to small',
+    'median():',
+    '    if the sizes differ: top of small',
+    '    else: average of both tops',
+  ],
   objectives: [
     { text: 'Split a stream into a max-heap half and a min-heap half', step: 2 },
     { text: 'Keep both invariants on every addNum', step: 3 },
@@ -297,6 +308,7 @@ export default defineLesson('graph', {
       label: 'Two halves',
       title: 'A max-heap and a min-heap',
       tag: 'concept',
+      code: [1],
       body: [
         '`small` is a **max-heap** of the smaller half, so its top is the largest small number. `large` is a **min-heap** of the larger half.',
         'Invariants: everything in `small` is at most everything in `large`, and `small` has the same size or exactly one more.',
@@ -308,6 +320,7 @@ export default defineLesson('graph', {
       label: 'Add 5',
       title: 'Push through small, then balance',
       tag: 'technique',
+      code: [3, 4, 5, 6],
       body: [
         'Push the number into `small`, then move `small.top` to `large`. That keeps the ordering invariant without comparing to the current tops.',
         'If `large` is now bigger, move its top back to `small`.',
@@ -319,6 +332,7 @@ export default defineLesson('graph', {
       label: 'Add 15',
       title: 'Even count: average the tops',
       tag: 'technique',
+      code: [7, 9],
       body: [
         '15 goes into `small`, is the largest there, so it moves straight to `large`. Sizes are equal, so nothing moves back.',
         'With an even count the median is `(small.top + large.top) / 2` = **10**.',
@@ -330,6 +344,7 @@ export default defineLesson('graph', {
       label: 'Add 1, 3',
       title: 'The dry run, continued',
       tag: 'technique',
+      code: [2, 3, 4, 5, 6],
       body: [
         'Adding 1: 5 moves to `large`, then back, median **5**.',
         'Adding 3: `small` becomes `[3, 1]`, `large` becomes `[5, 15]`, median **4**. Exactly the notes\' table.',
@@ -341,6 +356,7 @@ export default defineLesson('graph', {
       label: 'IPO',
       title: 'Two priorities: afford, then profit',
       tag: 'in practice',
+      code: [1],
       body: [
         'Start with `w = 0`, pick at most `k = 2` projects. Profits `[1, 2, 3]`, capital needed `[0, 1, 1]`.',
         'One heap orders projects by **capital** (what can I afford next?). The other orders affordable ones by **profit** (which pays most?).',
@@ -352,6 +368,7 @@ export default defineLesson('graph', {
       label: 'Pitfalls',
       title: 'The half with smaller numbers is a max-heap',
       tag: 'trade-off',
+      code: [1],
       body: [
         'Flip the direction and the top of `small` is its smallest value, not the middle. Rebalance at the end of **every** add, not only some.',
         'Values in `0..100`: a counting array gives O(1) add. Sliding window median needs deletions: use **lazy deletion**.',

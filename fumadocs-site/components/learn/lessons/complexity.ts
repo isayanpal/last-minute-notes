@@ -201,8 +201,19 @@ const ideaFrames: Frame<ArrayState>[] = IDEAS.map(({ cx, how }, k) => {
   };
 });
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'complexity',
+  pseudocode: [
+    'read n from the constraints',
+    'budget = about 10^8 simple steps',
+    'if n <= 20: O(2^n) is fine',
+    'else if n <= 500: O(n^3) is fine',
+    'else if n <= 5000: O(n^2) is fine',
+    'else if n <= 10^6: O(n log n) or O(n)',
+    'else: O(log n) or a formula',
+    'if plan(n) > budget:',
+    '    look for a pattern that drops a loop',
+  ],
   objectives: [
     { text: 'Use the 10^8 operations per second budget', step: 2 },
     { text: 'Map the input size to a target complexity', step: 3 },
@@ -214,6 +225,7 @@ export default defineLesson('array', {
       label: 'The problem',
       title: 'Will nested loops pass?',
       tag: 'problem',
+      code: [1, 2],
       body: [
         'The input has **n = 10^5** items and your first idea is two nested loops.',
         'That is 10^10 operations. A machine does roughly **10^8** simple operations per second, so it needs about 100 seconds.',
@@ -225,6 +237,7 @@ export default defineLesson('array', {
       label: 'Budget',
       title: 'Line every complexity up against the budget',
       tag: 'concept',
+      code: [2],
       body: [
         'Each bar is the operation count at n = 10^5, written as a power of ten. A bar of 8 is the one-second budget.',
         'Anything taller than the budget is too slow. The tallest bar that still fits is your target.',
@@ -236,6 +249,7 @@ export default defineLesson('array', {
       label: 'The table',
       title: 'n tells you the target',
       tag: 'technique',
+      code: [3, 4, 5, 6, 7],
       body: [
         'Read the constraint, find the largest n in the table, and the complexity under it is what the problem expects.',
         'Each row also hints at the techniques that usually reach that complexity.',
@@ -247,6 +261,7 @@ export default defineLesson('array', {
       label: 'Small n',
       title: 'Tiny n allows exponential work',
       tag: 'technique',
+      code: [3],
       body: [
         'When n is at most 10 to 12, **O(n!)** permutations fit. At 20 to 25, **O(2^n)** subsets or bitmask DP fit, but n! explodes.',
         'A very small limit is the problem telling you brute force search is fine.',
@@ -258,6 +273,7 @@ export default defineLesson('array', {
       label: 'Huge n',
       title: 'Huge n needs log n or a formula',
       tag: 'technique',
+      code: [7],
       body: [
         'At n = 10^6 a single pass, **O(n)**, still fits.',
         'At n = 10^9 or more even reading every value is over budget. Only **O(log n)** or **O(1)** survive: binary search on the answer or a math formula.',
@@ -269,6 +285,7 @@ export default defineLesson('array', {
       label: 'O(n²) hint',
       title: 'Too slow means a pattern exists',
       tag: 'trade-off',
+      code: [8, 9],
       body: [
         'If your first idea is O(n²) and n is 10^5, the problem is telling you a pattern exists.',
         'Sorting, a heap or binary search gets you to O(n log n). A hash map, two pointers or a sliding window gets you to O(n).',

@@ -1,7 +1,7 @@
 'use client';
 
 import type { BaseState, SceneProps } from '../types';
-import { ArrowHead, H, ITEM_STYLE, MONO, NoteLayer, Panels, Stage, TONE_COLOR, Tag, W, type ItemState, type Panel, type PaintTone } from './common';
+import { ArrowHead, H, ITEM_STYLE, MONO, halo, NoteLayer, Panels, Stage, TONE_COLOR, Tag, W, type ItemState, type Panel, type PaintTone } from './common';
 
 /**
  * Grid engine for DP tables, matrices, boards and 2D BFS.
@@ -72,8 +72,8 @@ export function GridScene({ state, frameKey }: SceneProps<GridState>) {
                 stroke={empty ? 'rgba(255,255,255,0.1)' : st.stroke}
                 strokeDasharray={empty ? '3 3' : undefined}
                 strokeWidth="1.4"
-                className="lx-key"
-                style={st.glow ? { filter: `drop-shadow(0 0 6px ${st.stroke}88)` } : undefined}
+                className="lx-key lx-halo"
+                style={halo(Boolean(st.glow), st.stroke, 6)}
               />
               {empty ? null : (
                 <text

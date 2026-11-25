@@ -127,8 +127,20 @@ const depthOf = (parent: number[], i: number) => {
 const UNION_FRAMES = unionFrames();
 const HALVING = halvingFrames();
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'union-find',
+  pseudocode: [
+    'find(x):',
+    '    while parent[x] != x:',
+    '        parent[x] = parent[parent[x]]',
+    '        x = parent[x]',
+    '    return x',
+    'union(a, b):',
+    '    ra = find(a), rb = find(b)',
+    '    if ra == rb: return false',
+    '    attach the shorter tree under the taller',
+    '    return true',
+  ],
   objectives: [
     { text: 'Model groups as a forest where the root names the group', step: 2 },
     { text: 'Union by rank keeps trees shallow', step: 3 },
@@ -151,6 +163,7 @@ export default defineLesson('graph', {
       label: 'The forest',
       title: 'Every node points to a parent',
       tag: 'concept',
+      code: [1, 5],
       body: [
         'Keep a `parent` array. A node whose parent is itself is a **root**, and the root names the group.',
         '`find(x)` follows parents up to the root. Two nodes are connected exactly when their roots match.',
@@ -162,6 +175,7 @@ export default defineLesson('graph', {
       label: 'Union by rank',
       title: 'Attach the shorter tree',
       tag: 'technique',
+      code: [6, 7, 9, 10],
       body: [
         '`union(a, b)` finds both roots. If they differ, hang the lower **rank** (roughly height) under the higher one, and bump the rank only on a tie.',
         'This keeps trees shallow, so `find` stays fast. Each merge lowers the component count by one.',
@@ -173,6 +187,7 @@ export default defineLesson('graph', {
       label: 'Path halving',
       title: 'Flatten while you search',
       tag: 'technique',
+      code: [2, 3, 4],
       body: [
         'During `find`, set each visited node\'s parent to its **grandparent** before stepping up. A long chain gets about half as deep every time it is searched.',
         'With rank plus path compression, each operation is effectively constant time (inverse Ackermann).',
@@ -184,6 +199,7 @@ export default defineLesson('graph', {
       label: 'Cycles',
       title: 'Union returns false: a cycle',
       tag: 'trade-off',
+      code: [8],
       body: [
         'If both roots are already equal, the nodes were connected before this edge, so adding it closes a cycle. `union` returns `false`.',
         'That is cycle detection in an undirected graph for free, the heart of "redundant connection" and Kruskal\'s minimum spanning tree.',

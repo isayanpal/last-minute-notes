@@ -105,8 +105,19 @@ const negScene = (phase: 'finalized' | 'truth'): GraphState => ({
   note: phase === 'finalized' ? { text: 'the first pop of a node is assumed final', tone: 'bad' } : { text: 'a negative edge can improve a node already finalized', tone: 'bad' },
 });
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'dijkstra',
+  pseudocode: [
+    'dist[all] = infinity, dist[start] = 0',
+    'heap = [(0, start)]',
+    'while heap is not empty:',
+    '    (d, u) = pop the nearest',
+    '    if d > dist[u]: skip (stale)',
+    '    for each edge (u, v, w):',
+    '        if d + w < dist[v]:',
+    '            dist[v] = d + w',
+    '            push (dist[v], v)',
+  ],
   objectives: [
     { text: 'Why BFS fails once edges have different costs', step: 1 },
     { text: 'The min-heap loop: pop the nearest, relax its edges', step: 3 },
@@ -129,6 +140,7 @@ export default defineLesson('graph', {
       label: 'The idea',
       title: 'Always expand the nearest',
       tag: 'concept',
+      code: [2, 4],
       body: [
         'Keep `dist[]` as the best known distance to every node, starting at infinity except the source at 0. A **min-heap** of `[distance, node]` always yields the closest unfinished node.',
         'When a node is popped first, no shorter path can exist, because every edge is non-negative.',
@@ -140,6 +152,7 @@ export default defineLesson('graph', {
       label: 'The loop',
       title: 'Pop, relax, push',
       tag: 'technique',
+      code: [3, 4, 6, 7, 8, 9],
       body: [
         'Pop the smallest `(d, u)`. For each edge `u to v` of weight `w`, if `d + w < dist[v]`, update `dist[v]` and push the new pair.',
         'Node 1 is popped at 1, which improves node 2 from 4 to 3 and sets node 3 to 7.',
@@ -151,6 +164,7 @@ export default defineLesson('graph', {
       label: 'Stale entries',
       title: 'No decrease-key needed',
       tag: 'technique',
+      code: [5],
       body: [
         'Node 2 was pushed at distance 4 and later at 3. Binary heaps cannot decrease a key, so the old pair `(4, 2)` stays in the heap.',
         'When it pops, `d > dist[u]` says a shorter path was already found, so it is skipped. Same for `(7, 3)`.',
@@ -162,6 +176,7 @@ export default defineLesson('graph', {
       label: 'Negatives',
       title: 'Why weights must be non-negative',
       tag: 'trade-off',
+      code: [7],
       body: [
         'Dijkstra finalizes a node the first time it is popped. A negative edge can make a longer route cheaper after that point.',
         'With negative weights use **Bellman-Ford**. Large weights may need `long` distances to avoid overflow.',

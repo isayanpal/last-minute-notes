@@ -216,8 +216,17 @@ const RECAP: ArrayState = {
   ],
 };
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'prefix-sum',
+  pseudocode: [
+    'seen = {0: 1}',
+    'sum = 0, count = 0',
+    'for x in a:',
+    '    sum = sum + x',
+    '    count = count + seen[sum - k]',
+    '    seen[sum] = seen[sum] + 1',
+    'return count',
+  ],
   objectives: [
     { text: 'See why negative numbers break a sliding window', step: 1 },
     { text: 'Build a prefix array and answer range sums in O(1)', step: 3 },
@@ -229,6 +238,7 @@ export default defineLesson('array', {
       label: 'The problem',
       title: 'Negatives break the window',
       tag: 'problem',
+      code: [3],
       body: [
         'Count subarrays of `[1, -1, 0]` that sum to **0**.',
         'A sliding window needs the sum to move in one direction as it grows. Here adding `-1` makes it **smaller**, so there is no rule for when to shrink.',
@@ -240,6 +250,7 @@ export default defineLesson('array', {
       label: 'Prefix',
       title: 'Running totals',
       tag: 'concept',
+      code: [4],
       body: [
         '`prefix[i]` is the sum of the first `i` elements, so `prefix[0] = 0` and the array has n + 1 entries.',
         'Each entry is the previous one plus one number: an O(n) pass.',
@@ -251,6 +262,7 @@ export default defineLesson('array', {
       label: 'Range sum',
       title: 'Any range in O(1)',
       tag: 'technique',
+      code: [4],
       body: ['The sum of `nums[a..b]` is `prefix[b + 1] - prefix[a]`.', 'Everything before `a` cancels out. Negative numbers do not matter at all.'],
       keyIdea: 'Range sum = prefix[b + 1] - prefix[a]. O(n) to build, O(1) per query.',
       frames: [query(1, 3), query(0, 4), query(2, 2)],
@@ -259,6 +271,7 @@ export default defineLesson('array', {
       label: 'Look back',
       title: 'Which earlier prefix do I need?',
       tag: 'concept',
+      code: [5],
       body: [
         'Subarray sum equals **k**. A subarray ending here sums to k if some earlier prefix equals `currentPrefix - k`.',
         'In `[1, 1, 1]` with k = 2, the prefix at the end is 3, so we need an earlier prefix of 1.',
@@ -270,6 +283,7 @@ export default defineLesson('array', {
       label: 'Hash map',
       title: 'Count prefixes as you go',
       tag: 'technique',
+      code: [5, 6],
       body: [
         'Keep a map from each prefix to how many times it has occurred. At each element: add to `prefix`, add `seen[prefix - k]` to the count, then record `prefix`.',
         '`[1, 1, 1]` with k = 2 gives **2**.',
@@ -281,6 +295,7 @@ export default defineLesson('array', {
       label: 'The seed',
       title: 'The line people forget',
       tag: 'trade-off',
+      code: [1],
       body: [
         'Without the initial `0 → 1` entry, a subarray that **starts at index 0** has no earlier prefix to match.',
         'Here `[1, 1]` at the very start is missed and the answer comes out as 1 instead of 2.',
@@ -292,6 +307,7 @@ export default defineLesson('array', {
       label: 'Negatives',
       title: 'Negatives and zeros are fine',
       tag: 'in practice',
+      code: [4, 5],
       body: [
         'Back to `[1, -1, 0]` with k = 0. The same loop finds **3** subarrays: `[1, -1]`, `[1, -1, 0]` and `[0]`.',
         'The map does not care which way the sum moves.',

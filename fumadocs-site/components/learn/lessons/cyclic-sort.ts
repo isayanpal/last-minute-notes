@@ -224,8 +224,20 @@ function disappeared(): Frame<ArrayState> {
 
 const FULL = sortFrames([3, 1, 5, 4, 2]);
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'cyclic-sort',
+  pseudocode: [
+    'i = 0',
+    'while i < n:',
+    '    j = a[i]',
+    '    if j < n and a[i] != a[j]:',
+    '        swap a[i], a[j]',
+    '    else:',
+    '        i = i + 1',
+    'for i in 0..n-1:',
+    '    if a[i] != i: return i',
+    'return n',
+  ],
   objectives: [
     { text: 'Spot the known-range signal: values in 1..n or 0..n', step: 1 },
     { text: 'Swap each value to its home index in O(n) and O(1) space', step: 3 },
@@ -237,6 +249,7 @@ export default defineLesson('array', {
       label: 'The problem',
       title: 'Find the missing number',
       tag: 'problem',
+      code: [1],
       body: [
         '`[4, 0, 3, 1]` holds n = 4 distinct numbers from `0..4`. Which one is missing?',
         'A hash set costs O(n) space and sorting costs O(n log n). The values are in a **known range**, and that is the clue.',
@@ -272,6 +285,7 @@ export default defineLesson('array', {
       label: 'Homes',
       title: 'Every value has a home',
       tag: 'concept',
+      code: [3, 4],
       body: [
         'With values `1..n`, the number `x` belongs at index `x - 1`.',
         'If the current value is not at home, swap it there and **stay** on `i`: the value that just arrived has not been placed yet.',
@@ -283,6 +297,7 @@ export default defineLesson('array', {
       label: 'Full sort',
       title: 'Cyclic sort, start to finish',
       tag: 'technique',
+      code: [1, 2, 3, 4, 5, 6, 7],
       body: ['Sort `[3, 1, 5, 4, 2]`. Each swap puts at least one value in its final place, so there are at most n swaps.', 'The `while` loop looks nested with the swaps, but the total work is O(n).'],
       keyIdea: 'At most n swaps plus n increments: O(n) time, O(1) space.',
       frames: FULL,
@@ -291,6 +306,7 @@ export default defineLesson('array', {
       label: 'Missing',
       title: 'Missing number: the dry run',
       tag: 'technique',
+      code: [2, 3, 4, 5, 6, 7],
       body: [
         'For `0..n` the home of `x` is index `x` itself. The value `n` has no index, so it is skipped.',
         'Follow the seven rows of the dry run on `[4, 0, 3, 1]`.',
@@ -302,6 +318,7 @@ export default defineLesson('array', {
       label: 'Final scan',
       title: 'The first wrong slot is the answer',
       tag: 'technique',
+      code: [8, 9, 10],
       body: ['After the swaps, scan for the first index where `nums[k] !== k`. If every slot matches, the answer is `n`.', 'Index 2 holds 4, so **2** is missing.'],
       keyIdea: 'Sort into homes, then the gaps tell you what is missing.',
       frames: MISSING.scan,
@@ -310,6 +327,7 @@ export default defineLesson('array', {
       label: 'Duplicates',
       title: 'Compare values, not positions',
       tag: 'trade-off',
+      code: [4],
       body: [
         'With `i !== home` the array `[2, 2]` swaps forever. Checking `nums[i] !== nums[home]` sees the duplicate and moves on.',
         'The same loop finds all disappeared numbers. It mutates the input, so say so. Sum formula and XOR are O(1) space alternatives for the single missing number.',

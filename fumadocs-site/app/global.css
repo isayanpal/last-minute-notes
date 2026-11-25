@@ -398,7 +398,69 @@ body {
 }
 
 .lx-key {
-  transition: fill 0.6s ease;
+  transition:
+    fill 0.6s ease,
+    stroke 0.6s ease,
+    stroke-width 0.6s ease,
+    opacity 0.6s ease;
+}
+
+/* Glow around a block: always present, so it fades in and out with the state. */
+.lx-halo {
+  transition: filter 0.6s ease;
+}
+
+/* A shape that both recolours and glows needs one combined list, a second `transition` would replace the first. */
+.lx-key.lx-halo {
+  transition:
+    fill 0.6s ease,
+    stroke 0.6s ease,
+    stroke-width 0.6s ease,
+    opacity 0.6s ease,
+    filter 0.6s ease;
+}
+
+/* Panel cards resize with their content while the whole card slides to its slot. */
+.lx-panel {
+  transition: height 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Bars grow and shrink in place when values change. */
+.lx-bar {
+  transition:
+    y 0.6s cubic-bezier(0.65, 0, 0.35, 1),
+    height 0.6s cubic-bezier(0.65, 0, 0.35, 1),
+    fill 0.6s ease,
+    stroke 0.6s ease,
+    filter 0.6s ease;
+}
+
+.lx-geom.lx-halo {
+  transition:
+    x 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+    width 0.45s cubic-bezier(0.65, 0, 0.35, 1),
+    filter 0.6s ease;
+}
+
+/* Block labels follow the top face while it rises, instead of snapping. */
+.lx-lift {
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* New blocks settle into place from slightly above. */
+.lx-rise {
+  animation: lx-rise 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+
+.lx-cam {
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.lx-face {
+  transition:
+    d 0.6s cubic-bezier(0.65, 0, 0.35, 1),
+    fill 0.6s ease,
+    stroke 0.6s ease;
 }
 
 .lx-glow {
@@ -435,6 +497,17 @@ body {
   from {
     opacity: 0;
     transform: translateY(-14px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
   }
   to {
     opacity: 1;
@@ -490,6 +563,7 @@ body {
   .lx-in,
   .lx-moved,
   .lx-hot,
+  .lx-rise,
   .lx-grow {
     animation: none;
   }
@@ -506,7 +580,15 @@ body {
   }
 
   .lx-slide,
-  .lx-key {
+  .lx-key,
+  .lx-halo,
+  .lx-key.lx-halo,
+  .lx-bar,
+  .lx-panel,
+  .lx-geom.lx-halo,
+  .lx-lift,
+  .lx-cam,
+  .lx-face {
     transition: none;
   }
 }

@@ -84,8 +84,15 @@ const SIGNED: ArrayState = {
   note: { text: 'bitwise operators use 32-bit signed integers', tone: 'bad' },
 };
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'bit-manipulation',
+  pseudocode: [
+    'xor all numbers: pairs cancel, the single one stays',
+    'n & (n - 1) clears the lowest set bit',
+    'count bits: repeat n = n & (n - 1) until n is 0',
+    'power of two: n > 0 and n & (n - 1) == 0',
+    'use >>> 0 when 32-bit signed values surprise you',
+  ],
   objectives: [
     { text: 'Read a number as a row of bits', step: 1 },
     { text: 'XOR cancels pairs: single number in one pass', step: 2 },
@@ -108,6 +115,7 @@ export default defineLesson('array', {
       label: 'XOR',
       title: 'Pairs cancel themselves',
       tag: 'technique',
+      code: [1],
       body: [
         '`a ^ a = 0` and `a ^ 0 = a`. XOR every number together and each value that appears twice cancels out.',
         'In `[4, 1, 2, 1, 2]` the 1s and 2s cancel and `4` remains. One pass, no hash map.',
@@ -119,6 +127,7 @@ export default defineLesson('array', {
       label: 'Clear lowest bit',
       title: 'n & (n - 1) drops one set bit',
       tag: 'technique',
+      code: [2, 3],
       body: [
         'Subtracting 1 flips the lowest set bit and every zero after it. AND-ing with the original clears exactly that lowest set bit.',
         'Count how many times you can do it before reaching 0, and you have the set-bit count in one loop per set bit.',
@@ -130,6 +139,7 @@ export default defineLesson('array', {
       label: 'Power of two',
       title: 'Exactly one set bit',
       tag: 'technique',
+      code: [4],
       body: [
         'A power of two has one set bit. Clearing it with `n & (n - 1)` leaves 0, so `n > 0 && (n & (n - 1)) === 0` is the test.',
         'The `n > 0` guard matters, because 0 would otherwise pass.',
@@ -141,6 +151,7 @@ export default defineLesson('array', {
       label: 'JS traps',
       title: '32-bit signed surprises',
       tag: 'trade-off',
+      code: [5],
       body: [
         'JavaScript bitwise operators work on **32-bit signed** integers. `1 << 31` is negative, and values above 2^31 - 1 truncate silently.',
         'Use `>>> 0` for unsigned behaviour or `BigInt` when you need 64 bits. In Java, `1 << 32` wraps to `1` for an `int`.',

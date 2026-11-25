@@ -286,8 +286,23 @@ function autoFrames(): Frame<GraphState>[] {
   return frames;
 }
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'trie',
+  pseudocode: [
+    'insert(word):',
+    '    node = root',
+    '    for ch in word:',
+    '        if ch not in node.children:',
+    '            node.children[ch] = new node',
+    '        node = node.children[ch]',
+    '    node.isWord = true',
+    '',
+    'walk(prefix):',
+    '    follow one child per character',
+    '    return the node, or null if missing',
+    'search(w): walk(w) exists and isWord',
+    'startsWith(p): walk(p) exists',
+  ],
   legend: [
     { label: 'current', color: TONE_COLOR.accent, shape: 'ring' },
     { label: 'end of word', color: TONE_COLOR.ok, shape: 'ring' },
@@ -312,6 +327,7 @@ export default defineLesson('graph', {
       label: 'Shared paths',
       title: 'A tree where each edge is a character',
       tag: 'concept',
+      code: [3, 6],
       body: [
         'Each node has a map of children, one per next character, and an **end** flag that marks a complete word.',
         'Words that share a prefix share a path. `apple`, `app` and `apt` all go through `a` then `p`.',
@@ -333,6 +349,7 @@ export default defineLesson('graph', {
       label: 'Insert',
       title: 'Insert "apple"',
       tag: 'technique',
+      code: [1, 2, 3, 4, 5, 6, 7],
       body: [
         'Walk from the root. For each character, create the child if it is missing, then step into it.',
         'After the last character, set `end = true`.',
@@ -344,6 +361,7 @@ export default defineLesson('graph', {
       label: 'Search',
       title: 'search("app") vs startsWith("app")',
       tag: 'technique',
+      code: [9, 10, 11, 12, 13],
       body: [
         'With only `apple` stored, both walk `a`, `p`, `p` and find a node.',
         '`startsWith` only needs the node to exist, so it is **true**. `search` also needs `end` to be true, so it is **false**.',
@@ -355,6 +373,7 @@ export default defineLesson('graph', {
       label: 'More words',
       title: 'New words reuse the path',
       tag: 'technique',
+      code: [3, 4, 5, 6],
       body: [
         '`app` creates nothing: it just sets `end` on the second `p`. `apt` adds a single node. `bat` shares nothing, so it starts a new branch.',
       ],
@@ -365,6 +384,7 @@ export default defineLesson('graph', {
       label: 'Cost',
       title: 'Autocomplete in O(L)',
       tag: 'trade-off',
+      code: [10],
       body: [
         'Walking the prefix costs O(length of the query) **regardless of how many words are stored**. Insert, search and startsWith are all O(L).',
         'Every word below the prefix node is a suggestion. The `b` branch is never touched.',

@@ -365,8 +365,22 @@ const RECAP: ArrayState = {
   ],
 };
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'two-pointers',
+  pseudocode: [
+    'l = 0, r = n - 1',
+    'while l < r:',
+    '    s = a[l] + a[r]',
+    '    if s == target: return [l, r]',
+    '    if s < target: l = l + 1',
+    '    else: r = r - 1',
+    '',
+    'write = 0',
+    'for read in 0..n-1:',
+    '    if a[read] is kept:',
+    '        a[write] = a[read]',
+    '        write = write + 1',
+  ],
   objectives: [
     { text: 'Replace an O(n²) pair search with one inward pass', step: 3 },
     { text: 'Justify every pointer move by the pairs it rules out', step: 4 },
@@ -379,6 +393,7 @@ export default defineLesson('array', {
       label: 'The problem',
       title: 'Checking every pair',
       tag: 'problem',
+      code: [1, 2],
       body: [
         'Find two numbers in the **sorted** array `[1, 2, 3, 4, 6]` that add up to **6**.',
         'Trying every pair works, but it ignores the fact that the array is sorted and costs O(n²) in the worst case.',
@@ -390,6 +405,7 @@ export default defineLesson('array', {
       label: 'Both ends',
       title: 'Start at both ends',
       tag: 'concept',
+      code: [1, 2],
       body: [
         'Put `lo` at the start and `hi` at the end. Their sum is 7, too big.',
         'Since the array is sorted, `nums[hi]` paired with **any** element at or after `lo` is even bigger. It can never be in the answer, so `hi` moves in.',
@@ -401,6 +417,7 @@ export default defineLesson('array', {
       label: 'Two Sum',
       title: 'Two Sum II, start to finish',
       tag: 'technique',
+      code: [3, 4, 5, 6],
       body: [
         'Sum too small: `lo++`. Sum too big: `hi--`. Equal: return the pair.',
         'Each step discards one element for good, so the loop runs at most n - 1 times. Use `lo < hi`, because a pair needs two different elements.',
@@ -412,6 +429,7 @@ export default defineLesson('array', {
       label: 'Container',
       title: 'Container with most water',
       tag: 'technique',
+      code: [2, 3, 5, 6],
       body: [
         'Area is `min(height[lo], height[hi]) * (hi - lo)`. Record it, then move the **shorter** line.',
         'The area is capped by the shorter side. Moving the taller side only shrinks the width while the cap stays the same or drops, so the shorter line is finished.',
@@ -423,6 +441,7 @@ export default defineLesson('array', {
       label: 'Read/write',
       title: 'Same direction: compact in place',
       tag: 'technique',
+      code: [8, 9, 10, 11, 12],
       body: [
         'Remove duplicates from a sorted array. `read` scans every value. `write` marks the next slot to fill.',
         'When `nums[read]` differs from the last kept value, copy it to `write` and advance. At the end `write` is the new length.',
@@ -434,6 +453,7 @@ export default defineLesson('array', {
       label: 'Partition',
       title: 'Three regions: Dutch national flag',
       tag: 'technique',
+      code: [10, 11, 12],
       body: [
         'Sort `0`, `1`, `2` in one pass. `[0, low)` holds zeros, `[low, mid)` ones, `(high, n)` twos.',
         'A 0 swaps with `low`, a 1 just advances `mid`, a 2 swaps with `high`. After that swap `mid` **stays**: the value that came from `high` is unchecked.',

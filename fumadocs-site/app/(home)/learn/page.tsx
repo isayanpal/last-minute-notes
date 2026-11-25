@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, Clock, ListOrdered } from 'lucide-react';
-import { LESSONS, TRACKS, type LessonMeta } from '@/lib/learn/catalog';
+import { LESSONS, TRACKS, sectionsOf, type LessonMeta } from '@/lib/learn/catalog';
 
 export const metadata: Metadata = {
   title: 'Learn · Last Minute Notes',
@@ -72,7 +72,7 @@ export default function LearnPage() {
 
       {TRACKS.map((t) => {
         const lessons = LESSONS.filter((l) => l.track === t.id);
-        const sections = [...new Set(lessons.map((l) => l.section))];
+        const sections = sectionsOf(t.id);
         let n = 0;
         return (
           <section key={t.id} id={t.id} className="mt-14 scroll-mt-20">

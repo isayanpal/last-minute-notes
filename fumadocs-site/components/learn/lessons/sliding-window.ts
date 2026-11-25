@@ -207,14 +207,32 @@ const RECAP: ArrayState = {
   stats: [
     { label: 'Time', value: 'O(n)', tone: 'ok' },
     { label: 'Space', value: 'O(k)', hint: 'window state' },
-    { label: 'Each element', value: 'in once, out once' },
+    { label: 'Each element', value: '1 in, 1 out' },
   ],
 };
 
 const LONGEST = longestFrames('abcabcbb');
 
-export default defineLesson('array', {
+export default defineLesson('isoArray', {
   slug: 'sliding-window',
+  pseudocode: [
+    'fixed window of size k:',
+    '    sum = 0',
+    '    for right in 0..n-1:',
+    '        sum = sum + a[right]',
+    '        if right >= k - 1:',
+    '            best = max(best, sum)',
+    '            sum = sum - a[right - k + 1]',
+    '',
+    'variable window:',
+    '    left = 0',
+    '    for right in 0..n-1:',
+    '        add a[right] to the window',
+    '        while window is not valid:',
+    '            remove a[left]',
+    '            left = left + 1',
+    '        best = max(best, right - left + 1)',
+  ],
   objectives: [
     { text: 'Spot problems about contiguous subarrays', step: 1 },
     { text: 'Run a fixed size window in O(n)', step: 4 },
@@ -226,6 +244,7 @@ export default defineLesson('array', {
       label: 'The problem',
       title: 'Brute force rescans every window',
       tag: 'problem',
+      code: [1],
       body: [
         'Find the largest sum of any **3 consecutive** numbers in `[2, 1, 5, 1, 3, 2]`.',
         'The obvious way starts at every index and adds up the next k numbers. Neighbouring windows share k - 1 numbers, yet each one is added again from scratch.',
@@ -237,6 +256,7 @@ export default defineLesson('array', {
       label: 'Slide',
       title: 'Add one, remove one',
       tag: 'concept',
+      code: [4, 7],
       body: [
         'Keep a window `[left, right]` and its running state, here the sum.',
         'Moving the window one step only changes two numbers: **add** the one entering on the right and **remove** the one leaving on the left.',
@@ -248,6 +268,7 @@ export default defineLesson('array', {
       label: 'Fixed run',
       title: 'A fixed window, start to finish',
       tag: 'technique',
+      code: [3, 4, 5, 6, 7],
       body: [
         'For a window of size k: add `nums[i]`. Once `i >= k - 1` the window is full, so record the answer, then remove `nums[i - k + 1]`.',
         'Watch `windowSum` change by exactly two numbers per step.',
@@ -259,6 +280,7 @@ export default defineLesson('array', {
       label: 'Answer',
       title: 'Best window: 5 + 1 + 3',
       tag: 'technique',
+      code: [6],
       body: ['The window `[2..4]` gives the best sum, **9**.', 'Brute force did 12 additions for 6 numbers. The slide did one add and at most one remove per number.'],
       keyIdea: 'O(n) time, O(1) extra space for a sum. The state can be anything you can update incrementally: a count, a set, a map.',
       frames: fixedFrames().slice(-1),
@@ -267,6 +289,7 @@ export default defineLesson('array', {
       label: 'Variable',
       title: 'When the size is not given',
       tag: 'concept',
+      code: [9],
       body: [
         'Longest substring without repeating characters in `"abcabcbb"`. The window has no fixed size.',
         'Move `right` forward and add each character to a set while the window stays valid.',
@@ -278,6 +301,7 @@ export default defineLesson('array', {
       label: 'Shrink',
       title: 'Shrink until valid again',
       tag: 'technique',
+      code: [13, 14, 15],
       body: [
         'At index 3 the window would contain `a` twice. It is invalid.',
         'Move `left` forward, removing characters from the set, until the duplicate is gone. Then record the length.',
@@ -289,6 +313,7 @@ export default defineLesson('array', {
       label: 'Full run',
       title: 'Longest substring, every step',
       tag: 'technique',
+      code: [11, 12, 13, 16],
       body: ['The window slides across the string once. `left` never moves backwards, so even with the inner loop each character is added and removed at most once.', 'The answer is **3**, for `"abc"`.'],
       keyIdea: 'Nested loops do not mean O(n²) here: both pointers only move forward, so the total is O(n).',
       frames: LONGEST,
@@ -297,6 +322,7 @@ export default defineLesson('array', {
       label: 'Shortest',
       title: 'Flip the loop for a minimum',
       tag: 'trade-off',
+      code: [13, 14, 15],
       body: [
         'Shortest subarray with sum at least 7 in `[2, 3, 1, 2, 4, 3]`.',
         'Now you shrink while the window is **still valid**, and record the answer inside the loop, because every shrink might find a shorter one.',

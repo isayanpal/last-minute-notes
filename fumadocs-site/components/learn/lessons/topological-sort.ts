@@ -101,8 +101,18 @@ const indegOf = (g: G) => {
   return d;
 };
 
-export default defineLesson('graph', {
+export default defineLesson('isoGraph', {
   slug: 'topological-sort',
+  pseudocode: [
+    'indegree[v] = number of prerequisites of v',
+    'queue = every v with indegree 0',
+    'while queue is not empty:',
+    '    u = dequeue, add u to order',
+    '    for each v after u:',
+    '        indegree[v] = indegree[v] - 1',
+    '        if indegree[v] == 0: enqueue v',
+    'if order has fewer than n nodes: a cycle',
+  ],
   objectives: [
     { text: 'When a dependency problem is a topological sort', step: 1 },
     { text: 'In-degree: how many prerequisites a node still waits on', step: 2 },
@@ -125,6 +135,7 @@ export default defineLesson('graph', {
       label: 'In-degree',
       title: 'Count what each node waits on',
       tag: 'concept',
+      code: [1, 2],
       body: [
         'Build the adjacency list and the **in-degree** of every node: how many prerequisites it still waits on.',
         'Every node with in-degree 0 can start right now. C0 is the only one here.',
@@ -136,6 +147,7 @@ export default defineLesson('graph', {
       label: "Kahn's",
       title: 'Pop, order, release',
       tag: 'technique',
+      code: [3, 4, 5, 6, 7],
       body: [
         'Pop a node, append it to the order, and decrement the in-degree of everything that depends on it. Anything reaching 0 joins the queue.',
         'When the queue is empty the order is complete. It runs in O(V + E).',
@@ -147,6 +159,7 @@ export default defineLesson('graph', {
       label: 'Cycle',
       title: 'A short order means a cycle',
       tag: 'trade-off',
+      code: [8],
       body: [
         'Here C1 and C2 each wait on the other. After C0 is popped, neither reaches in-degree 0, so the queue empties with the order short.',
         'If `order.length < n`, the leftover nodes are stuck in a cycle. That is also how you answer "can all courses be finished?".',

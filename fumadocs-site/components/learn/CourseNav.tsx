@@ -4,17 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Check, ChevronDown, ChevronRight, FileText, Folder, FolderOpen, Menu, X } from 'lucide-react';
-import { LESSONS, TRACKS, type LessonLevel, type LessonMeta, type LessonTrack } from '@/lib/learn/catalog';
+import { LESSONS, TRACKS, sectionsOf, type LessonLevel, type LessonTrack } from '@/lib/learn/catalog';
+import { MODULE_COLORS } from './module-ui';
 
-const FOLDER_COLORS = ['#c9a36b', '#3fb97a', '#8b6fe0', '#e8814a', '#3f8fe0', '#2fb8a8', '#e0577f', '#a6b84a'];
+const FOLDER_COLORS = MODULE_COLORS;
 const LEVELS: ('All' | LessonLevel)[] = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 const LEVEL_DOT: Record<LessonLevel, string> = { Beginner: 'bg-emerald-400', Intermediate: 'bg-amber-400', Advanced: 'bg-red-400' };
-
-function groupBySection(lessons: LessonMeta[]) {
-  const map = new Map<string, LessonMeta[]>();
-  for (const l of lessons) map.set(l.section, [...(map.get(l.section) ?? []), l]);
-  return [...map.entries()];
-}
 
 /** Track switcher. A dropdown, so it holds any number of tracks without squeezing labels. */
 function TrackPicker({ value, onChange }: { value: LessonTrack; onChange: (t: LessonTrack) => void }) {
@@ -113,7 +108,10 @@ function Nav({ onNavigate, onClose }: { onNavigate?: () => void; onClose?: () =>
 
   const trackLessons = useMemo(() => LESSONS.filter((l) => l.track === track), [track]);
   const shown = useMemo(() => trackLessons.filter((l) => level === 'All' || l.level === level), [trackLessons, level]);
-  const sections = groupBySection(shown);
+  // A level filter also hides modules that have no lesson of that level.
+  const sections = sectionsOf(track)
+    .map((name) => [name, shown.filter((l) => l.section === name)] as const)
+    .filter(([, lessons]) => level === 'All' || lessons.length > 0);
 
   const toggle = (key: string) =>
     setOpen((o) => {
